@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-AU-Compatible" content="IE = edge">
+    <meta name="viewport" content="width=device-width,user-scalable=no,initial-scale=1.0,maximum-scale=1.0,minimum-scale=1.0">
+    <title>EPG_Welcome</title>
+    <script type="text/javascript">
+    var width = 1280,
+        height = 720;
+    if (window.innerWidth === 1920) {
+        width = 1920;
+        height = 1080;
+    }
+    var meta = document.createElement('meta');
+    meta.setAttribute('name', 'page-view-size');
+    meta.setAttribute('content', width + '*' + height);
+    document.querySelector('head').appendChild(meta);
+    window.onerror = function(a, b, c, d) {
+        var str = '';
+        if ((typeof a).toLowerCase() === 'string') {
+            str = a;
+        } else {
+            for (let i in a) {
+                str += i + ': ' + a[i].toString();
+            }
+        }
+        alert('error: ' + str + '; ' + b + '; ' + c + '; ' + d);
+    }
+    </script>
+    <style type="text/css" media="screen">
+    * {
+        margin: 0;
+        padding: 0;
+    }
+    </style>
+</head>
+
+<body>
+    <div id="app"></div>
+    <script type="text/javascript">
+    var script = document.createElement('script');
+    document.querySelectorAll('body')[0].appendChild(script);
+    </script>
+</body>
+
+</html>
