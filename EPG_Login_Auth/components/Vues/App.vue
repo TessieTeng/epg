@@ -19,17 +19,13 @@ export default {
             return {
                 isRequestStatus: false,
             };
-
         },
-
-
-
         methods: {
 
             getRelativePath() {
                 //var pathName = location.pathname;
                 //var relativePath = pathName.replace("portal.html", "");
-                console.log("8888", relativePath);
+                console.log("888888", relativePath);
                 var relativePath = "/iptv/ppthdplay/SYHOTEL/";
                 sessionStorage.setItem("relativePath", relativePath);
             },
@@ -71,8 +67,8 @@ export default {
                                 }
                                 _this.doAuth();
                             } else {
-                               console.log("doLogin请求数据失败");
-                            window.location.href = sessionStorage.getItem("indexUrl");
+                                console.log("doLogin请求数据失败");
+                                window.location.href = sessionStorage.getItem("indexUrl");
 
                             }
                         } else {
