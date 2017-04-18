@@ -41,7 +41,7 @@ export default {
                         "MessageType": "STBLoginReq",
                         "MessageBody": {
                             "STBID": !!window.Authentication ? Authentication.CTCGetConfig("STBID") : '0010039901049500164574FF4C691FFE',
-                            "USERID": Authentication.CTCGetConfig("UserID"),
+                            "USERID": !!window.Authentication ? Authentication.CTCGetConfig("UserID") : "123456",
                         },
                     }
                 };
@@ -61,9 +61,15 @@ export default {
                                 if (window.sessionStorage) {
                                     sessionStorage.setItem("HostID", _msgBody.HostID);
                                     sessionStorage.setItem("UserID", _msgBody.UserID);
+                                    sessionStorage.setItem("AdPath", _msgBody.AdPath);
+                                    sessionStorage.setItem("MainPath", _msgBody.MainPath);
+                                    sessionStorage.setItem("WelcomePageGroupPath", _msgBody.WelcomePageGroupPath);
                                 } else {
                                     Cookie.write("HostID", _msgBody.HostID);
                                     Cookie.write("UserID", _msgBody.UserID);
+                                    Cookie.write("AdPath", _msgBody.AdPath);
+                                    Cookie.write("MainPath", _msgBody.MainPath);
+                                    Cookie.write("WelcomePageGroupPath", _msgBody.WelcomePageGroupPath);
                                 }
                                 _this.doAuth();
                             } else {
@@ -132,7 +138,17 @@ export default {
                                     Cookie.write("Token", _msgBody.Token);
                                 }
 
-                                _this.getVideoAddr();
+                                // _this.getVideoAddr();
+                                if (sessionStorage.getItem("WelcomePageGroupPath") == "welcome_test") {
+                                    console.log("测试路径");
+                                    location.replace("./epggroup_welcomes/welcome_test/welcome.html");
+                                } else if (sessionStorage.getItem("WelcomePageGroupPath") == "") {
+                                    console.log("正式路径");
+                                    location.replace("./epggroup_welcomes/welcome_default/welcome.html");
+                                } else if (sessionStorage.getItem("WelcomePageGroupPath").indexOf("http") >= 0) {
+                                    console.log("是链接", sessionStorage.getItem("WelcomePageGroupPath"));
+                                    window.location = sessionStorage.getItem("WelcomePageGroupPath");
+                                }
                             } else {
                                 console.log("Auth请求数据失败");
                                 window.location.href = sessionStorage.getItem("indexUrl");
