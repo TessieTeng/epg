@@ -487,7 +487,7 @@ export default {
                     "Token=" + this.Token + "&" +
                     "UserID=" + this.UserID + "&" +
                     "indexUrl=" + this.indexUrl + "&" +
-                    "relativePath=" + this.getRelativePath() + "&" +
+                    "relativePath=" + this.relativePath + "&" +
                     "HostID=" + this.HostID + "&" +
                     "AdPath=" + this.AdPath + "&" +
                     "MainPath=" + this.MainPath + "&" +
