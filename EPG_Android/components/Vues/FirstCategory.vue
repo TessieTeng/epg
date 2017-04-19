@@ -83,6 +83,24 @@ export default {
                 return null;
             },
 
+             getParams() {
+                window.EPGDirectory = this.GetQueryString("EPGDirectory");
+                window.EPGTemplateType = this.GetQueryString("EPGTemplateType");
+                window.EpgGroupID = this.GetQueryString("EpgGroupID");
+                window.LoginID = this.GetQueryString("LoginID");
+                window.RootCategoryID = this.GetQueryString("RootCategoryID");
+                window.Token = this.GetQueryString("Token");
+                window.UserID = this.GetQueryString("UserID");
+                window.indexUrl = this.GetQueryString("indexUrl");
+                window.relativePath = this.GetQueryString("relativePath");
+                window.AdPath = this.GetQueryString("AdPath");
+                window.MainPath = this.GetQueryString("MainPath");
+                window.WelcomePageGroupPath = this.GetQueryString("WelcomePageGroupPath");
+                window.currLangCode = this.GetQueryString("currLangCode");
+
+
+            },
+
             //取正常图片
             getNormalIcon(item) {
                 var tempPicList = item.PictureList.Picture;
@@ -126,17 +144,17 @@ export default {
                             "ObjectID": categoryId,
                             "ObjectType": 1,
                             "ChildrenLevel": 1,
-                            "LangCode": window.sessionStorage ? sessionStorage.getItem("currLangCode") : Cookie.read("currLangCode"),
-                            "EpgGroupID": window.sessionStorage ? sessionStorage.getItem("EpgGroupID") : Cookie.read("EpgGroupID"),
-                            "UserID": window.sessionStorage ? sessionStorage.getItem("UserID") : Cookie.read("UserID"),
-                            "Token": window.sessionStorage ? sessionStorage.getItem("Token") : Cookie.read("Token"),
+                            "LangCode": window.currLangCode,
+                            "EpgGroupID": window.EpgGroupID,
+                            "UserID": window.UserID,
+                            "Token": window.Token,
                         }
                     }
                 };
 
                 Http({
                     type: 'POST',
-                    url: sessionStorage.getItem("relativePath") + 'service/epgservice/index.php?MessageType=GetObjectInfoReq',
+                    url: window.relativePath + 'service/epgservice/index.php?MessageType=GetObjectInfoReq',
                     data: JSON.stringify(tmpObj),
                     complete: function(data) {
                         console.log(data);
@@ -186,8 +204,10 @@ export default {
                         // this.$dispatch("stopVideo");
                         this.$nextTick(() => {
                             // window.location.href ="http:222.221.25.243:6166/iptv/ppthdplay/apps/index/index_epg.html";
-                            var address = sessionStorage.getItem("indexUrl");
-                            window.location.href = sessionStorage.getItem("indexUrl");
+                            // var address = sessionStorage.getItem("indexUrl");
+                            // window.location.href = sessionStorage.getItem("indexUrl");
+
+                            window.location.href = window.indexUrl;
                            
                         });
                         break;
@@ -286,11 +306,11 @@ export default {
             Loading,
         },
         ready() {
-
+            this.getParams();
             var categary = document.getElementById("firstTabItem");
             categary.children[0].children[0].focus();
             this.listenBackKey();
-            this.getRootCategoryData(sessionStorage.getItem("RootCategoryID"));
+            this.getRootCategoryData(window.RootCategoryID);
             this.updateIsMainLayout(true);
             this.updateLastStore(0);
             console.log(this);

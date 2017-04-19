@@ -251,16 +251,16 @@ export default {
                     "Message": {
                         "MessageType": "GetWeatherInfoReq",
                         "MessageBody": {
-                            "LangCode": window.sessionStorage ? sessionStorage.getItem("currLangCode") : Cookie.read("currLangCode"),
+                            "LangCode": window.currLangCode,
                             "EpgGroupID": 1,
-                            "Token": window.sessionStorage ? sessionStorage.getItem("Token") : Cookie.read("Token"),
+                            "Token": window.Token,
                         }
                     }
                 };
 
                 Http({
                     type: 'POST',
-                    url: sessionStorage.getItem("relativePath") + 'service/epgservice/index.php?MessageType=GetWeatherInfoReq',
+                    url: window.relativePath + 'service/epgservice/index.php?MessageType=GetWeatherInfoReq',
                     data: JSON.stringify(tmpObj),
                     complete: function(data) {
                         console.log(data);
@@ -330,7 +330,7 @@ export default {
 
         ready() {
             var _this = this;
-            var hint = sessionStorage.getItem("currLangCode");
+            var hint = window.currLangCode;
             if (hint === "chi") {
                 _this.today = "今天";
                 _this.tomorrow = "明天";
