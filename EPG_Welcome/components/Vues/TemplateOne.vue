@@ -211,6 +211,7 @@ export default {
                 RootCategoryID: "",
                 Token: "",
                 UserID: "",
+                HostID: "",
                 indexUrl: "",
                 relativePath: "",
                 AdPath: "",
@@ -225,6 +226,7 @@ export default {
 
             handleTimeout() {
                 var timesRun = 0;
+                // 后面这里需要修改
                 var interval = setInterval(function() {
                     timesRun += 1;
                     if (timesRun === 4) {
@@ -232,7 +234,7 @@ export default {
                         window.location.href = this.indexUrl;
                         return;
                     }
-                    getWelcomeData();
+                    this.getWelcomeData();
                 }, 5000);
             },
 
@@ -279,14 +281,12 @@ export default {
                 this.RootCategoryID = this.GetQueryString("RootCategoryID");
                 this.Token = this.GetQueryString("Token");
                 this.UserID = this.GetQueryString("UserID");
+                this.HostID = this.GetQueryString("HostID");
                 this.indexUrl = this.GetQueryString("indexUrl");
                 this.relativePath = this.GetQueryString("relativePath");
                 this.AdPath = this.GetQueryString("AdPath");
                 this.MainPath = this.GetQueryString("MainPath");
                 this.WelcomePageGroupPath = this.GetQueryString("WelcomePageGroupPath");
-                this.currLangCode = this.GetQueryString("currLangCode");
-
-
             },
 
             getWifiInfo() {
@@ -425,6 +425,7 @@ export default {
                 //轮播图片
                 if ((typeof(obj.PictureList) == "undefined") || null == obj.PictureList) {
                     console.log("图片列表是空");
+                    // 发送错误log报告
                 } else {
                     this.pictureList = Object.freeze(obj.PictureList.ImageList);
                     setInterval(() => {
@@ -433,9 +434,60 @@ export default {
                 }
 
             },
+            getObjStr(obj) {
+                let str = '';
+                for (let key in obj) {
+                    str += key + ': ' + obj[key] + '; ';
+                }
+                return str;
+            },
+            postLog(params = {OperationCode: '', Detail: ''}){
+                var _this = this;
+                const tmpObj = {
+                    "Message": {
+                        "MessageType": "EPGLogReq",
+                        "MessageBody": {
+                            "USERID": Authentication.CTCGetConfig("UserID"),
+                            "HostID": _this.HostID,
+                            "OperationCode": params.OperationCode,
+                            "Detail": params.Detail,
+                        },
+                    }
+                };
+                Http({
+                    type: 'POST',
+                    url: _this.relativePath + 'service/epgservice/index.php?MessageType=EPGLogReq',
+                    data: JSON.stringify(tmpObj),
+                    complete: function(data) {
+                        if (data.status === 200) {
+                            alert("data.status === 200");
+                            const _data = JSON.parse(data.response);
+                            const _msgBody = _data.Message.MessageBody;
+                            console.log(_data);
+                            if (_msgBody.ResultCode === 200) {
+                                console.log(_msgBody);
+                                alert("_msgBody.ResultCode === 200");
+                            } else {
+                                alert("失败!");
+                                console.log("数据获取失败");
+                            }
+                        } else {
+                            alert(_this.getObjStr(data));
+                        }
+                    },
+                    error: function(err) {
+                        alert('err')
+                    },
+                });
+            },
             listenBackKey() {
-                document.querySelector('#welcomeLayout').addEventListener('keypress', (keyEvent) => {
-
+                document.querySelector('#welcomeLayout').addEventListener('keydown', (keyEvent) => {
+                    if (this.WelcomePageGroupPath === 'test') {
+                        this.postLog({
+                            OperationCode: '欢迎页按按钮',
+                            Detail: this.getObjStr(keyEvent),
+                        });
+                    }
                     keyEvent = keyEvent ? keyEvent : window.event;
                     var keyvalue = keyEvent.which ? keyEvent.which : keyEvent.keyCode;
                     if (keyvalue == 8) {
@@ -474,7 +526,7 @@ export default {
                     window.location = this.MainPath;
                 } else {
                     console.log("正式路径");
-                    location.replace("../../epggroup_mains/main_default/main.html" + this.addParams());
+                    location.replace("../../epggroup_mains/main_default/main.html?" + this.addParams());
                 }
             },
             /**  明天看主页需要的参数*/
@@ -492,6 +544,8 @@ export default {
                     "AdPath=" + this.AdPath + "&" +
                     "MainPath=" + this.MainPath + "&" +
                     "WelcomePageGroupPath=" + this.WelcomePageGroupPath;
+
+                    // currentLanguage
 
                 return params;
 
@@ -529,7 +583,7 @@ export default {
                                 _this.isRequestStatus = false;
                                 console.log("获取数据失败");
                                 console.log("数据获取失败");
-
+                                // 这里要做错误log请求
                             }
                         } else {
                             this.isRequestStatus = false;
