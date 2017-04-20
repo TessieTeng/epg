@@ -1,5 +1,4 @@
 <style>
-@import url('../assets/css/weui.min.css');
 html {
     font-size: 100px;
 }
@@ -150,15 +149,16 @@ a {
 <template>
     <!-- 路由外链 -->
     <div>
-        <router-view></router-view>
+        <router-view :data-source='DataSource'></router-view>
         <!--  <div class="MM">
             <div class="one" id="videoPlay">aaaaaaaaaaaaaaa</div>
             <div class="two" id="videoPlayTotal">ccccccccccccccccccc</div>
         </div> -->
-        <div>
+    <div>
 </template>
 <script>
 import store from '../vuex/store.js';
+import Http from '../assets/lib/Http';
 import {
     updateFirstClassTab,
     updateSecondClassTab
@@ -172,10 +172,151 @@ export default {
                 curTime: -1,
                 allTime: -3,
                 strUtility: null,
-
+                DataSource:{},
             };
         },
         methods: {
+            GetQueryString(name) {
+                var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
+                var r = window.location.search.substr(1).match(reg);
+                if (r != null) return unescape(r[2]);
+                return null;
+            },
+
+            getParams() {
+                this.DataSource.HostID = this.GetQueryString("HostID");
+                this.DataSource.indexUrl = decodeURIComponent(this.GetQueryString("indexUrl"));
+                this.DataSource.relativePath = decodeURIComponent(this.GetQueryString("relativePath"));
+                this.DataSource.currLangCode = this.GetQueryString("currLangCode"); 
+                // if (!window.Authentication) {
+                //     this.goToIptv();
+                //     return;
+                // }
+                this.doLogin();
+            },
+            goToIptv() {
+                window.location.href = this.DataSource.indexUrl;
+            },
+            doLogin() {
+                const _this = this;
+                const tmpObj = {
+                    "Message": {
+                        "MessageType": "STBLoginReq",
+                        "MessageBody": {
+                            "STBID": Authentication.CTCGetConfig("STBID"),
+                            "USERID": Authentication.CTCGetConfig("UserID"),
+                        },
+                    }
+                };
+                Http({
+                    type: 'POST',
+                    url: this.DataSource.relativePath + 'service/epgservice/index.php?MessageType=STBLoginReq',
+                    data: JSON.stringify(tmpObj),
+                    complete: function(data) {
+                        if (data.status === 200) {
+                            const _data = JSON.parse(data.response);
+                            const _msgBody = _data.Message.MessageBody;
+                            if (_msgBody.ResultCode == 200) {
+                                _this.DataSource.HostID = _msgBody.HostID;
+                                _this.DataSource.UserID = _msgBody.UserID;
+                                _this.DataSource.AdPath = _msgBody.AdPath;
+                                _this.DataSource.MainPath = _msgBody.MainPath;
+                                _this.DataSource.WelcomePageGroupPath = _msgBody.WelcomePageGroupPath;
+
+                                _this.doAuth();
+                            } else {
+                                console.log("doLogin请求数据失败");
+                                _this.goToIptv();
+
+                            }
+                        } else {
+                            console.log("doLogin网络请求失败");
+                            _this.goToIptv();
+                        }
+                    },
+                    error: function(err) {
+                        _this.goToIptv();
+                    },
+                });
+            },
+            doAuth() {
+                const _this = this;
+                const tmpObj = {
+                    "Message": {
+                        "MessageType": "DoAuthReq",
+                        "MessageBody": {
+                            "HostID": this.DataSource.HostID,
+                            "UserID": this.DataSource.UserID,
+                        },
+                    }
+                };
+
+                Http({
+                    type: 'POST',
+                    url: this.DataSource.relativePath + 'service/epgservice/index.php?MessageType=DoAuthReq',
+                    data: JSON.stringify(tmpObj),
+                    complete: function(data) {
+                        if (data.status === 200) {
+                            const _data = JSON.parse(data.response);
+                            const _msgBody = _data.Message.MessageBody;
+                            if (_msgBody.ResultCode == 200) {
+                                _this.DataSource.EPGDirectory = _msgBody.EPGDirectory;
+                                _this.DataSource.EPGTemplateType = _msgBody.EPGTemplateType;
+                                _this.DataSource.EpgGroupID = _msgBody.EpgGroupID;
+                                _this.DataSource.LoginID = _msgBody.LoginID;
+                                _this.DataSource.RootCategoryID = _msgBody.RootCategoryID;
+                                _this.DataSource.Token = _msgBody.Token;  
+                                alert('获取栏目成功')
+                            } else {
+                                _this.goToIptv();
+                            }
+                        } else {
+                            _this.goToIptv();
+                        }
+                    },
+                    error: function(err) {
+                        _this.goToIptv();
+                    },
+                });
+            },
+            getObjStr(obj) {
+                let str = '';
+                for (let key in obj) {
+                    str += key + ': ' + obj[key] + '; ';
+                }
+                return str;
+            },
+            postLog(params = {
+                OperationCode: '',
+                Detail: ''
+            }) {
+                const tmpObj = {
+                    "Message": {
+                        "MessageType": "EPGLogReq",
+                        "MessageBody": {
+                            "USERID": Authentication.CTCGetConfig("UserID"),
+                            "HostID": this.DataSource.HostID,
+                            "OperationCode": params.OperationCode,
+                            "Detail": params.Detail,
+                        },
+                    }
+                };
+                Http({
+                    type: 'POST',
+                    url: this.DataSource.relativePath + 'service/epgservice/index.php?MessageType=EPGLogReq',
+                    data: JSON.stringify(tmpObj),
+                    complete: function(data) {
+                        if (data.status === 200) {
+                        } else {
+                            alert('ErrorCode: ' + data.status + ' -> ' + data.response);
+                        }
+                    },
+                    error: function(err) {
+                        alert('请确保网络畅通');
+                    },
+                });
+            },
+
             // initMediaPlay() {
             //     // var playUrl = "http://115.28.104.91:12080/vod/back_video_4M_out.mpg";
             //     // var playUrl = "http://222.221.25.243:6166/iptv/ppthdplay/apps/index/SYHOTEL/assets/video/back_video_4M_out.mpg";
@@ -256,7 +397,10 @@ export default {
             // },
 
         },
-        // events: {
+        events: {
+            postLog(params) {
+                this.postLog(params);
+            },
         //     playVideo() {
         //         // alert("重新播放HAHHAA");
         //         this.initMediaPlay();
@@ -282,50 +426,20 @@ export default {
         //         // this.mp.stop();
         //         // alert("关闭视频");
         //     },
-        // },
+        },
         vuex: {
             actions: {
                 updateFirstClassTab,
                 updateSecondClassTab,
-
             },
         },
         ready() {
-            // alert(Authentication.CTCGetAuthInfo("123456"));
+            this.getParams();
             this.updateFirstClassTab(0);
             this.updateSecondClassTab(0);
             var html = document.getElementsByTagName('html')[0];
             var width = html.offsetWidth;
             html.style.fontSize = (width >= 1920 ? 1920 : width) / 1920 * 100 + 'px';
-
-
-
-            console.log(location.search);
-            var url = location.search; //获取url中"?"符后的字串
-            // alert(url);
-            // var pathname = location.pathname.replace("index.html", "");
-            // sessionStorage.setItem("pathname", pathname);
-            // if (url.indexOf("?") != -1) {
-            //     var str = url.substr(1);
-            //     var strs = str.split("&");
-            //     for (var i = 0; i < strs.length; i++) {
-            //         if (strs[i].split("=")[0] == "esaddr") {
-            //             console.log("esaddr" + strs[i].split("=")[1]);
-            //             sessionStorage.setItem("esaddr", strs[i].split("=")[1]);
-            //         }
-
-            //         if (strs[i].split("=")[0] == "UserID") {
-            //             console.log("UserID" + strs[i].split("=")[1]);
-            //             sessionStorage.setItem("UserID", strs[i].split("=")[1]);
-            //         }
-            //         if (strs[i].split("=")[0] == "EpgGroupID") {
-            //             console.log(strs[i].split("=")[1]);
-            //             sessionStorage.setItem("EpgGroupID", strs[i].split("=")[1]);
-
-            //         }
-            //     }
-            // }
-
         },
         store: store,
 }

@@ -303,8 +303,8 @@ export default {
                     }
                 };
                 Http({
-                    type: 'post',
-                    url: _this.relativePath + 'service/es/epgservice/index.php?MessageType=GetWifiInfoReq',
+                    type: 'POST',
+                    url: _this.relativePath + 'service/epgservice/index.php?MessageType=GetWifiInfoReq',
                     data: JSON.stringify(tmpObj),
                     complete: function(data) {
                         if (data.status === 200) {
@@ -441,7 +441,10 @@ export default {
                 }
                 return str;
             },
-            postLog(params = {OperationCode: '', Detail: ''}){
+            postLog(params = {
+                OperationCode: '',
+                Detail: ''
+            }) {
                 var _this = this;
                 const tmpObj = {
                     "Message": {
@@ -460,33 +463,22 @@ export default {
                     data: JSON.stringify(tmpObj),
                     complete: function(data) {
                         if (data.status === 200) {
-                            alert("data.status === 200");
-                            const _data = JSON.parse(data.response);
-                            const _msgBody = _data.Message.MessageBody;
-                            console.log(_data);
-                            if (_msgBody.ResultCode === 200) {
-                                console.log(_msgBody);
-                                alert("_msgBody.ResultCode === 200");
-                            } else {
-                                alert("失败!");
-                                console.log("数据获取失败");
-                            }
                         } else {
-                            alert(_this.getObjStr(data));
+                            alert('ErrorCode: ' + data.status + ' -> ' + data.response);
                         }
                     },
                     error: function(err) {
-                        alert('err')
+                        alert('请确保网络畅通');
                     },
                 });
             },
             listenBackKey() {
                 document.querySelector('#welcomeLayout').addEventListener('keydown', (keyEvent) => {
                     if (this.WelcomePageGroupPath === 'test') {
-                        this.postLog({
+                        /*this.postLog({
                             OperationCode: '欢迎页按按钮',
-                            Detail: this.getObjStr(keyEvent),
-                        });
+                            Detail: keyEvent.keyCode,
+                        });*/
                     }
                     keyEvent = keyEvent ? keyEvent : window.event;
                     var keyvalue = keyEvent.which ? keyEvent.which : keyEvent.keyCode;
@@ -513,10 +505,47 @@ export default {
                 });
 
             },
+            cookie(name, value, options) {
+                if (typeof value != 'undefined') { // name and value given, set cookie
+                    options = options || {};
+                    if (value === null) {
+                        value = '';
+                        options.expires = -1;
+                    }
+                    var expires = '';
+                    if (options.expires && (typeof options.expires == 'number' || options.expires.toUTCString)) {
+                        var date;
+                        if (typeof options.expires == 'number') {
+                            date = new Date();
+                            date.setTime(date.getTime() + (options.expires * 24 * 60 * 60 * 1000));
+                        } else {
+                            date = options.expires;
+                        }
+                        expires = '; expires=' + date.toUTCString(); // use expires attribute, max-age is not supported by IE
+                    }
+                    var path = options.path ? '; path=' + options.path : '';
+                    var domain = options.domain ? '; domain=' + options.domain : '';
+                    var secure = options.secure ? '; secure' : '';
+                    document.cookie = [name, '=', encodeURIComponent(value), expires, path, domain, secure].join('');
+                } else { // only name given, get cookie
+                    var cookieValue = null;
+                    if (document.cookie && document.cookie != '') {
+                        var cookies = document.cookie.split(';');
+                        for (var i = 0; i < cookies.length; i++) {
+                            var cookie = jQuery.trim(cookies[i]);
+                            // Does this cookie string begin with the name we want?
+                            if (cookie.substring(0, name.length + 1) == (name + '=')) {
+                                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                                break;
+                            }
+                        }
+                    }
+                    return cookieValue;
+                }
+            },
 
             gotoMainLayout() {
                 clearInterval(this.timeInterval);
-
 
                 if (this.MainPath == "test") {
                     console.log("测试路径");
@@ -529,24 +558,12 @@ export default {
                     location.replace("../../epggroup_mains/main_default/main.html?" + this.addParams());
                 }
             },
-            /**  明天看主页需要的参数*/
             addParams() {
-                var params = "EPGDirectory=" + this.EPGDirectory + "&" +
-                    "EPGTemplateType=" + this.EPGTemplateType + "&" +
-                    "EpgGroupID=" + this.EpgGroupID + "&" +
-                    "LoginID=" + this.LoginID + "&" +
-                    "RootCategoryID=" + this.RootCategoryID + "&" +
-                    "Token=" + this.Token + "&" +
-                    "UserID=" + this.UserID + "&" +
-                    "indexUrl=" + this.indexUrl + "&" +
-                    "relativePath=" + this.relativePath + "&" +
+                var params = 
+                    "indexUrl=" + encodeURIComponent(this.indexUrl) + "&" +
+                    "relativePath=" + encodeURIComponent(this.relativePath) + "&" +
                     "HostID=" + this.HostID + "&" +
-                    "AdPath=" + this.AdPath + "&" +
-                    "MainPath=" + this.MainPath + "&" +
-                    "WelcomePageGroupPath=" + this.WelcomePageGroupPath;
-
-                    // currentLanguage
-
+                    "currLangCode=" + this.currLangCode
                 return params;
 
             },

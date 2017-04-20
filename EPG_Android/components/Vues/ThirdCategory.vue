@@ -115,17 +115,17 @@ export default {
                             "ObjectID": categoryId,
                             "ObjectType": 1,
                             "ChildrenLevel": 1,
-                            "LangCode": window.currLangCode,
+                            "LangCode": DataSource.currLangCode,
                             "EpgGroupID": 1,
-                            "UserID": 1001,
-                            "Token": window.Token,
+                            "UserID": DataSource.UserID,
+                            "Token": DataSource.Token,
                         }
                     }
                 };
 
                 Http({
                     type: 'POST',
-                    url: window.relativePath + 'service/epgservice/index.php?MessageType=GetObjectInfoReq',
+                    url: DataSource.relativePath + 'service/epgservice/index.php?MessageType=GetObjectInfoReq',
                     data: JSON.stringify(tmpObj),
                     complete: function(data) {
                         console.log(data);

@@ -158,16 +158,16 @@ export default {
                             "ObjectID": categoryId,
                             "ObjectType": 1,
                             "ChildrenLevel": 1,
-                            "LangCode": window.currLangCode,
-                            "EpgGroupID": window.EpgGroupID,
-                            "UserID": window.UserID,
-                            "Token": window.Token,
+                            "LangCode": DataSource.currLangCode,
+                            "EpgGroupID": DataSource.EpgGroupID,
+                            "UserID": DataSource.UserID,
+                            "Token": DataSource.Token,
                         }
                     }
                 };
                 Http({
                     type: 'POST',
-                    url: window.relativePath + 'service/epgservice/index.php?MessageType=GetObjectInfoReq',
+                    url: DataSource.relativePath + 'service/epgservice/index.php?MessageType=GetObjectInfoReq',
                     data: JSON.stringify(tmpObj),
                     complete: function(data) {
                         console.log(data);
@@ -210,7 +210,7 @@ export default {
             },
 
             listenBackKey() {
-                document.querySelector('#secondTabItem').addEventListener('keypress', (keyEvent) => {
+                document.querySelector('#secondTabItem').addEventListener('keydown', (keyEvent) => {
                     keyEvent = keyEvent ? keyEvent : window.event;
                     var keyvalue = keyEvent.which ? keyEvent.which : keyEvent.keyCode;
                     if (keyvalue == 8) {

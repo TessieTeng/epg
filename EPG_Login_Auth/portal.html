@@ -18,6 +18,17 @@
     meta.setAttribute('name', 'page-view-size');
     meta.setAttribute('content', width + '*' + height);
     document.querySelector('head').appendChild(meta);
+    window.onerror = function(a, b, c, d) {
+        var str = '';
+        if ((typeof a).toLowerCase() === 'string') {
+            str = a;
+        } else {
+            for (let i in a) {
+                str += i + ': ' + a[i].toString();
+            }
+        }
+        alert('error: ' + str + '; ' + b + '; ' + c + '; ' + d);
+    }
     </script>
     <style type="text/css" media="screen">
     * {

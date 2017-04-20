@@ -39,7 +39,7 @@ export default {
         },
         methods: {
             listenBackKey() {
-                document.querySelector('#singleRootDiv').addEventListener('keypress', (keyEvent) => {
+                document.querySelector('#singleRootDiv').addEventListener('keydown', (keyEvent) => {
                     keyEvent = keyEvent ? keyEvent : window.event;
                     var keyvalue = keyEvent.which ? keyEvent.which : keyEvent.keyCode;
                     if (keyvalue == 8) {
@@ -61,16 +61,16 @@ export default {
                             "ObjectID": categoryid,
                             "ObjectType": 1,
                             "ChildrenLevel": 1,
-                            "LangCode": window.currLangCode,
+                            "LangCode": DataSource.currLangCode,
                             "EpgGroupID": 1,
-                            "UserID": "888888",
-                            "Token": window.Token,
+                            "UserID": DataSource.UserID,
+                            "Token": DataSource.Token,
                         }
                     }
                 };
                 Http({
                     type: 'POST',
-                    url: window.relativePath + 'service/epgservice/index.php?MessageType=GetObjectInfoReq',
+                    url: DataSource.relativePath + 'service/epgservice/index.php?MessageType=GetObjectInfoReq',
                     data: JSON.stringify(tmpObj),
                     complete: function(data) {
                         console.log(data);

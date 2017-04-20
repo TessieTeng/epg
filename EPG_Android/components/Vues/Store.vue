@@ -167,6 +167,9 @@ export default {
                 righthint:"",
             };
         },
+        props:{
+            dataSource: Object,
+        },
 
         computed: {},
 
@@ -179,7 +182,7 @@ export default {
             },
 
             listenBackKey() {
-                document.querySelector('#goodslist').addEventListener('keypress', (keyEvent) => {
+                document.querySelector('#goodslist').addEventListener('keydown', (keyEvent) => {
                     keyEvent = keyEvent ? keyEvent : window.event;
                     var keyvalue = keyEvent.which ? keyEvent.which : keyEvent.keyCode;
                     if (keyvalue == 8) {
@@ -227,17 +230,17 @@ export default {
                             "ObjectID": myId,
                             "ObjectType": 1,
                             "ChildrenLevel": 1,
-                            "LangCode": window.currLangCode,
+                            "LangCode": this.dataSource.currLangCode,
                             "EpgGroupID": 1,
-                            "UserID": "888888",
-                            "Token": window.Token,
+                            "UserID": this.dataSource.UserID,
+                            "Token": this.dataSource.Token,
                         }
                     }
                 };
 
                 Http({
                     type: 'post',
-                    url: window.relativePath + 'service/epgservice/index.php?MessageType=GetObjectInfoReq',
+                    url: this.dataSource.relativePath + 'service/epgservice/index.php?MessageType=GetObjectInfoReq',
                     data: JSON.stringify(tmpObj),
                     complete: function(data) {
                         console.log(data);
@@ -325,7 +328,7 @@ export default {
 
         ready() {
             var _this = this;
-            var hint = window.currLangCode;
+            var hint = this.dataSource.currLangCode;
             if (hint === "chi") {
                 _this.tophint = "全部商品";
                 _this.lefthint = "酒店商城";

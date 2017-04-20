@@ -111,7 +111,7 @@ export default {
         computed: {
             getCurrTime() {
                 var tempCurrTime = moment(this.currentTime).format('YYYY-MM-DD hh:mm:ss');
-                var hint = window.currLangCode;
+                var hint = DataSource.currLangCode;
                 if (hint == "chi") {
                     tempCurrTime = moment(this.currentTime).format('YYYY-MM-DD hh:mm:ss');
                 } else {
@@ -126,7 +126,7 @@ export default {
                 var localTime = this.currentTime;
                 var longTimestamp = localTime + (timeZone - 8) * 60 * 60 * 1000;
                 var longDate = moment(longTimestamp).format('YYYY年MM月DD日');
-                var hint = window.currLangCode;
+                var hint = DataSource.currLangCode;
                 if (hint == "chi") {
                     longDate = moment(longTimestamp).format('YYYY年MM月DD日');
                 } else {
@@ -155,16 +155,16 @@ export default {
                     "Message": {
                         "MessageType": "GetWorldTimeListReq",
                         "MessageBody": {
-                            "LangCode": window.currLangCode,
+                            "LangCode": DataSource.currLangCode,
                             "EpgGroupID": 1,
-                            "Token": window.Token,
+                            "Token": DataSource.Token,
                         }
                     }
                 };
 
                 Http({
                     type: 'POST',
-                    url: window.relativePath + 'service/epgservice/index.php?MessageType=GetWorldTimeListReq',
+                    url: DataSource.relativePath + 'service/epgservice/index.php?MessageType=GetWorldTimeListReq',
                     data: JSON.stringify(tmpObj),
                     complete: function(data) {
                         console.log(data);
@@ -251,7 +251,7 @@ export default {
 
         ready() {
             var _this = this;
-            var hint = window.currLangCode;
+            var hint = DataSource.currLangCode;
             if (hint === "chi") {
                 _this.hint = "当前时间";
 
