@@ -23,11 +23,7 @@ export default {
         methods: {
 
             getRelativePath() {
-                //var pathName = location.pathname;
-                //var relativePath = pathName.replace("portal.html", "");
-                console.log("888888", relativePath);
-                var relativePath = "/iptv/ppthdplay/SYHOTEL/";
-                sessionStorage.setItem("relativePath", relativePath);
+                sessionStorage.setItem("relativePath", "/iptv/ppthdplay/SYHOTEL/");
             },
 
             doLogin() {
@@ -40,8 +36,8 @@ export default {
                     "Message": {
                         "MessageType": "STBLoginReq",
                         "MessageBody": {
-                            "STBID": !!window.Authentication ? Authentication.CTCGetConfig("STBID") : '0010039901049500164574FF4C691FFE',
-                            "USERID": !!window.Authentication ? Authentication.CTCGetConfig("UserID") : "123456",
+                            "STBID": Authentication.CTCGetConfig("STBID"),
+                            "USERID": Authentication.CTCGetConfig("UserID"),
                         },
                     }
                 };
@@ -51,42 +47,31 @@ export default {
                     url: sessionStorage.getItem("relativePath") + 'service/epgservice/index.php?MessageType=STBLoginReq',
                     data: JSON.stringify(tmpObj),
                     complete: function(data) {
-                        console.log(data);
                         if (data.status === 200) {
-                            console.log("doLogin请求成功");
                             const _data = JSON.parse(data.response);
                             const _msgBody = _data.Message.MessageBody;
-                            console.log(_msgBody);
                             if (_msgBody.ResultCode == 200) {
-                                if (window.sessionStorage) {
-                                    sessionStorage.setItem("HostID", _msgBody.HostID);
-                                    sessionStorage.setItem("UserID", _msgBody.UserID);
-                                    sessionStorage.setItem("AdPath", _msgBody.AdPath);
-                                    sessionStorage.setItem("MainPath", _msgBody.MainPath);
-                                    sessionStorage.setItem("WelcomePageGroupPath", _msgBody.WelcomePageGroupPath);
-                                } else {
-                                    Cookie.write("HostID", _msgBody.HostID);
-                                    Cookie.write("UserID", _msgBody.UserID);
-                                    Cookie.write("AdPath", _msgBody.AdPath);
-                                    Cookie.write("MainPath", _msgBody.MainPath);
-                                    Cookie.write("WelcomePageGroupPath", _msgBody.WelcomePageGroupPath);
-                                }
+                                sessionStorage.setItem("HostID", _msgBody.HostID);
+                                sessionStorage.setItem("UserID", _msgBody.UserID);
+                                sessionStorage.setItem("AdPath", _msgBody.AdPath);
+                                sessionStorage.setItem("MainPath", _msgBody.MainPath);
+                                sessionStorage.setItem("WelcomePageGroupPath", _msgBody.WelcomePageGroupPath);
                                 _this.doAuth();
                             } else {
                                 console.log("doLogin请求数据失败");
-                                window.location.href = sessionStorage.getItem("indexUrl");
+                                _this.goToIptv();
 
                             }
                         } else {
                             console.log("doLogin网络请求失败");
-                            window.location.href = sessionStorage.getItem("indexUrl");
+                            _this.goToIptv();
                         }
 
                         _this.isRequestStatus = false;
                         _this.showLoading = false;
                     },
                     error: function(err) {
-                        window.location.href = sessionStorage.getItem("indexUrl");
+                        _this.goToIptv();
                     },
                 });
             },
@@ -101,60 +86,35 @@ export default {
                     "Message": {
                         "MessageType": "DoAuthReq",
                         "MessageBody": {
-                            "HostID": window.sessionStorage ? sessionStorage.getItem("HostID") : Cookie.read("HostID"),
-                            "UserID": window.sessionStorage ? sessionStorage.getItem("UserID") : Cookie.read("UserID"),
+                            "HostID": sessionStorage.getItem("HostID"),
+                            "UserID": sessionStorage.getItem("UserID"),
                         },
                     }
                 };
-
-                console.log("HostID>>>>>>", window.sessionStorage ? sessionStorage.getItem("HostID") : Cookie.read("HostID"));
-                console.log("UserID>>>>>>", window.sessionStorage ? sessionStorage.getItem("UserID") : Cookie.read("UserID"));
 
                 Http({
                     type: 'POST',
                     url: sessionStorage.getItem("relativePath") + 'service/epgservice/index.php?MessageType=DoAuthReq',
                     data: JSON.stringify(tmpObj),
                     complete: function(data) {
-                        console.log(data);
                         if (data.status === 200) {
-                            console.log("Auth请求成功");
                             const _data = JSON.parse(data.response);
                             const _msgBody = _data.Message.MessageBody;
-                            console.log(_msgBody);
                             if (_msgBody.ResultCode == 200) {
-                                console.log("验证成功");
-                                if (window.sessionStorage) {
-                                    sessionStorage.setItem("EPGDirectory", _msgBody.EPGDirectory);
-                                    sessionStorage.setItem("EPGTemplateType", _msgBody.EPGTemplateType);
-                                    sessionStorage.setItem("EpgGroupID", _msgBody.EpgGroupID);
-                                    sessionStorage.setItem("LoginID", _msgBody.LoginID);
-                                    sessionStorage.setItem("RootCategoryID", _msgBody.RootCategoryID);
-                                    sessionStorage.setItem("Token", _msgBody.Token);
-                                } else {
-                                    Cookie.write("EPGDirectory", _msgBody.EPGDirectory);
-                                    Cookie.write("EPGTemplateType", _msgBody.EPGTemplateType);
-                                    Cookie.write("EpgGroupID", _msgBody.EpgGroupID);
-                                    Cookie.write("LoginID", _msgBody.LoginID);
-                                    Cookie.write("Token", _msgBody.Token);
-                                }
-
+                                sessionStorage.setItem("EPGDirectory", _msgBody.EPGDirectory);
+                                sessionStorage.setItem("EPGTemplateType", _msgBody.EPGTemplateType);
+                                sessionStorage.setItem("EpgGroupID", _msgBody.EpgGroupID);
+                                sessionStorage.setItem("LoginID", _msgBody.LoginID);
+                                sessionStorage.setItem("RootCategoryID", _msgBody.RootCategoryID);
+                                sessionStorage.setItem("Token", _msgBody.Token);
                                 // _this.getVideoAddr();
-                                if (sessionStorage.getItem("WelcomePageGroupPath") == "welcome_test") {
-                                    console.log("测试路径");
-                                    location.replace("./epggroup_welcomes/welcome_test/welcome.html");
-                                } else if (sessionStorage.getItem("WelcomePageGroupPath") == "") {
-                                    console.log("正式路径");
-                                    location.replace("./epggroup_welcomes/welcome_default/welcome.html");
-                                } else if (sessionStorage.getItem("WelcomePageGroupPath").indexOf("http") >= 0) {
-                                    console.log("是链接", sessionStorage.getItem("WelcomePageGroupPath"));
-                                    window.location = sessionStorage.getItem("WelcomePageGroupPath");
-                                }
+                                _this.goToWelcome();
                             } else {
                                 console.log("Auth请求数据失败");
-                                window.location.href = sessionStorage.getItem("indexUrl");
+                                _this.goToIptv();
                             }
                         } else {
-                            window.location.href = sessionStorage.getItem("indexUrl");
+                            _this.goToIptv();
 
                         }
 
@@ -163,7 +123,7 @@ export default {
                     },
                     error: function(err) {
                         console.log(err);
-                        window.location.href = sessionStorage.getItem("indexUrl");
+                        _this.goToIptv();
                     },
                 });
             },
@@ -183,7 +143,7 @@ export default {
                                     "Name": "bg_media_url"
                                 }]
                             },
-                            "Token": window.sessionStorage ? sessionStorage.getItem("Token") : Cookie.read("Token"),
+                            "Token": sessionStorage.getItem("Token"),
                         }
                     }
                 };
@@ -193,9 +153,7 @@ export default {
                     url: sessionStorage.getItem("relativePath") + 'service/epgservice/index.php?MessageType=GetSysParamReq',
                     data: JSON.stringify(tmpObj),
                     complete: function(data) {
-                        console.log(data);
                         if (data.status === 200) {
-                            console.log("请求成功");
                             const _data = JSON.parse(data.response);
                             const _msgBody = _data.Message.MessageBody;
                             if (_msgBody.ResultCode == 200) {
@@ -209,27 +167,15 @@ export default {
                                     sessionStorage.setItem("EPGVideoUrl", videoUrl);
                                 }
 
-                                sessionStorage.setItem("EPGDirectory", "epggroup_test");
-                                // if (sessionStorage.getItem("EPGDirectory") == "epggroup_default") {
-                                //     location.replace("./epggroup_ads/ad_default/ad.html");
-                                // } else if (sessionStorage.getItem("EPGDirectory") == "epggroup_test") {
-                                //     location.replace("./epggroup_ads/ad_test/ad.html");
-                                // }
-
-                                if (sessionStorage.getItem("EPGDirectory") == "epggroup_default") {
-                                    location.replace("./epggroup_welcomes/welcome_default/welcome.html");
-                                } else if (sessionStorage.getItem("EPGDirectory") == "epggroup_test") {
-                                    location.replace("./epggroup_welcomes/welcome_test/welcome.html");
-                                }
-
+                                _this.goToWelcome();
 
                             } else {
-                                console.log("请求数据失败");
                                 console.log("数据获取失败");
+                                _this.goToIptv();
                             }
                         } else {
                             console.log("网络请求失败");
-                            window.location.href = sessionStorage.getItem("indexUrl");
+                            _this.goToIptv();
                         }
 
                         _this.isRequestStatus = false;
@@ -237,6 +183,7 @@ export default {
                     },
                     error: function(err) {
                         console.log(err);
+                        _this.goToIptv();
                     },
                 });
 
@@ -248,7 +195,24 @@ export default {
                 var r = window.location.search.substr(1).match(reg);
                 if (r != null) return unescape(r[2]);
                 return null;
-            }
+            }, 
+
+            goToIptv() {
+                window.location.href = sessionStorage.getItem("indexUrl");
+            },
+
+            goToWelcome() {
+                if (sessionStorage.getItem("WelcomePageGroupPath") == "test") {
+                    console.log("测试路径");
+                    location.replace("./epggroup_welcomes/welcome_test/welcome.html");
+                } else if (/^https?:\/\//.test(sessionStorage.getItem("WelcomePageGroupPath"))) {
+                    console.log("是链接");
+                    location.replace(sessionStorage.getItem("WelcomePageGroupPath"));
+                } else {
+                    console.log("正式路径");
+                    location.replace("./epggroup_welcomes/welcome_default/welcome.html");
+                }
+            },
 
         },
 

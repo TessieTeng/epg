@@ -1,11 +1,10 @@
 // import Promise from 'bluebird';
 import Vue from 'vue';
-import Resource from 'vue-resource';
 import VueRouter from 'vue-router';
+import './assets/lib/sessionStorage';
 
 import App from "Vues/App";
 
-Vue.use(Resource);
 Vue.use(VueRouter);
 var router = new VueRouter();
 router.map({
