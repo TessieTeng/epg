@@ -257,16 +257,16 @@ export default {
                     "Message": {
                         "MessageType": "GetWifiInfoReq",
                         "MessageBody": {
-                            "UserID": window.sessionStorage ? sessionStorage.getItem("UserID") : Cookie.read("UserID"),
-                            "EpgGroupID": window.sessionStorage ? sessionStorage.getItem("EpgGroupID") : Cookie.read("EpgGroupID"),
+                            "UserID": sessionStorage.getItem("UserID"),
+                            "EpgGroupID": sessionStorage.getItem("EpgGroupID"),
                             "LangCode": this.currentLang,
-                            "Token": window.sessionStorage ? sessionStorage.getItem("Token") : Cookie.read("Token"),
+                            "Token": sessionStorage.getItem("Token"),
                         }
                     }
                 };
                 Http({
                     type: 'post',
-                    url: sessionStorage.getItem("relativePath") + 'service/es/epgservice/index.php?MessageType=GetWifiInfoReq',
+                    url: sessionStorage.getItem("relativePath") + 'service/epgservice/index.php?MessageType=GetWifiInfoReq',
                     data: JSON.stringify(tmpObj),
                     complete: function(data) {
                         if (data.status === 200) {
@@ -396,8 +396,13 @@ export default {
 
             },
             listenBackKey() {
-                document.querySelector('#welcomeLayout').addEventListener('keypress', (keyEvent) => {
-
+                document.querySelector('#welcomeLayout').addEventListener('keydown', (keyEvent) => {
+                    if (sessionStorage.getItem('WelcomePageGroupPath') === 'test') {
+                        this.EPGLog({
+                            OperationCode: 'welcome_keydown',
+                            Detail: 'keyCode: ' + keyEvent.keyCode + '; which: ' + keyEvent.which
+                        });
+                    }
                     keyEvent = keyEvent ? keyEvent : window.event;
                     var keyvalue = keyEvent.which ? keyEvent.which : keyEvent.keyCode;
                     if (keyvalue == 8) {
@@ -426,10 +431,15 @@ export default {
             gotoMainLayout() {
                 clearInterval(this.timeInterval);
 
-                if (sessionStorage.getItem("EPGDirectory") == "epggroup_default") {
-                    window.location.href = "../../epggroup_mains/main_default/main.html ";
-                } else if (sessionStorage.getItem("EPGDirectory") == "epggroup_test") {
-                    window.location.href = "../../epggroup_mains/main_test/main.html ";
+                if (sessionStorage.getItem("MainPath") == "test") {
+                    console.log("测试路径");
+                    location.replace("../../epggroup_mains/main_test/main.html");
+                } else if (/^https?:\/\//.test(sessionStorage.getItem("MainPath"))) {
+                    console.log("是链接");
+                    location.replace(sessionStorage.getItem("MainPath"));
+                } else {
+                    console.log("正式路径");
+                    location.replace("../../epggroup_mains/main_default/main.html");
                 }
             },
             getWelcomeData() {
@@ -442,9 +452,9 @@ export default {
                     "Message": {
                         "MessageType": "GetWelcomePageReq",
                         "MessageBody": {
-                            "EpgGroupID": window.sessionStorage ? sessionStorage.getItem("EpgGroupID") : Cookie.read("EpgGroupID"),
-                            "UserID": window.sessionStorage ? sessionStorage.getItem("UserID") : Cookie.read("UserID"),
-                            "Token": window.sessionStorage ? sessionStorage.getItem("Token") : Cookie.read("Token"),
+                            "EpgGroupID": sessionStorage.getItem("EpgGroupID"),
+                            "UserID": sessionStorage.getItem("UserID"),
+                            "Token": sessionStorage.getItem("Token"),
                         }
                     }
                 };
@@ -455,12 +465,15 @@ export default {
                     data: JSON.stringify(tmpObj),
                     complete: function(data) {
                         if (data.status === 200) {
-                            console.log("请求成功");
                             const _data = JSON.parse(data.response);
                             const _msgBody = _data.Message.MessageBody;
                             if (_msgBody.ResultCode === 200) {
                                 _this.isRequestStatus = false;
                                 _this.handleData(_msgBody);
+                                _this.EPGLog({
+                                    OperationCode: '进入welcome',
+                                    Detail: 'success'
+                                });
                             } else {
                                 _this.isRequestStatus = false;
                                 console.log("获取数据失败");
@@ -479,6 +492,28 @@ export default {
 
 
             },
+            EPGLog(params = {OperationCode: '', Detail: ''}) {
+                const tmpObj = {
+                    "Message": {
+                        "MessageType": "EPGLogReq",
+                        "MessageBody": {
+                            "USERID": Authentication.CTCGetConfig("STBID"),
+                            "HostID": sessionStorage.getItem("HostID"),
+                            "OperationCode": params.OperationCode,
+                            "Detail": params.Detail,
+                        },
+                    }
+                };
+                Http({
+                    type: 'POST',
+                    url: sessionStorage.getItem("relativePath") + 'service/epgservice/index.php?MessageType=EPGLogReq',
+                    data: JSON.stringify(tmpObj),
+                    complete: function(data) {
+                    },
+                    error: function(err) {
+                    },
+                });
+            },
 
         },
 
@@ -492,7 +527,7 @@ export default {
             this.saveLangCode("chi");
             this.canNotGoBack = true;
             this.listenBackKey();
-            this.getWifiInfo();
+            // this.getWifiInfo();
             this.getWelcomeData();
             setTimeout(() => {
                 this.tabIndex = 0;
