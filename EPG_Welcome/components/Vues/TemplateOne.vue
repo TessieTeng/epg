@@ -210,14 +210,14 @@ export default {
 
             handleTimeout() {
                 var timesRun = 0;
-                var interval = setInterval(function() {
+                var interval = setInterval(() => {
                     timesRun += 1;
                     if (timesRun === 4) {
                         clearInterval(interval);
                         window.location.href = sessionStorage.getItem("indexUrl");
                         return;
                     }
-                    getWelcomeData();
+                    this.getWelcomeData();
                 }, 5000);
             },
 
@@ -477,10 +477,10 @@ export default {
 
                             }
                         } else {
-                            this.isRequestStatus = false;
+                            _this.isRequestStatus = false;
                             console.log("网络请求失败");
                             //欢迎页异常处理
-                            handleTimeout();
+                            _this.handleTimeout();
                         }
                     }
 
