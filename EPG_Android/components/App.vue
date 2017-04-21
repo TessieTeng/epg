@@ -1,5 +1,4 @@
 <style>
-@import url('../assets/css/weui.min.css');
 html {
     font-size: 100px;
 }
@@ -291,41 +290,11 @@ export default {
             },
         },
         ready() {
-            // alert(Authentication.CTCGetAuthInfo("123456"));
             this.updateFirstClassTab(0);
             this.updateSecondClassTab(0);
             var html = document.getElementsByTagName('html')[0];
             var width = html.offsetWidth;
             html.style.fontSize = (width >= 1920 ? 1920 : width) / 1920 * 100 + 'px';
-
-
-
-            console.log(location.search);
-            var url = location.search; //获取url中"?"符后的字串
-            // alert(url);
-            // var pathname = location.pathname.replace("index.html", "");
-            // sessionStorage.setItem("pathname", pathname);
-            if (url.indexOf("?") != -1) {
-                var str = url.substr(1);
-                var strs = str.split("&");
-                for (var i = 0; i < strs.length; i++) {
-                    if (strs[i].split("=")[0] == "esaddr") {
-                        console.log("esaddr" + strs[i].split("=")[1]);
-                        sessionStorage.setItem("esaddr", strs[i].split("=")[1]);
-                    }
-
-                    if (strs[i].split("=")[0] == "UserID") {
-                        console.log("UserID" + strs[i].split("=")[1]);
-                        sessionStorage.setItem("UserID", strs[i].split("=")[1]);
-                    }
-                    if (strs[i].split("=")[0] == "EpgGroupID") {
-                        console.log(strs[i].split("=")[1]);
-                        sessionStorage.setItem("EpgGroupID", strs[i].split("=")[1]);
-
-                    }
-                }
-            }
-
         },
         store: store,
 }

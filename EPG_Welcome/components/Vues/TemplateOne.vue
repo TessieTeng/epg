@@ -470,10 +470,6 @@ export default {
                             if (_msgBody.ResultCode === 200) {
                                 _this.isRequestStatus = false;
                                 _this.handleData(_msgBody);
-                                _this.EPGLog({
-                                    OperationCode: '进入welcome',
-                                    Detail: 'success'
-                                });
                             } else {
                                 _this.isRequestStatus = false;
                                 console.log("获取数据失败");

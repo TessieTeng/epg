@@ -59,15 +59,15 @@ export default {
                 categoryList: [{
                     PictureList: {
                         Picture: [{
-                            PictureUrl: '../../assets/images/iptv_a.png',
+                            PictureUrl: '',
                         }, {
-                            PictureUrl: '../../assets/images/jieshao_a.png',
+                            PictureUrl: '',
                         }, {
-                            PictureUrl: '../../assets/images/shangcheng_a.png',
+                            PictureUrl: '',
                         }, {
-                            PictureUrl: '../../assets/images/tuijian_a.png',
+                            PictureUrl: '',
                         }, {
-                            PictureUrl: '../../assets/images/youxi_a.png',
+                            PictureUrl: '',
                         }, ]
                     }
                 }],
@@ -104,7 +104,7 @@ export default {
             },
             listenBackKey() {
                 var _this = this;
-                document.querySelector('#firstCategoryLayout').addEventListener('keypress', (keyEvent) => {
+                document.querySelector('#firstCategoryLayout').addEventListener('keydown', (keyEvent) => {
                     keyEvent = keyEvent ? keyEvent : window.event;
                     var keyvalue = keyEvent.which ? keyEvent.which : keyEvent.keyCode;
                     if (keyvalue == 8) {
@@ -126,10 +126,10 @@ export default {
                             "ObjectID": categoryId,
                             "ObjectType": 1,
                             "ChildrenLevel": 1,
-                            "LangCode": window.sessionStorage ? sessionStorage.getItem("currLangCode") : Cookie.read("currLangCode"),
-                            "EpgGroupID": window.sessionStorage ? sessionStorage.getItem("EpgGroupID") : Cookie.read("EpgGroupID"),
-                            "UserID": window.sessionStorage ? sessionStorage.getItem("UserID") : Cookie.read("UserID"),
-                            "Token": window.sessionStorage ? sessionStorage.getItem("Token") : Cookie.read("Token"),
+                            "LangCode": sessionStorage.getItem("currLangCode"),
+                            "EpgGroupID": sessionStorage.getItem("EpgGroupID"),
+                            "UserID": sessionStorage.getItem("UserID"),
+                            "Token": sessionStorage.getItem("Token"),
                         }
                     }
                 };
@@ -149,7 +149,6 @@ export default {
                                 _this.categoryList = _msgBody.ChildrenObjectList.Object;
 
                                 console.log(_this.categoryList);
-
                                 _this.$nextTick(() => {
                                     if (!_this.firstClassTab == 0) {
                                         document.getElementById("_" + _this.firstClassTab).focus();
@@ -157,6 +156,10 @@ export default {
                                         var categary = document.getElementById("firstTabItem");
                                         categary.children[0].children[0].focus();
                                     }
+                                    _this.EPGLog({
+                                        OperationCode: '主页获取列表数据',
+                                        Detail: 'success',
+                                    });
                                 })
                             } else {
                                 console.log("请求数据失败");
@@ -264,6 +267,28 @@ export default {
                 }
 
             },
+            EPGLog(params = {OperationCode: '', Detail: ''}) {
+                const tmpObj = {
+                    "Message": {
+                        "MessageType": "EPGLogReq",
+                        "MessageBody": {
+                            "USERID": Authentication.CTCGetConfig("STBID"),
+                            "HostID": sessionStorage.getItem("HostID"),
+                            "OperationCode": params.OperationCode,
+                            "Detail": params.Detail,
+                        },
+                    }
+                };
+                Http({
+                    type: 'POST',
+                    url: sessionStorage.getItem("relativePath") + 'service/epgservice/index.php?MessageType=EPGLogReq',
+                    data: JSON.stringify(tmpObj),
+                    complete: function(data) {
+                    },
+                    error: function(err) {
+                    },
+                });
+            },
         },
 
         store: store,
@@ -293,7 +318,6 @@ export default {
             this.getRootCategoryData(sessionStorage.getItem("RootCategoryID"));
             this.updateIsMainLayout(true);
             this.updateLastStore(0);
-            console.log(this);
 
             this.$nextTick(() => {
                 if (this.firstVideoPlay) {

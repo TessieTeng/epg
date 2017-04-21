@@ -18,6 +18,17 @@
     meta.setAttribute('name', 'page-view-size');
     meta.setAttribute('content', width + '*' + height);
     document.querySelector('head').appendChild(meta);
+    window.onerror = function(a, b, c, d) {
+        var str = '';
+        if ((typeof a).toLowerCase() === 'string') {
+            str = a;
+        } else {
+            for (let i in a) {
+                str += i + ': ' + a[i].toString();
+            }
+        }
+        alert('error: ' + str + '; ' + b + '; ' + c + '; ' + d);
+    }
     </script>
     <style type="text/css" media="screen">
     * {
@@ -30,19 +41,7 @@
 <body>
     <div id="app">
     </div>
-    <!-- <script   src="assets/js/html5media.min.js"></script> -->
-    <!-- <script type="text/javascript" src='http://hedgehog.ngrok.cc/mobile/mobile_action.js'></script> -->
-    <!-- <script type="text/javascript" src="/assets/lib/swiper-3.3.1.min.js"></script> -->
     <!-- <script type="text/javascript" src="assets/debug/alloy_lever.min.js"></script> -->
-    <script type="text/javascript">
-    var script = document.createElement('script');
-    // 开发环境
-    // script.src = './index.js?v=20160601' + Math.random();
-    //打包环境
-    // script.src = './dist/index.js?v=20160601' + Math.random();
-    document.querySelectorAll('body')[0].appendChild(script);
-    </script>
-    <!-- <script type="text/javascript" src='./tv/tv_action.js'></script> -->
 </body>
 
 </html>
