@@ -24,9 +24,12 @@ export default {
         },
         methods: {
 
-            getRelativePath() {
-                sessionStorage.setItem("relativePath", Config.relativePath);
-                sessionStorage.setItem("province", Config.name);
+            getConfig() {
+                for (const key in Config) {
+                    sessionStorage.setItem(key, Config[key]);
+                }
+                // sessionStorage.setItem("relativePath", Config.relativePath);
+                // sessionStorage.setItem("province", Config.province);
             },
 
             doLogin() {
@@ -257,7 +260,7 @@ export default {
             var indexUrl = this.GetQueryString("indexUrl");
             sessionStorage.setItem("indexUrl", indexUrl);
 
-            this.getRelativePath();
+            this.getConfig();
             this.doLogin();
 
         },

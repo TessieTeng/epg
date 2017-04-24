@@ -5,16 +5,18 @@
  */
 
 (function(window) {
+  // 当前省份
   var province = '云南';
   
+  // 所有省份
   var ConfigObj = {
 
     '云南': {
-      name: '云南',
+      province: '云南',
       relativePath: '/iptv/ppthdplay/SYHOTEL/',
     },
     '湖北': {
-      name: '湖北',
+      province: '湖北',
       relativePath: '/iptv/',
     },
 
