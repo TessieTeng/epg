@@ -18,12 +18,15 @@ export default {
     data() {
             return {
                 isRequestStatus: false,
+                group_name: '',
+                cdc_group_id: '',
             };
         },
         methods: {
 
             getRelativePath() {
-                sessionStorage.setItem("relativePath", "/iptv/ppthdplay/SYHOTEL/");
+                sessionStorage.setItem("relativePath", Config.relativePath);
+                sessionStorage.setItem("province", Config.name);
             },
 
             doLogin() {
@@ -32,13 +35,24 @@ export default {
                     return;
                 }
                 this.isRequestStatus == true;
+                const tmpBody = {
+                    "STBID": Authentication.CTCGetConfig("STBID"),
+                    "USERID": Authentication.CTCGetConfig("UserID"),
+                }
+                switch (sessionStorage.getItem('province')) {
+                    case '云南':
+                        break;
+                    case '湖北':
+                        tmpBody.HotelGroupName = this.group_name;
+                        tmpBody.HotelGroupID = this.cdc_group_id;
+                        break;
+                    default:
+                        break;
+                }
                 const tmpObj = {
                     "Message": {
                         "MessageType": "STBLoginReq",
-                        "MessageBody": {
-                            "STBID": Authentication.CTCGetConfig("STBID"),
-                            "USERID": Authentication.CTCGetConfig("UserID"),
-                        },
+                        "MessageBody": tmpBody,
                     }
                 };
 
@@ -59,19 +73,19 @@ export default {
                                 _this.doAuth();
                             } else {
                                 console.log("doLogin请求数据失败");
-                                _this.goToIptv();
+                                _this.goToIptv("doLogin请求数据失败");
 
                             }
                         } else {
                             console.log("doLogin网络请求失败");
-                            _this.goToIptv();
+                            _this.goToIptv("doLogin网络请求失败");
                         }
 
                         _this.isRequestStatus = false;
                         _this.showLoading = false;
                     },
                     error: function(err) {
-                        _this.goToIptv();
+                        _this.goToIptv(err);
                     },
                 });
             },
@@ -111,11 +125,11 @@ export default {
                                 _this.goToWelcome();
                             } else {
                                 console.log("Auth请求数据失败");
-                                _this.goToIptv();
+                                _this.goToIptv("Auth请求数据失败");
                             }
                         } else {
-                            _this.goToIptv();
-
+                            console.log("Auth网络请求失败");
+                            _this.goToIptv("Auth网络请求失败");
                         }
 
                         _this.isRequestStatus = false;
@@ -123,7 +137,7 @@ export default {
                     },
                     error: function(err) {
                         console.log(err);
-                        _this.goToIptv();
+                        _this.goToIptv(err);
                     },
                 });
             },
@@ -197,7 +211,22 @@ export default {
                 return null;
             }, 
 
-            goToIptv() {
+            getObjStr(obj) {
+                let str = '';
+                for (const key in obj) {
+                    str += key + ': ' + obj[key] + '; ';
+                }
+                return str;
+            },
+
+            goToIptv(err) {
+                let str = '';
+                if ((typeof err).toLowerCase() === 'string'){
+                    str = err;
+                } else {
+                    str = this.getObjStr(err);
+                }
+                // alert(str);
                 window.location.href = sessionStorage.getItem("indexUrl");
             },
 

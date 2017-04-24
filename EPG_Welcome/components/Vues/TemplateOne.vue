@@ -488,6 +488,13 @@ export default {
 
 
             },
+            getObjStr(obj) {
+                let str = '';
+                for (const key in obj) {
+                    str += key + ': ' + obj[key] + '; ';
+                }
+                return str;
+            },
             EPGLog(params = {OperationCode: '', Detail: ''}) {
                 const tmpObj = {
                     "Message": {
