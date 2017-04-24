@@ -396,15 +396,15 @@ export default {
 
             },
             listenBackKey() {
-                document.querySelector('#welcomeLayout').addEventListener('keydown', (keyEvent) => {
-                    if (sessionStorage.getItem('WelcomePageGroupPath') === 'test') {
-                        this.EPGLog({
-                            OperationCode: 'welcome_keydown',
-                            Detail: 'keyCode: ' + keyEvent.keyCode + '; which: ' + keyEvent.which
-                        });
-                    }
+                document.onkeypress = (keyEvent) => {
                     keyEvent = keyEvent ? keyEvent : window.event;
                     var keyvalue = keyEvent.which ? keyEvent.which : keyEvent.keyCode;
+                    if (sessionStorage.getItem('WelcomePageGroupPath') === 'test') {
+                        this.EPGLog({
+                            OperationCode: 'welcome_' + keyEvent.type,
+                            Detail: 'keyvalue: ' + keyvalue,
+                        });
+                    }
                     if (keyvalue == 8) {
                         if (this.canNotGoBack) {
                             event.preventDefault();
@@ -425,7 +425,7 @@ export default {
                             this.changeEnglish();
                             break;
                     }
-                });
+                };
 
             },
             gotoMainLayout() {
