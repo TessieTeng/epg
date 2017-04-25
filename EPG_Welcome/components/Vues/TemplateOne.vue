@@ -487,7 +487,7 @@ export default {
         },
 
         ready() {
-            document.querySelector("#defaultLang").focus();
+            // document.querySelector("#defaultLang").focus();
             this.changeTime();
             this.saveLangCode("chi");
             this.canNotGoBack = true;
