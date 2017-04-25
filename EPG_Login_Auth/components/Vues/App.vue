@@ -71,7 +71,6 @@ export default {
 
             //获取武汉链接参数
             getUrlParams() {
-                console.log("test");
                 this.totalUrl = location.href;
                 console.log("this.totalUrl:", this.totalUrl);
                 var param = this.totalUrl.split("?")[1];
@@ -79,7 +78,6 @@ export default {
                 if (param) {
                     var xmlSource = param.split("=")[1];
                     console.log("获取到的参数：", xml);
-                    // var xmlSource = '<server_ip>play_vod</server_ip><group_name>group</group_name><group_path>group_path</group_path><oss_user_id>888888</oss_user_id><page_url>http://epgURL</page_url>';
                     var xml = "<rss version='2.0'><channel>" + xmlSource + "</channel></rss>";
                     var xmlDoc = $.parseXML(xml),
                         $xml = $(xmlDoc),
@@ -122,47 +120,6 @@ export default {
                 this.pushLogToServer();
             },
 
-            xml2Json(xml) {
-                var obj = {};
-                if (xml.nodeType == 1) { // element
-                    // do attributes
-                    console.log("1>>");
-                    if (xml.attributes.length > 0) {
-                        obj["@attributes"] = {};
-                        for (var j = 0; j < xml.attributes.length; j++) {
-                            var attribute = xml.attributes.item(j);
-                            obj["@attributes"][attribute.nodeName] = attribute.nodeValue;
-                        }
-                    }
-                } else if (xml.nodeType == 3) { // text
-                    console.log("2>>");
-                    obj = xml.nodeValue;
-                } else {
-                    console.log("55>>", xml);
-                }
-
-                // do children
-                console.log("3>>");
-                if (xml.hasChildNodes()) {
-                    console.log("4>>");
-                    for (var i = 0; i < xml.childNodes.length; i++) {
-                        var item = xml.childNodes.item(i);
-                        var nodeName = item.nodeName;
-                        if (typeof(obj[nodeName]) == "undefined") {
-                            obj[nodeName] = xmlToJson(item);
-                        } else {
-                            if (typeof(obj[nodeName].push) == "undefined") {
-                                var old = obj[nodeName];
-                                obj[nodeName] = [];
-                                obj[nodeName].push(old);
-                            }
-                            obj[nodeName].push(xmlToJson(item));
-                        }
-                    }
-                }
-                return obj;
-            },
-
             pushLogToServer() {
                 var _this = this;
                 if (this.isRequestStatus) {
@@ -185,7 +142,6 @@ export default {
                 Http({
                     type: 'POST',
                     url: sessionStorage.getItem("relativePath") + 'service/epgservice/index.php?MessageType=EPGLogReq',
-                    // url: '/iptv/service/epgservice/index.php?MessageType=EPGLogReq', //sessionStorage.getItem("relativePath") + 
                     data: JSON.stringify(tmpObj),
                     complete: function(data) {
                         console.log(data);
@@ -242,7 +198,6 @@ export default {
                 Http({
                     type: 'POST',
                     url: sessionStorage.getItem("relativePath") + 'service/epgservice/index.php?MessageType=STBLoginReq',
-                    // url: '/iptv/service/epgservice/index.php?MessageType=STBLoginReq',
                     data: JSON.stringify(tmpObj),
                     complete: function(data) {
                         console.log(data);
@@ -307,7 +262,6 @@ export default {
                 Http({
                     type: 'POST',
                     url: sessionStorage.getItem("relativePath") + 'service/epgservice/index.php?MessageType=DoAuthReq',
-                    // url: '/iptv/service/epgservice/index.php?MessageType=DoAuthReq',
                     data: JSON.stringify(tmpObj),
                     complete: function(data) {
                         console.log(data);
