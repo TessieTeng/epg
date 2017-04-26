@@ -6,12 +6,12 @@ const ExtractText = require('extract-text-webpack-plugin');
 
 module.exports = {
     entry: {
-        'main': './index',
+        'main_inline': './index',
     },
     output: {
         path: './dist',
         // filename:  process.env.NODE_ENV === 'production' ? '[name][hash:7].js' : '[name].js',
-        filename: '[name][hash:7].js',
+        filename: '[name]_[hash:7].js',
         // filename: '[name].js',
     },
     resolve: {
@@ -54,10 +54,10 @@ module.exports = {
     // },
     plugins: [
         new HtmlWebpackPlugin({
-            filename: './main.html',
-            template: './main.html',
+            filename: './main_inline.html',
+            template: './main_inline.html',
         }),
-        new ExtractText('mainstyle.css'),
+        new ExtractText('main_inline_style.css'),
         /*new webpack.optimize.UglifyJsPlugin({
           compress: {
               warnings: false

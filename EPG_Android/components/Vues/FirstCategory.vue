@@ -12,7 +12,7 @@
             <div class="bgimg"></div>
             <div class="menuTab firstCategory" id="firstCategoryLayout">
                 <div class="advertisement">
-                    <img class="advertisement" v-bind:src='adPic[0].AdUrl'>
+                    <img class="advertisement" :src='adPic[0].AdUrl'>
                 </div>
                 <ul id="firstTabItem">
                     <li v-for="item in categoryList">
@@ -103,7 +103,6 @@ export default {
 
             },
             listenBackKey() {
-                var _this = this;
                 document.querySelector('#firstCategoryLayout').addEventListener('keydown', (keyEvent) => {
                     keyEvent = keyEvent ? keyEvent : window.event;
                     var keyvalue = keyEvent.which ? keyEvent.which : keyEvent.keyCode;
@@ -139,16 +138,13 @@ export default {
                     url: sessionStorage.getItem("relativePath") + 'service/epgservice/index.php?MessageType=GetObjectInfoReq',
                     data: JSON.stringify(tmpObj),
                     complete: function(data) {
-                        console.log(data);
                         if (data.status === 200) {
-                            console.log("请求成功");
                             const _data = JSON.parse(data.response);
                             const _msgBody = _data.Message.MessageBody;
                             if (_msgBody.ResultCode == 200) {
                                 _this.adPic = _msgBody.AdList.Ad;
                                 _this.categoryList = _msgBody.ChildrenObjectList.Object;
 
-                                console.log(_this.categoryList);
                                 _this.$nextTick(() => {
                                     if (!_this.firstClassTab == 0) {
                                         document.getElementById("_" + _this.firstClassTab).focus();
@@ -179,9 +175,9 @@ export default {
 
             excuteAction(item) {
                 var _this = this;
-                console.log(item);
-                console.log(item.ObjectID);
-                console.log(item.RelatedAction);
+                // console.log(item);
+                // console.log(item.ObjectID);
+                // console.log(item.RelatedAction);
                 this.updateFirstClassTab(item.ObjectID);
                 this.updateSecondClassTab(0);
                 switch (item.RelatedAction) {
@@ -289,6 +285,13 @@ export default {
                     },
                 });
             },
+            getObjStr(obj) {
+                let str = '';
+                for (const key in obj) {
+                    str += key + ': ' + obj[key] + '; ';
+                }
+                return str;
+            },
         },
 
         store: store,
@@ -311,7 +314,21 @@ export default {
             Loading,
         },
         ready() {
-
+            var str = '';
+            str += "HostID：" + sessionStorage.getItem("HostID") + '；';
+            str += "UserID：" + sessionStorage.getItem("UserID") + '；';
+            str += "AdPath：" + sessionStorage.getItem("AdPath") + '；';
+            str += "MainPath：" + sessionStorage.getItem("MainPath") + '；';
+            str += "WelcomePageGroupPath：" + sessionStorage.getItem("WelcomePageGroupPath") + '；';
+            str += "indexUrl：" + sessionStorage.getItem("indexUrl") + '；';
+            str += "currLangCode：" + sessionStorage.getItem("currLangCode") + '；';
+            str += "EPGDirectory：" + sessionStorage.getItem("EPGDirectory") + '；';
+            str += "EPGTemplateType：" + sessionStorage.getItem("EPGTemplateType") + '；';
+            str += "EpgGroupID：" + sessionStorage.getItem("EpgGroupID") + '；';
+            str += "LoginID：" + sessionStorage.getItem("LoginID") + '；';
+            str += "RootCategoryID：" + sessionStorage.getItem("RootCategoryID") + '；';
+            str += "Token：" + sessionStorage.getItem("Token") + '；';
+            console.log(str);
             var categary = document.getElementById("firstTabItem");
             categary.children[0].children[0].focus();
             this.listenBackKey();

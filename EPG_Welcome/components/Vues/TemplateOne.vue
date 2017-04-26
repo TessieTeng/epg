@@ -245,7 +245,7 @@ export default {
             },
             //保存选择的语言
             saveLangCode(language) {
-                sessionStorage.setItem("currLangCode", language);
+                this.currentLang = language;
             },
             getWifiInfo() {
                 var _this = this;
@@ -425,6 +425,7 @@ export default {
 
             },
             gotoMainLayout() {
+                sessionStorage.setItem("currLangCode", this.currentLang);
                 clearInterval(this.timeInterval);
 
                 if (sessionStorage.getItem("MainPath") == "test") {
@@ -523,7 +524,6 @@ export default {
         ready() {
             document.querySelector("#defaultLang").focus();
             this.changeTime();
-            this.saveLangCode("chi");
             this.canNotGoBack = true;
             this.listenBackKey();
             // this.getWifiInfo();

@@ -144,6 +144,16 @@ export default {
             addSecond() {
                 this.currentTime += 1000;
             },
+            listenBackKey() {
+                document.addEventListener('keydown', (keyEvent) => {
+                    keyEvent = keyEvent ? keyEvent : window.event;
+                    var keyvalue = keyEvent.which ? keyEvent.which : keyEvent.keyCode;
+                    if (keyvalue == 8) {
+                        // this.$dispatch("stopVideo");
+                        history.back();
+                    }
+                });
+            },
             //获取世界时间
             getTimeData() {
                 var _this = this;
@@ -155,9 +165,9 @@ export default {
                     "Message": {
                         "MessageType": "GetWorldTimeListReq",
                         "MessageBody": {
-                            "LangCode": window.sessionStorage ? sessionStorage.getItem("currLangCode") : Cookie.read("currLangCode"),
+                            "LangCode": sessionStorage.getItem("currLangCode"),
                             "EpgGroupID": 1,
-                            "Token": window.sessionStorage ? sessionStorage.getItem("Token") : Cookie.read("Token"),
+                            "Token": sessionStorage.getItem("Token"),
                         }
                     }
                 };
@@ -250,16 +260,17 @@ export default {
         },
 
         ready() {
-            var _this = this;
             var hint = sessionStorage.getItem("currLangCode");
+            alert(hint);
             if (hint === "chi") {
-                _this.hint = "当前时间";
+                this.hint = "当前时间";
 
             } else if (hint === "eng") {
-                _this.hint = "Current  Time";
+                this.hint = "Current  Time";
             }
 
 
+            this.listenBackKey();
             this.getTimeData();
            // this.$dispatch("pauseVideo");
         },
