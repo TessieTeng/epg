@@ -9,7 +9,7 @@
 <template>
     <div>
         <div class="rootDiv">
-            <div class="bgimg"></div>
+            <div class="bgimg" :style='{"background-image": "url(" + bgimg +  ")"}'></div>
             <div class="menuTab firstCategory" id="firstCategoryLayout">
                 <div class="advertisement">
                     <img class="advertisement" :src='adPic[0].AdUrl'>
@@ -52,6 +52,7 @@ export default {
                 isRequestStatus: false,
                 firstEnter: true,
                 exitTime: 0,
+                bgimg: '',
                 adPic: [{
                     AdUrl: ''
                 }],
@@ -143,6 +144,15 @@ export default {
                             const _msgBody = _data.Message.MessageBody;
                             if (_msgBody.ResultCode == 200) {
                                 _this.adPic = _msgBody.AdList.Ad;
+
+                                const tmpAdImgs = _this.adPic.filter(item => {
+                                    return item.AdPosNo === "pos00";
+                                });
+                                // 暂时只取了第一张
+                                if (tmpAdImgs.length > 0) {
+                                    _this.bgimg = tmpAdImgs[0].AdUrl;
+                                }
+
                                 _this.categoryList = _msgBody.ChildrenObjectList.Object;
 
                                 _this.$nextTick(() => {
@@ -314,7 +324,6 @@ export default {
             Loading,
         },
         ready() {
-            console.log('------' + this.getObjStr(document.querySelector('.rootDiv').getBoundingClientRect()))
             var categary = document.getElementById("firstTabItem");
             categary.children[0].children[0].focus();
             this.listenBackKey();

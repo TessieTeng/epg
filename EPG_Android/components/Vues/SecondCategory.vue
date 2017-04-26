@@ -3,7 +3,7 @@
 <template>
     <div>
         <div class="rootDiv">
-        <div class ="bgimg"></div>
+            <div class="bgimg" :style='{"background-image": "url(" + bgimg +  ")"}'></div>
             <div class="menuTab">
                 <div class="advertisement">
                     <img class="advertisement" v-bind:src='adPic[0].AdUrl'>
@@ -42,6 +42,7 @@ export default {
     data() {
             return {
                 isRequestStatus: false,
+                bgimg: '',
                 adPic: [{
                     AdUrl: '../../assets/images/ad_s.jpg'
                 }],
@@ -158,10 +159,10 @@ export default {
                             "ObjectID": categoryId,
                             "ObjectType": 1,
                             "ChildrenLevel": 1,
-                            "LangCode": window.sessionStorage ? sessionStorage.getItem("currLangCode") : Cookie.read("currLangCode"),
-                            "EpgGroupID": window.sessionStorage ? sessionStorage.getItem("EpgGroupID") : Cookie.read("EpgGroupID"),
-                            "UserID": window.sessionStorage ? sessionStorage.getItem("UserID") : Cookie.read("UserID"),
-                            "Token": window.sessionStorage ? sessionStorage.getItem("Token") : Cookie.read("Token"),
+                            "LangCode": sessionStorage.getItem("currLangCode"),
+                            "EpgGroupID": sessionStorage.getItem("EpgGroupID"),
+                            "UserID": sessionStorage.getItem("UserID"),
+                            "Token": sessionStorage.getItem("Token"),
                         }
                     }
                 };
@@ -178,6 +179,15 @@ export default {
                             const _msgBody = _data.Message.MessageBody;
                             if (_msgBody.ResultCode == 200) {
                                 _this.adPic = _msgBody.AdList.Ad;
+
+                                const tmpAdImgs = _this.adPic.filter(item => {
+                                    return item.AdPosNo === "pos00";
+                                });
+                                // 暂时只取了第一张
+                                if (tmpAdImgs.length > 0) {
+                                    _this.bgimg = tmpAdImgs[0].AdUrl;
+                                }
+
                                 _this.categoryList = _msgBody.ChildrenObjectList.Object;
                                 _this.childObj = _data.Message.MessageBody;
 

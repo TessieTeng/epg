@@ -9,9 +9,9 @@ html {
     top: 0;
     width: 19.2rem;
     height: 8.3rem;
-    background: url(../assets/images/bg.jpg);
     line-height: 8.3rem;
-
+    background-position: center;
+    background-size: cover;
 }
 .menuTab {
     position: fixed;
