@@ -314,21 +314,7 @@ export default {
             Loading,
         },
         ready() {
-            var str = '';
-            str += "HostID：" + sessionStorage.getItem("HostID") + '；';
-            str += "UserID：" + sessionStorage.getItem("UserID") + '；';
-            str += "AdPath：" + sessionStorage.getItem("AdPath") + '；';
-            str += "MainPath：" + sessionStorage.getItem("MainPath") + '；';
-            str += "WelcomePageGroupPath：" + sessionStorage.getItem("WelcomePageGroupPath") + '；';
-            str += "indexUrl：" + sessionStorage.getItem("indexUrl") + '；';
-            str += "currLangCode：" + sessionStorage.getItem("currLangCode") + '；';
-            str += "EPGDirectory：" + sessionStorage.getItem("EPGDirectory") + '；';
-            str += "EPGTemplateType：" + sessionStorage.getItem("EPGTemplateType") + '；';
-            str += "EpgGroupID：" + sessionStorage.getItem("EpgGroupID") + '；';
-            str += "LoginID：" + sessionStorage.getItem("LoginID") + '；';
-            str += "RootCategoryID：" + sessionStorage.getItem("RootCategoryID") + '；';
-            str += "Token：" + sessionStorage.getItem("Token") + '；';
-            console.log(str);
+            console.log('------' + this.getObjStr(document.querySelector('.rootDiv').getBoundingClientRect()))
             var categary = document.getElementById("firstTabItem");
             categary.children[0].children[0].focus();
             this.listenBackKey();

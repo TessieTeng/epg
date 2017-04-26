@@ -62,7 +62,7 @@ export default {
                 var tempPicList = item.PictureList.Picture;
                 for (var i = 0; i < tempPicList.length; i++) {
                     if (tempPicList[i].PictureType == 13) {
-                        console.log(tempPicList[i].PictureUrl);
+                        // console.log(tempPicList[i].PictureUrl);
                         return tempPicList[i].PictureUrl;
                     }
                 }
@@ -72,7 +72,7 @@ export default {
                 var tempPicList = item.PictureList.Picture;
                 for (var i = 0; i < tempPicList.length; i++) {
                     if (tempPicList[i].PictureType == 14) {
-                        console.log(tempPicList[i].PictureUrl);
+                        // console.log(tempPicList[i].PictureUrl);
                         return tempPicList[i].PictureUrl;
                     }
                 }
@@ -80,9 +80,9 @@ export default {
             },
             excuteAction(item) {
                 var _this = this;
-                console.log(item);
-                console.log(item.ObjectID);
-                console.log(item.RelatedAction);
+                // console.log(item);
+                // console.log(item.ObjectID);
+                // console.log(item.RelatedAction);
                 this.updateSecondClassTab(item.ObjectID);
 
                 switch (item.RelatedAction) {
@@ -171,7 +171,7 @@ export default {
                     // url: '.' + sessionStorage.getItem('esaddr') + '?MessageType=GetObjectInfoReq',
                     data: JSON.stringify(tmpObj),
                     complete: function(data) {
-                        console.log(data);
+                        // console.log(data);
                         if (data.status === 200) {
                             console.log("请求成功");
                             const _data = JSON.parse(data.response);
@@ -181,9 +181,9 @@ export default {
                                 _this.categoryList = _msgBody.ChildrenObjectList.Object;
                                 _this.childObj = _data.Message.MessageBody;
 
-                                console.log(_this.childObj);
-                                console.log("KKK");
-                                console.log(_this.categoryList);
+                                // console.log(_this.childObj);
+                                // console.log("KKK");
+                                // console.log(_this.categoryList);
                                 _this.$nextTick(() => {
                                     if (!_this.secondClassTab == 0) {
                                         document.getElementById("_" + _this.secondClassTab).focus();

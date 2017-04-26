@@ -6,7 +6,7 @@ const ExtractText = require('extract-text-webpack-plugin');
 
 module.exports = {
     entry: {
-        'main_inline': './index',
+        'main': './index',
     },
     output: {
         path: './dist',
@@ -54,10 +54,10 @@ module.exports = {
     // },
     plugins: [
         new HtmlWebpackPlugin({
-            filename: './main_inline.html',
-            template: './main_inline.html',
+            filename: './main.html',
+            template: './main.html',
         }),
-        new ExtractText('main_inline_style.css'),
+        new ExtractText('main_style.css'),
         /*new webpack.optimize.UglifyJsPlugin({
           compress: {
               warnings: false
