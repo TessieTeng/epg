@@ -430,13 +430,15 @@ export default {
 
                 if (sessionStorage.getItem("MainPath") == "test") {
                     console.log("测试路径");
-                    location.replace("../../epggroup_mains/main_test/main.html");
+                    // location.replace("../../epggroup_mains/main_test/main.html");
+                    location.replace("../../epggroup_mains/main_test/main_outer.html");
                 } else if (/^https?:\/\//.test(sessionStorage.getItem("MainPath"))) {
                     console.log("是链接");
                     location.replace(sessionStorage.getItem("MainPath"));
                 } else {
                     console.log("正式路径");
-                    location.replace("../../epggroup_mains/main_default/main.html");
+                    // location.replace("../../epggroup_mains/main_default/main.html");
+                    location.replace("../../epggroup_mains/main_default/main_outer.html");
                 }
             },
             getWelcomeData() {
