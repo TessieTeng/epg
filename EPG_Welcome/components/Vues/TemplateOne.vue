@@ -245,11 +245,7 @@ export default {
             },
             //保存选择的语言
             saveLangCode(language) {
-                if (window.sessionStorage) {
-                    sessionStorage.setItem("currLangCode", language);
-                } else {
-                    Cookie.write("currLangCode", language);
-                }
+                sessionStorage.setItem("currLangCode", language);
             },
             getWifiInfo() {
                 var _this = this;
