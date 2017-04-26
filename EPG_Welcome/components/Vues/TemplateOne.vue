@@ -396,7 +396,8 @@ export default {
 
             },
             listenBackKey() {
-                document.querySelector('#welcomeLayout').addEventListener('keypress', (keyEvent) => {
+                // document.querySelector('#welcomeLayout').addEventListener('keypress', (keyEvent) => {
+                document.querySelector('#welcomeLayout').addEventListener('keydown', (keyEvent) => {
 
                     keyEvent = keyEvent ? keyEvent : window.event;
                     var keyvalue = keyEvent.which ? keyEvent.which : keyEvent.keyCode;

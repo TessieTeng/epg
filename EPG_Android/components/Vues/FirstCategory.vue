@@ -104,7 +104,8 @@ export default {
             },
             listenBackKey() {
                 var _this = this;
-                document.querySelector('#firstCategoryLayout').addEventListener('keypress', (keyEvent) => {
+                // document.querySelector('#firstCategoryLayout').addEventListener('keypress', (keyEvent) => {
+                document.querySelector('#firstCategoryLayout').addEventListener('keydown', (keyEvent) => {
                     keyEvent = keyEvent ? keyEvent : window.event;
                     var keyvalue = keyEvent.which ? keyEvent.which : keyEvent.keyCode;
                     if (keyvalue == 8) {
@@ -188,7 +189,7 @@ export default {
                             // window.location.href ="http:222.221.25.243:6166/iptv/ppthdplay/apps/index/index_epg.html";
                             var address = sessionStorage.getItem("indexUrl");
                             window.location.href = sessionStorage.getItem("indexUrl");
-                           
+
                         });
                         break;
                     case "weather_list":

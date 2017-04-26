@@ -4,16 +4,16 @@ html {
     font-size: 100px;
 }
 
-
-.bgimg{
+.bgimg {
     position: fixed;
     top: 0;
     width: 19.2rem;
     height: 8.3rem;
     background: url(../assets/images/bg.jpg);
     line-height: 8.3rem;
-
+    background-size: cover;
 }
+
 .menuTab {
     position: fixed;
     bottom: 0;
