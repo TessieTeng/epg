@@ -58,6 +58,7 @@ export default {
                         },
                     }
                 };
+
                 Http({
                     type: 'POST',
                     url: _this.relativePath + 'service/epgservice/index.php?MessageType=STBLoginReq',
@@ -112,6 +113,9 @@ export default {
                     }
                 };
 
+                console.log("HostID>>>>>>", _this.HostID);
+                console.log("UserID>>>>>>", _this.UserID);
+
                 Http({
                     type: 'POST',
                     url: _this.relativePath + 'service/epgservice/index.php?MessageType=DoAuthReq',
@@ -134,6 +138,12 @@ export default {
                                 _this.Token = _msgBody.Token;   
 
                                 // _this.getVideoAddr();
+                                alert(++_this.Num);
+                                if (this.Num === 1) {
+                                    DoAuthReq();
+                                } else {
+                                    return;
+                                }
                                 _this.goToWelcome();
                             } else {
                                 console.log("Auth请求数据失败");
@@ -269,7 +279,7 @@ export default {
                     window.location = this.WelcomePageGroupPath;
                 } else {
                     console.log("正式路径");
-                    location.replace("./epggroup_welcomes/welcome_default/welcome.html?" + this.addParams());
+                    location.replace("./epggroup_welcomes/welcome_default/welcome.html" + this.addParams());
                 }
             },
 
@@ -284,6 +294,7 @@ export default {
             /*存储跳转IPTV首页的地址
              *http:222.221.25.243:6166/iptv/ppthdplay/apps/index/index_epg.html
              */
+
             this.indexUrl = this.GetQueryString("indexUrl");
             this.relativePath = this.getRelativePath();
             this.doLogin();
