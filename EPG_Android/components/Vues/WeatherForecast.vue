@@ -309,6 +309,14 @@ export default {
                     },
                 });
             },
+            listenBackKey() {
+                window.onkeydown = function(event) {
+                    var e = event || window.event;
+                    if (e.keyCode == 8) {
+                        history.back();
+                    }
+                };
+            },
 
         },
 
@@ -344,6 +352,7 @@ export default {
             }
 
             this.getRootCategoryData();
+            this.listenBackKey();
             //this.$dispatch("pauseVideo");
         },
 }

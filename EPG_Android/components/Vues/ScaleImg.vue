@@ -42,13 +42,12 @@ export default {
         },
         methods: {
             listenBackKey() {
-                document.querySelector('#singleRootDiv').addEventListener('keypress', (keyEvent) => {
-                    keyEvent = keyEvent ? keyEvent : window.event;
-                    var keyvalue = keyEvent.which ? keyEvent.which : keyEvent.keyCode;
-                    if (keyvalue == 8) {
+                window.onkeydown = function(event) {
+                    var e = event || window.event;
+                    if (e.keyCode == 8) {
                         history.back();
                     }
-                });
+                };
             },
 
         },

@@ -420,10 +420,6 @@ export default {
                             this.tabIndex = 1;
                             this.changeEnglish();
                             break;
-                        case 13: // 确认/OK
-                            // 根据浏览器判断某盒子才做这个跳转
-                            // this.gotoMainLayout();
-                            break;
                     }
                 };
 
