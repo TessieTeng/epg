@@ -51,7 +51,9 @@ export default {
                     // 如果这种方法不支持，就改回一个个赋值吧
                     // 里面包含字段：server_ip, group_name, group_path, oss_user_id, page_url, partner, group_id, cdc_group_id, area_id, csm_id,
                     for (const key in jsonObj.xml) {
-                        this.$set(this, key, jsonObj.xml[key]);
+                        if (jsonObj.xml.hasOwnProperty(key)) {
+                            this.$set(this, key, jsonObj.xml[key]);
+                        }
                     }
 
                     // this.server_ip = jsonObj.xml.server_ip;
@@ -260,7 +262,7 @@ export default {
 
             GetQueryString(name) {
                 var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
-                var r = window.location.search.substr(1).match(reg);
+                var r = location.search.substr(1).match(reg);
                 if (r != null) return unescape(r[2]);
                 return null;
             }, 
@@ -281,19 +283,19 @@ export default {
                     str = this.getObjStr(err);
                 }
                 // alert(str);
-                window.location.href = sessionStorage.getItem("indexUrl");
+                location.href = sessionStorage.getItem("indexUrl");
             },
 
             goToWelcome() {
                 if (/^https?:\/\//.test(sessionStorage.getItem("WelcomePageGroupPath"))) {
                     // 链接跳转
-                    location.replace(sessionStorage.getItem("WelcomePageGroupPath"));
+                    location.href = sessionStorage.getItem("WelcomePageGroupPath");
                 } else if (sessionStorage.getItem("WelcomePageGroupPath") == "test") {
                     // 测试路径
-                    location.replace("./epggroup_welcomes/welcome_test/welcome.html");
+                    location.href = "./epggroup_welcomes/welcome_test/welcome.html";
                 } else {
                     // 正式路径
-                    location.replace("./epggroup_welcomes/welcome_default/welcome.html");
+                    location.href = "./epggroup_welcomes/welcome_default/welcome.html";
                 }
             },
 
