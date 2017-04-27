@@ -110,12 +110,12 @@ export default {
 
         computed: {
             getCurrTime() {
-                var tempCurrTime = moment(this.currentTime).format('YYYY-MM-DD hh:mm:ss');
+                var tempCurrTime = moment(this.currentTime).format('YYYY-MM-DD HH:mm:ss');
                 var hint = sessionStorage.getItem("currLangCode");
                 if (hint == "chi") {
-                    tempCurrTime = moment(this.currentTime).format('YYYY-MM-DD hh:mm:ss');
+                    tempCurrTime = moment(this.currentTime).format('YYYY-MM-DD HH:mm:ss');
                 } else {
-                    tempCurrTime = moment(this.currentTime).format('MM/DD/YYYY hh:mm:ss');
+                    tempCurrTime = moment(this.currentTime).format('MM/DD/YYYY HH:mm:ss');
                 }
                 return tempCurrTime;
             },
@@ -137,7 +137,7 @@ export default {
             getHourMinute(timeZone) {
                 var localTime = this.currentTime;
                 var longTimestamp = localTime + (timeZone - 8) * 60 * 60 * 1000;
-                var longDate = moment(longTimestamp).format('hh:mm');
+                var longDate = moment(longTimestamp).format('HH:mm');
                 return longDate;
             },
 
