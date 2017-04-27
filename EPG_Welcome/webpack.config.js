@@ -11,7 +11,7 @@ module.exports = {
     output: {
         path: './dist',
         // filename:  process.env.NODE_ENV === 'production' ? '[name][hash:7].js' : '[name].js',
-        filename: '[name][hash:7].js',
+        filename: '[name]_[hash:7].js',
         // filename: '[name].js',
     },
     resolve: {
@@ -57,7 +57,7 @@ module.exports = {
             filename: './welcome.html',
             template: './welcome.html',
         }),
-        new ExtractText('welcomestyle.css'),
+        new ExtractText('welcome_style.css'),
         /*new webpack.optimize.UglifyJsPlugin({
           compress: {
               warnings: false

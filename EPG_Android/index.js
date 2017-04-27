@@ -1,7 +1,7 @@
 // import Promise from 'bluebird';
 import Vue from 'vue';
-import Resource from 'vue-resource';
 import VueRouter from 'vue-router';
+import './assets/lib/sessionStorage';
 
 import App from "App";
 import FirstCategory from "Vues/FirstCategory";
@@ -16,7 +16,6 @@ import SingleImg from "Vues/SingleImg";
 import Store from "Vues/Store";
 import ScaleImg from "Vues/ScaleImg";
 
-Vue.use(Resource);
 Vue.use(VueRouter);
 
 var router = new VueRouter();
