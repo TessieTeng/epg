@@ -17,7 +17,7 @@
     },
     '湖北': {
       province: '湖北',
-      relativePath: '/iptv/',
+      relativePath: '',
     },
 
   }

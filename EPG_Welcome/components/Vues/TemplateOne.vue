@@ -412,13 +412,16 @@ export default {
                     }
 
                     switch (keyvalue) {
-                        case 37: //left
+                        case 37: // left
                             this.tabIndex = 0;
                             this.changeChinese();
                             break;
-                        case 39: //right
+                        case 39: // right
                             this.tabIndex = 1;
                             this.changeEnglish();
+                            break;
+                        case 13: // 确认/OK
+                            this.gotoMainLayout();
                             break;
                     }
                 };
@@ -428,18 +431,25 @@ export default {
                 sessionStorage.setItem("currLangCode", this.currentLang);
                 clearInterval(this.timeInterval);
 
-                if (sessionStorage.getItem("MainPath") == "test") {
-                    console.log("测试路径");
-                    // location.replace("../../epggroup_mains/main_test/main.html");
-                    location.replace("../../epggroup_mains/main_test/main_outer.html");
-                } else if (/^https?:\/\//.test(sessionStorage.getItem("MainPath"))) {
-                    console.log("是链接");
+                let path = '../../epggroup_mains/main_default/';
+                let file = 'main.html';
+                const {vendor, appName, userAgent} = navigator;
+
+                if (/^https?:\/\//.test(sessionStorage.getItem("MainPath"))) {
+                    // 链接跳转
                     location.replace(sessionStorage.getItem("MainPath"));
+                    return;
+                } else if (sessionStorage.getItem("MainPath") == "test") {
+                    // 测试路径
+                    path = '../../epggroup_mains/main_test/';
                 } else {
-                    console.log("正式路径");
-                    // location.replace("../../epggroup_mains/main_default/main.html");
-                    location.replace("../../epggroup_mains/main_default/main_outer.html");
+                    // 正式路径
                 }
+                // UT盒子：MC8638
+                if (vendor === 'Apple Inc.' && appName === 'EIS iPanel' && userAgent === 'Sunniwell') {
+                    file = 'main_outer.html?currLangCode=' + this.currentLang;
+                }
+                location.replace(path + file);
             },
             getWelcomeData() {
                 var _this = this;

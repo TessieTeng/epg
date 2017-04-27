@@ -302,6 +302,13 @@ export default {
                 }
                 return str;
             },
+            getCurrLangCodeFromTopWindow () {
+                let currLangCode = 'chi';
+                var reg = new RegExp("(^|&)currLangCode=([^&]*)(&|$)");
+                var r = window.top.location.search.substr(1).match(reg);
+                if (r != null) currLangCode = unescape(r[2]);
+                sessionStorage.setItem('currLangCode', currLangCode);
+            }
         },
 
         store: store,
@@ -324,6 +331,10 @@ export default {
             Loading,
         },
         ready() {
+            // 兼容UT盒子从main_outer.html进入时取不到currLangCode的问题
+            if (/main_outer.html/.test(window.top.location.pathname)) {
+                this.getCurrLangCodeFromTopWindow();
+            }
             var categary = document.getElementById("firstTabItem");
             categary.children[0].children[0].focus();
             this.listenBackKey();
