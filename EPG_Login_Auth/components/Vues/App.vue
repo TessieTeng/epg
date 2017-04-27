@@ -238,6 +238,7 @@ export default {
 
             goToIptv() {
                 window.location.href = this.indexUrl;
+
             },
 
             addParams() {

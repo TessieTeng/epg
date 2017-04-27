@@ -48,7 +48,7 @@ export default {
                             "ChildrenLevel": 1,
                             "LangCode": window.localStorage ? localStorage.getItem("currLangCode") : Cookie.read("currLangCode"),
                             "EpgGroupID": 3,
-                            "UserID": DataSource.UserID,
+                            "UserID": 3001,
                         }
                     }
                 };

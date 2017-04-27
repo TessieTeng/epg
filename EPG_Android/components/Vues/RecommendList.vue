@@ -136,17 +136,17 @@ export default {
                             "ObjectID": categoryId,
                             "ObjectType": 1,
                             "ChildrenLevel": 1,
-                            "LangCode": DataSource.currLangCode,
-                            "EpgGroupID": DataSource.EpgGroupID,
-                            "UserID": DataSource.UserID,
-                            "Token": DataSource.Token,
+                            "LangCode": window.currLangCode,
+                            "EpgGroupID": window.EpgGroupID,
+                            "UserID": window.UserID,
+                            "Token": window.Token,
                         }
                     }
                 };
 
                 Http({
                     type: 'POST',
-                    url: DataSource.relativePath + 'service/epgservice/index.php?MessageType=GetObjectInfoReq',
+                    url: window.relativePath + 'service/epgservice/index.php?MessageType=GetObjectInfoReq',
                     data: JSON.stringify(tmpObj),
                     complete: function(data) {
                         console.log(data);
@@ -179,7 +179,7 @@ export default {
             },
 
             listenBackKey() {
-                this.$el.addEventListener('keydown', (keyEvent) => {
+                this.$el.addEventListener('keypress', (keyEvent) => {
                     keyEvent = keyEvent ? keyEvent : window.event;
                     var keyvalue = keyEvent.which ? keyEvent.which : keyEvent.keyCode;
                     if (keyvalue == 8) {

@@ -100,7 +100,7 @@ export default {
                     }
                 };
 
-                // document.querySelector('#detailLayout').addEventListener('keydown', (keyEvent) => {
+                // document.querySelector('#detailLayout').addEventListener('keypress', (keyEvent) => {
                 //     keyEvent = keyEvent ? keyEvent : window.event;
                 //     var keyvalue = keyEvent.which ? keyEvent.which : keyEvent.keyCode;
                 //     alert("Detail +++" + keyvalue);
@@ -110,7 +110,7 @@ export default {
                 // });
 
 
-                // this.$el.addEventListener('keydown', (keyEvent) => {
+                // this.$el.addEventListener('keypress', (keyEvent) => {
                 //     keyEvent = keyEvent ? keyEvent : window.event;
                 //     var keyvalue = keyEvent.which ? keyEvent.which : keyEvent.keyCode;
                 //     alert("detail +++" + keyvalue);

@@ -16,7 +16,7 @@
                 </div>
                 <ul id="firstTabItem">
                     <li v-for="item in categoryList">
-                        <a href="javascript:;" id='_{{item.ObjectID}}' @click="excuteAction(item)" @focus="isFoucs=true" @blur="isFoucs=false">
+                        <a href="javascript:;" id='_{{item.ObjectID}}' @click="excuteAction(item)" @focus="isFoucs=true" @blurs="isFoucs=false">
                             <div class="imgFrame">
                                 <img v-bind:src='getNormalIcon(item)'>
                                 <img v-bind:src='getFocusIcon(item)'>
@@ -30,6 +30,7 @@
     </div>
 </template>
 <script>
+import Loading from '../Tools/Loading.vue';
 import store from '../../vuex/store.js';
 import Http from '../../assets/lib/Http';
 import {
@@ -54,6 +55,7 @@ export default {
                 adPic: [{
                     AdUrl: ''
                 }],
+                showLoading: true,
                 categoryList: [{
                     PictureList: {
                         Picture: [{
@@ -72,10 +74,32 @@ export default {
                 isFoucs: false,
             };
         },
-        props:{
-            dataSource: Object,
-        },
         methods: {
+
+            GetQueryString(name) {
+                var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
+                var r = window.location.search.substr(1).match(reg);
+                if (r != null) return unescape(r[2]);
+                return null;
+            },
+
+             getParams() {
+                window.EPGDirectory = this.GetQueryString("EPGDirectory");
+                window.EPGTemplateType = this.GetQueryString("EPGTemplateType");
+                window.EpgGroupID = this.GetQueryString("EpgGroupID");
+                window.LoginID = this.GetQueryString("LoginID");
+                window.RootCategoryID = this.GetQueryString("RootCategoryID");
+                window.Token = this.GetQueryString("Token");
+                window.UserID = this.GetQueryString("UserID");
+                window.indexUrl = this.GetQueryString("indexUrl");
+                window.relativePath = this.GetQueryString("relativePath");
+                window.AdPath = this.GetQueryString("AdPath");
+                window.MainPath = this.GetQueryString("MainPath");
+                window.WelcomePageGroupPath = this.GetQueryString("WelcomePageGroupPath");
+                window.currLangCode = this.GetQueryString("currLangCode");
+
+
+            },
 
             //取正常图片
             getNormalIcon(item) {
@@ -97,7 +121,8 @@ export default {
 
             },
             listenBackKey() {
-                document.querySelector('#firstCategoryLayout').addEventListener('keydown', (keyEvent) => {
+                var _this = this;
+                document.querySelector('#firstCategoryLayout').addEventListener('keypress', (keyEvent) => {
                     keyEvent = keyEvent ? keyEvent : window.event;
                     var keyvalue = keyEvent.which ? keyEvent.which : keyEvent.keyCode;
                     if (keyvalue == 8) {
@@ -106,15 +131,8 @@ export default {
                     }
                 });
             },
-            getObjStr(obj) {
-                let str = '';
-                for (let key in obj) {
-                    str += key + ': ' + obj[key] + '; ';
-                }
-                return str;
-            },
             getRootCategoryData(categoryId) {
-                const _this = this;
+                var _this = this;
                 if (this.isRequestStatus) {
                     return;
                 }
@@ -126,18 +144,20 @@ export default {
                             "ObjectID": categoryId,
                             "ObjectType": 1,
                             "ChildrenLevel": 1,
-                            "LangCode": this.dataSource.currLangCode,
-                            "EpgGroupID": this.dataSource.EpgGroupID,
-                            "UserID": this.dataSource.UserID,
-                            "Token": this.dataSource.Token,
+                            "LangCode": window.currLangCode,
+                            "EpgGroupID": window.EpgGroupID,
+                            "UserID": window.UserID,
+                            "Token": window.Token,
                         }
                     }
                 };
+
                 Http({
                     type: 'POST',
-                    url: this.dataSource.relativePath + 'service/epgservice/index.php?MessageType=GetObjectInfoReq',
+                    url: window.relativePath + 'service/epgservice/index.php?MessageType=GetObjectInfoReq',
                     data: JSON.stringify(tmpObj),
                     complete: function(data) {
+                        console.log(data);
                         if (data.status === 200) {
                             console.log("请求成功");
                             const _data = JSON.parse(data.response);
@@ -145,6 +165,7 @@ export default {
                             if (_msgBody.ResultCode == 200) {
                                 _this.adPic = _msgBody.AdList.Ad;
                                 _this.categoryList = _msgBody.ChildrenObjectList.Object;
+
                                 console.log(_this.categoryList);
 
                                 _this.$nextTick(() => {
@@ -163,6 +184,7 @@ export default {
                         }
 
                         _this.isRequestStatus = false;
+                        _this.showLoading = false;
                     },
                     error: function(err) {
                         console.log(err);
@@ -171,6 +193,7 @@ export default {
             },
 
             excuteAction(item) {
+                var _this = this;
                 console.log(item);
                 console.log(item.ObjectID);
                 console.log(item.RelatedAction);
@@ -184,7 +207,7 @@ export default {
                             // var address = sessionStorage.getItem("indexUrl");
                             // window.location.href = sessionStorage.getItem("indexUrl");
 
-                            window.location.href = this.dataSource.indexUrl;
+                            window.location.href = window.indexUrl;
                            
                         });
                         break;
@@ -261,7 +284,6 @@ export default {
                 }
 
             },
-
         },
 
         store: store,
@@ -280,18 +302,18 @@ export default {
                 isMainLayout: getIsMainLayout,
             }
         },
+        components: {
+            Loading,
+        },
         ready() {
-            const interval = setInterval(() => {
-                if (!!this.dataSource.RootCategoryID) {
-                    clearInterval(interval);
-                    this.getRootCategoryData(this.dataSource.RootCategoryID);
-                }
-            }, 500);
+            this.getParams();
             var categary = document.getElementById("firstTabItem");
             categary.children[0].children[0].focus();
             this.listenBackKey();
+            this.getRootCategoryData(window.RootCategoryID);
             this.updateIsMainLayout(true);
             this.updateLastStore(0);
+            console.log(this);
 
             this.$nextTick(() => {
                 if (this.firstVideoPlay) {
