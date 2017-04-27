@@ -136,17 +136,17 @@ export default {
                             "ObjectID": categoryId,
                             "ObjectType": 1,
                             "ChildrenLevel": 1,
-                            "LangCode": window.currLangCode,
-                            "EpgGroupID": window.EpgGroupID,
-                            "UserID": window.UserID,
-                            "Token": window.Token,
+                            "LangCode": window.sessionStorage ? sessionStorage.getItem("currLangCode") : Cookie.read("currLangCode"),
+                            "EpgGroupID": window.sessionStorage ? sessionStorage.getItem("EpgGroupID") : Cookie.read("EpgGroupID"),
+                            "UserID": window.sessionStorage ? sessionStorage.getItem("UserID") : Cookie.read("UserID"),
+                            "Token": window.sessionStorage ? sessionStorage.getItem("Token") : Cookie.read("Token"),
                         }
                     }
                 };
 
                 Http({
                     type: 'POST',
-                    url: window.relativePath + 'service/epgservice/index.php?MessageType=GetObjectInfoReq',
+                    url: sessionStorage.getItem("relativePath") + 'service/epgservice/index.php?MessageType=GetObjectInfoReq',
                     data: JSON.stringify(tmpObj),
                     complete: function(data) {
                         console.log(data);

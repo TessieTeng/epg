@@ -305,26 +305,26 @@ export default {
             // alert(url);
             // var pathname = location.pathname.replace("index.html", "");
             // sessionStorage.setItem("pathname", pathname);
-            // if (url.indexOf("?") != -1) {
-            //     var str = url.substr(1);
-            //     var strs = str.split("&");
-            //     for (var i = 0; i < strs.length; i++) {
-            //         if (strs[i].split("=")[0] == "esaddr") {
-            //             console.log("esaddr" + strs[i].split("=")[1]);
-            //             sessionStorage.setItem("esaddr", strs[i].split("=")[1]);
-            //         }
+            if (url.indexOf("?") != -1) {
+                var str = url.substr(1);
+                var strs = str.split("&");
+                for (var i = 0; i < strs.length; i++) {
+                    if (strs[i].split("=")[0] == "esaddr") {
+                        console.log("esaddr" + strs[i].split("=")[1]);
+                        sessionStorage.setItem("esaddr", strs[i].split("=")[1]);
+                    }
 
-            //         if (strs[i].split("=")[0] == "UserID") {
-            //             console.log("UserID" + strs[i].split("=")[1]);
-            //             sessionStorage.setItem("UserID", strs[i].split("=")[1]);
-            //         }
-            //         if (strs[i].split("=")[0] == "EpgGroupID") {
-            //             console.log(strs[i].split("=")[1]);
-            //             sessionStorage.setItem("EpgGroupID", strs[i].split("=")[1]);
+                    if (strs[i].split("=")[0] == "UserID") {
+                        console.log("UserID" + strs[i].split("=")[1]);
+                        sessionStorage.setItem("UserID", strs[i].split("=")[1]);
+                    }
+                    if (strs[i].split("=")[0] == "EpgGroupID") {
+                        console.log(strs[i].split("=")[1]);
+                        sessionStorage.setItem("EpgGroupID", strs[i].split("=")[1]);
 
-            //         }
-            //     }
-            // }
+                    }
+                }
+            }
 
         },
         store: store,

@@ -227,17 +227,17 @@ export default {
                             "ObjectID": myId,
                             "ObjectType": 1,
                             "ChildrenLevel": 1,
-                            "LangCode": window.currLangCode,
+                            "LangCode": window.sessionStorage ? sessionStorage.getItem("currLangCode") : Cookie.read("currLangCode"),
                             "EpgGroupID": 1,
                             "UserID": "888888",
-                            "Token": window.Token,
+                            "Token": window.sessionStorage ? sessionStorage.getItem("Token") : Cookie.read("Token"),
                         }
                     }
                 };
 
                 Http({
                     type: 'post',
-                    url: window.relativePath + 'service/epgservice/index.php?MessageType=GetObjectInfoReq',
+                    url: sessionStorage.getItem("relativePath") + 'service/epgservice/index.php?MessageType=GetObjectInfoReq',
                     data: JSON.stringify(tmpObj),
                     complete: function(data) {
                         console.log(data);
@@ -325,7 +325,7 @@ export default {
 
         ready() {
             var _this = this;
-            var hint = window.currLangCode;
+            var hint = sessionStorage.getItem("currLangCode");
             if (hint === "chi") {
                 _this.tophint = "全部商品";
                 _this.lefthint = "酒店商城";

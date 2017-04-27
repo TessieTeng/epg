@@ -61,16 +61,16 @@ export default {
                             "ObjectID": categoryid,
                             "ObjectType": 1,
                             "ChildrenLevel": 1,
-                            "LangCode": window.currLangCode,
+                            "LangCode": window.sessionStorage ? sessionStorage.getItem("currLangCode") : Cookie.read("currLangCode"),
                             "EpgGroupID": 1,
                             "UserID": "888888",
-                            "Token": window.Token,
+                            "Token": window.sessionStorage ? sessionStorage.getItem("Token") : Cookie.read("Token"),
                         }
                     }
                 };
                 Http({
                     type: 'POST',
-                    url: window.relativePath + 'service/epgservice/index.php?MessageType=GetObjectInfoReq',
+                    url: sessionStorage.getItem("relativePath") + 'service/epgservice/index.php?MessageType=GetObjectInfoReq',
                     data: JSON.stringify(tmpObj),
                     complete: function(data) {
                         console.log(data);
