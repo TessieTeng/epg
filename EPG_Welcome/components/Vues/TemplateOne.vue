@@ -204,19 +204,18 @@ export default {
                 picIndex: 0,
 
 
-                EPGDirectory: "",
-                EPGTemplateType: "",
-                EpgGroupID: "",
-                LoginID: "",
-                RootCategoryID: "",
-                Token: "",
-                UserID: "",
-                indexUrl: "",
-                relativePath: "",
-                AdPath: "",
-                MainPath: "",
-                WelcomePageGroupPath: "",
-                currLangCode: "",
+                "EPGDirectory": "",
+                "EPGTemplateType": "",
+                "EpgGroupID": "",
+                "LoginID": "",
+                "Token": "",
+                "UserID": "",
+                "indexUrl": "",
+                "relativePath": "",
+                "AdPath": "",
+                "MainPath": "",
+                "WelcomePageGroupPath": "",
+                "currLangCode": "",
             };
 
         },
@@ -276,7 +275,6 @@ export default {
                 this.EPGTemplateType = this.GetQueryString("EPGTemplateType");
                 this.EpgGroupID = this.GetQueryString("EpgGroupID");
                 this.LoginID = this.GetQueryString("LoginID");
-                this.RootCategoryID = this.GetQueryString("RootCategoryID");
                 this.Token = this.GetQueryString("Token");
                 this.UserID = this.GetQueryString("UserID");
                 this.indexUrl = this.GetQueryString("indexUrl");
@@ -483,7 +481,6 @@ export default {
                     "EPGTemplateType=" + this.EPGTemplateType + "&" +
                     "EpgGroupID=" + this.EpgGroupID + "&" +
                     "LoginID=" + this.LoginID + "&" +
-                    "RootCategoryID=" + this.RootCategoryID + "&" +
                     "Token=" + this.Token + "&" +
                     "UserID=" + this.UserID + "&" +
                     "indexUrl=" + this.indexUrl + "&" +

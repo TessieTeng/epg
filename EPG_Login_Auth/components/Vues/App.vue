@@ -134,8 +134,7 @@ export default {
                                 _this.EPGTemplateType = _msgBody.EPGTemplateType;
                                 _this.EpgGroupID = _msgBody.EpgGroupID;
                                 _this.LoginID = _msgBody.LoginID;
-                                _this.RootCategoryID = _msgBody.RootCategoryID;
-                                _this.Token = _msgBody.Token;   
+                                _this.Token = _msgBody.Token;
 
                                 // _this.getVideoAddr();
                                 alert(++_this.Num);
@@ -256,7 +255,6 @@ export default {
                     "EPGTemplateType=" + this.EPGTemplateType + "&" +
                     "EpgGroupID=" + this.EpgGroupID + "&" +
                     "LoginID=" + this.LoginID + "&" +
-                    "RootCategoryID=" + this.RootCategoryID + "&" +
                     "Token=" + this.Token + "&" +
                     "UserID=" + this.UserID + "&" +
                     "indexUrl=" + this.indexUrl + "&" +
