@@ -221,17 +221,19 @@ export default {
                 }, 5000);
             },
 
-            changeTime() {
-                var _this = this;
+            changeTime(date) {
+                const _this = this;
+                let startTime = date.getTime();
                 this.timeInterval = setInterval(function() {
-                    var time = new Date();
+                    startTime += 1000;
+                    const time = new Date(startTime);
                     // 程序计时的月从0开始取值后+1
-                    var myMonth = _this.formats(time.getMonth() + 1);
-                    var myDate = _this.formats(time.getDate());
-                    var myHours = _this.formats(time.getHours());
-                    var myMinutes = _this.formats(time.getMinutes());
-                    var mySeconds = _this.formats(time.getSeconds());
-                    var fullTime = time.getFullYear() + "/" + myMonth + "/" + myDate + " " + myHours + ":" + myMinutes + ":" + mySeconds;
+                    const myMonth = _this.formats(time.getMonth() + 1);
+                    const myDate = _this.formats(time.getDate());
+                    const myHours = _this.formats(time.getHours());
+                    const myMinutes = _this.formats(time.getMinutes());
+                    const mySeconds = _this.formats(time.getSeconds());
+                    const fullTime = time.getFullYear() + "/" + myMonth + "/" + myDate + " " + myHours + ":" + myMinutes + ":" + mySeconds;
                     _this.currentTime = fullTime;
                 }, 1000);
             },
@@ -476,6 +478,7 @@ export default {
                             if (_msgBody.ResultCode === 200) {
                                 _this.isRequestStatus = false;
                                 _this.handleData(_msgBody);
+                                _this.changeTime(new Date(data.getResponseHeader('Date')));
                             } else {
                                 _this.isRequestStatus = false;
                                 console.log("获取数据失败");
@@ -532,7 +535,6 @@ export default {
 
         ready() {
             document.querySelector("#defaultLang").focus();
-            this.changeTime();
             this.canNotGoBack = true;
             this.listenBackKey();
             // this.getWifiInfo();
