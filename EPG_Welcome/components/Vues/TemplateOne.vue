@@ -202,20 +202,6 @@ export default {
                     lazyLoading: true,
                 },
                 picIndex: 0,
-
-
-                "EPGDirectory": "",
-                "EPGTemplateType": "",
-                "EpgGroupID": "",
-                "LoginID": "",
-                "Token": "",
-                "UserID": "",
-                "indexUrl": "",
-                "relativePath": "",
-                "AdPath": "",
-                "MainPath": "",
-                "WelcomePageGroupPath": "",
-                "currLangCode": "",
             };
 
         },
@@ -228,7 +214,7 @@ export default {
                     timesRun += 1;
                     if (timesRun === 4) {
                         clearInterval(interval);
-                        window.location.href = this.indexUrl;
+                        window.location.href = sessionStorage.getItem("indexUrl");
                         return;
                     }
                     getWelcomeData();
@@ -259,50 +245,28 @@ export default {
             },
             //保存选择的语言
             saveLangCode(language) {
-                this.currLangCode = language;
+                if (window.sessionStorage) {
+                    sessionStorage.setItem("currLangCode", language);
+                } else {
+                    Cookie.write("currLangCode", language);
+                }
             },
-
-
-            GetQueryString(name) {
-                var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
-                var r = window.location.search.substr(1).match(reg);
-                if (r != null) return unescape(r[2]);
-                return null;
-            },
-
-            getParams() {
-                this.EPGDirectory = this.GetQueryString("EPGDirectory");
-                this.EPGTemplateType = this.GetQueryString("EPGTemplateType");
-                this.EpgGroupID = this.GetQueryString("EpgGroupID");
-                this.LoginID = this.GetQueryString("LoginID");
-                this.Token = this.GetQueryString("Token");
-                this.UserID = this.GetQueryString("UserID");
-                this.indexUrl = this.GetQueryString("indexUrl");
-                this.relativePath = this.GetQueryString("relativePath");
-                this.AdPath = this.GetQueryString("AdPath");
-                this.MainPath = this.GetQueryString("MainPath");
-                this.WelcomePageGroupPath = this.GetQueryString("WelcomePageGroupPath");
-                this.currLangCode = this.GetQueryString("currLangCode");
-
-
-            },
-
             getWifiInfo() {
                 var _this = this;
                 const tmpObj = {
                     "Message": {
                         "MessageType": "GetWifiInfoReq",
                         "MessageBody": {
-                            "UserID": _this.UserID,
-                            "EpgGroupID": _this.EpgGroupID,
+                            "UserID": window.sessionStorage ? sessionStorage.getItem("UserID") : Cookie.read("UserID"),
+                            "EpgGroupID": window.sessionStorage ? sessionStorage.getItem("EpgGroupID") : Cookie.read("EpgGroupID"),
                             "LangCode": this.currentLang,
-                            "Token": _this.Token,
+                            "Token": window.sessionStorage ? sessionStorage.getItem("Token") : Cookie.read("Token"),
                         }
                     }
                 };
                 Http({
                     type: 'post',
-                    url: _this.relativePath + 'service/es/epgservice/index.php?MessageType=GetWifiInfoReq',
+                    url: sessionStorage.getItem("relativePath") + 'service/es/epgservice/index.php?MessageType=GetWifiInfoReq',
                     data: JSON.stringify(tmpObj),
                     complete: function(data) {
                         if (data.status === 200) {
@@ -459,39 +423,14 @@ export default {
                 });
 
             },
-
             gotoMainLayout() {
                 clearInterval(this.timeInterval);
 
-
-                if (this.MainPath == "test") {
-                    console.log("测试路径");
-                    location.replace("../../epggroup_mains/main_test/main.html?" + this.addParams());
-                } else if (this.MainPath.indexOf("http") >= 0) {
-                    console.log("是链接", this.MainPath);
-                    window.location = this.MainPath;
-                } else {
-                    console.log("正式路径");
-                    location.replace("../../epggroup_mains/main_default/main.html" + this.addParams());
+                if (sessionStorage.getItem("EPGDirectory") == "epggroup_default") {
+                    window.location.href = "../../epggroup_mains/main_default/main.html ";
+                } else if (sessionStorage.getItem("EPGDirectory") == "epggroup_test") {
+                    window.location.href = "../../epggroup_mains/main_test/main.html ";
                 }
-            },
-            /**  明天看主页需要的参数*/
-            addParams() {
-                var params = "EPGDirectory=" + this.EPGDirectory + "&" +
-                    "EPGTemplateType=" + this.EPGTemplateType + "&" +
-                    "EpgGroupID=" + this.EpgGroupID + "&" +
-                    "LoginID=" + this.LoginID + "&" +
-                    "Token=" + this.Token + "&" +
-                    "UserID=" + this.UserID + "&" +
-                    "indexUrl=" + this.indexUrl + "&" +
-                    "relativePath=" + this.getRelativePath() + "&" +
-                    "HostID=" + this.HostID + "&" +
-                    "AdPath=" + this.AdPath + "&" +
-                    "MainPath=" + this.MainPath + "&" +
-                    "WelcomePageGroupPath=" + this.WelcomePageGroupPath;
-
-                return params;
-
             },
             getWelcomeData() {
                 var _this = this;
@@ -503,16 +442,16 @@ export default {
                     "Message": {
                         "MessageType": "GetWelcomePageReq",
                         "MessageBody": {
-                            "EpgGroupID": _this.EpgGroupID,
-                            "UserID": _this.UserID,
-                            "Token": _this.Token,
+                            "EpgGroupID": window.sessionStorage ? sessionStorage.getItem("EpgGroupID") : Cookie.read("EpgGroupID"),
+                            "UserID": window.sessionStorage ? sessionStorage.getItem("UserID") : Cookie.read("UserID"),
+                            "Token": window.sessionStorage ? sessionStorage.getItem("Token") : Cookie.read("Token"),
                         }
                     }
                 };
 
                 Http({
                     type: 'post',
-                    url: _this.relativePath + 'service/epgservice/index.php?MessageType=GetWelcomePageReq',
+                    url: sessionStorage.getItem("relativePath") + 'service/epgservice/index.php?MessageType=GetWelcomePageReq',
                     data: JSON.stringify(tmpObj),
                     complete: function(data) {
                         if (data.status === 200) {
@@ -549,12 +488,11 @@ export default {
 
         ready() {
             document.querySelector("#defaultLang").focus();
-            this.getParams();
             this.changeTime();
             this.saveLangCode("chi");
             this.canNotGoBack = true;
             this.listenBackKey();
-            //this.getWifiInfo();
+            this.getWifiInfo();
             this.getWelcomeData();
             setTimeout(() => {
                 this.tabIndex = 0;
