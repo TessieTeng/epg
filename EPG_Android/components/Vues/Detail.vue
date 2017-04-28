@@ -2,8 +2,8 @@
 .info {
     position: fixed;
     z-index: 2;
-    left: 0rem;
-    top: 0rem;
+    left: 0;
+    top: 0;
     width: 100%;
     height: 100%;
     font-family: "微软雅黑";
@@ -18,39 +18,39 @@
 .main {
     width: 100%;
     height: 100%;
-    padding-top: 0.6rem;
+    padding-top: 40px;
 }
 
 .conent {
-    width: 17.2rem;
-    height: 10rem;
+    width: 1146.67px;
+    height: 666.67px;
     margin: auto;
     overflow: hidden;
 }
-
+/*
 .footer {
-    width: 17.2rem;
-    height: 1.3rem;
+    width: 1146.67px;
+    height: 86.67px;
     margin: auto;
 }
 
 .currentpage {
-    font-size: 0.38rem;
+    font-size: 25.33px;
     color: #FFF;
     float: right;
 }
 
 .leftimg {
-    width: 0.4rem;
-    margin-right: 0.1rem;
-    margin: -0.08rem 0;
+    width: 26.67px;
+    margin-right: 6.67px;
+    margin: -5.34px 0;
 }
 
 .rightimg {
-    width: 0.4rem;
-    margin-left: 0.1rem;
-    margin: -0.08rem 0;
-}
+    width: 26.67px;
+    margin-left: 6.67px;
+    margin: -5.34px 0;
+}*/
 </style>
 <!--******************图片展示详情页*******************-->
 <template>
