@@ -1,8 +1,11 @@
 <style>
-/*html {
-    font-size: 100px;
+html {
+    /*font-size: 100px;*/
 }
-*/
+body {
+    background-color: black;
+}
+
 
 .bgimg{
     position: fixed;
@@ -76,7 +79,7 @@
 
 .imgFrame {
     width: 106.67px;
-    height: 146.67px;
+    height: 126.67px;
     background-color: transparent;
 }
 

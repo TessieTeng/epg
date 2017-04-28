@@ -1,7 +1,7 @@
 <style scoped>
 .rootDiv {
-    width: 19.2rem;
-    height: 10.8rem;
+    width: 1280px;
+    height: 720px;
     position: relative;
     background-color: transparent;
 }

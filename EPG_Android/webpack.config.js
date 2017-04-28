@@ -35,6 +35,12 @@ module.exports = {
                 // plugins: ['transform-runtime'],
             }
         }, {
+        test: /\.css$/,
+        loader: 'style!css',
+        }, {
+        test: /\.less$/,
+        loader: 'style!css!less',
+        }, {
             test: /\.json$/,
             loader: 'json',
         }, {
