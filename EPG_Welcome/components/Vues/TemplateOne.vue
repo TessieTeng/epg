@@ -152,7 +152,7 @@ export default {
                 pictureList: [],
                 wifiTip: "WIFI:******密码:******",
                 welcomeData: "欢迎下榻本酒店",
-                opretorGuide: "请按“OK”键进入主菜单",
+                opretorGuide: "请按“确定”键进入主菜单",
                 currentTime: '',
                 opretorObj: null,
                 welcomeObj: null,
@@ -354,6 +354,7 @@ export default {
                     }, 2000)
                 }
 
+                this.changeChinese();
             },
             listenBackKey() {
                 document.onkeypress = (keyEvent) => {
@@ -365,22 +366,25 @@ export default {
                             Detail: 'keyvalue: ' + keyvalue,
                         });
                     }
-                    if (keyvalue == 8) {
-                        if (this.canNotGoBack) {
-                            event.preventDefault();
-                            e.keyCode = 0;
-                            e.returnValue = false;
-                        } else {
-                            e.returnValue = true;
-                        }
-                    }
 
                     switch (keyvalue) {
-                        case 37: // left
+                        // 返回
+                        case 8: 
+                            if (this.canNotGoBack) {
+                                event.preventDefault();
+                                e.keyCode = 0;
+                                e.returnValue = false;
+                            } else {
+                                e.returnValue = true;
+                            }
+                            break;
+                        // left
+                        case 37: 
                             this.tabIndex = 0;
                             this.changeChinese();
                             break;
-                        case 39: // right
+                        // right
+                        case 39: 
                             this.tabIndex = 1;
                             this.changeEnglish();
                             break;

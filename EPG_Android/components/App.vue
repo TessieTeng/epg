@@ -1,48 +1,48 @@
 <style>
-html {
+/*html {
     font-size: 100px;
 }
-
+*/
 
 .bgimg{
     position: fixed;
     top: 0;
-    width: 19.2rem;
-    height: 8.3rem;
-    line-height: 8.3rem;
+    width: 1280px;
+    height: 553.33px;
+    line-height: 553.33px;
     background-position: center;
     background-size: cover;
 }
 .menuTab {
     position: fixed;
     bottom: 0;
-    width: 19.2rem;
-    height: 2.5rem;
+    width: 1280px;
+    height: 166.67px;
     background: url(../assets/images/bg_portal_bottom.png);
-    line-height: 2.5rem;
+    line-height: 166.67px;
 }
 
 .advertisement {
-    width: 3.5rem;
-    height: 2.1rem;
-    border-radius: 0.2rem;
+    width: 233.34px;
+    height: 140px;
+    border-radius: 13.34px;
     float: left;
 }
 
 .advertisement img {
-    margin: 0.2rem;
+    margin: 13.34px;
 }
 
 .menuTab ul {
     list-style: none;
     margin: 0px;
     padding: 0px;
-    margin-top: 0.3rem;
+    margin-top: 20px;
     width: auto;
 }
 
 .menuTab ul li {
-    margin-left: 0.5rem;
+    margin-left: 48px;
     float: left;
 }
 
@@ -51,9 +51,9 @@ html {
 }
 
 .menuTab ul li a img {
-    width: 1.6rem;
-    height: 1.9rem;
-    border-radius: 0.2rem;
+    width: 106.67px;
+    height: 126.67px;
+    border-radius: 13.34px;
     margin: auto;
     position: absolute;
 }
@@ -75,21 +75,21 @@ html {
 }
 
 .imgFrame {
-    width: 1.8rem;
-    height: 2.2rem;
+    width: 106.67px;
+    height: 146.67px;
     background-color: transparent;
 }
 
 .breatheFrame {
-    width: 1.6rem;
-    height: 1.9rem;
+    width: 106.67px;
+    height: 126.67px;
     margin: auto;
     position: absolute;
 }
 
 .menuTab ul li a:focus .breatheFrame {
-    box-shadow: 0 0.01rem 0.1rem rgba(6, 127, 210, 1);
-    border-radius: 0.2rem;
+    box-shadow: 0 0.67px 6.67px rgba(6, 127, 210, 1);
+    border-radius: 13.34px;
     -webkit-animation-timing-function: ease-in-out;
     -webkit-animation-name: breathe;
     -webkit-animation-duration: 2000ms;
@@ -100,7 +100,7 @@ html {
 @-webkit-keyframes breathe {
     100% {
         opacity: 35;
-        box-shadow: 0 0.01rem 0.3rem rgba(6, 127, 210, 1);
+        box-shadow: 0 0.67px 20px rgba(6, 127, 210, 1);
     }
 }
 
@@ -114,36 +114,36 @@ a {
 }
 
 .MM {
-    width: 25rem;
-    height: 2rem;
+    width: 1666.67px;
+    height: 133.34px;
     float: left;
     z-index: 100000;
     background-color: pink;
     position: fixed;
-    bottom: 5rem;
+    bottom: 333.34px;
 }
 
 #videoPlay {
-    width: 2rem;
-    height: 1rem;
+    width: 133.34px;
+    height: 66.67px;
     float: left;
     background-color: red;
     z-index: 1000;
 }
 
 #videoPlayTotal {
-    width: 2rem;
+    width: 133.34px;
     z-index: 1000;
-    margin-top: 1rem;
-    font-size: 0.3rem;
-    height: 1rem;
+    margin-top: 66.67px;
+    font-size: 20px;
+    height: 66.67px;
     float: left;
     background-color: green;
 }
 
 #luyou {
-    width: 10rem;
-    height: 5rem;
+    width: 666.67px;
+    height: 333.34px;
 }
 </style>
 <template>
