@@ -107,7 +107,7 @@ export default {
 
                 Http({
                     type: 'POST',
-                    url: sessionStorage.getItem("relativePath") + 'service/epgservice/index.php?MessageType=STBLoginReq',
+                    url: sessionStorage.getItem("relativePath") + '/epgservice/index.php?MessageType=STBLoginReq',
                     data: JSON.stringify(tmpObj),
                     complete: function(data) {
                         if (data.status === 200) {
@@ -157,7 +157,7 @@ export default {
 
                 Http({
                     type: 'POST',
-                    url: sessionStorage.getItem("relativePath") + 'service/epgservice/index.php?MessageType=DoAuthReq',
+                    url: sessionStorage.getItem("relativePath") + '/epgservice/index.php?MessageType=DoAuthReq',
                     data: JSON.stringify(tmpObj),
                     complete: function(data) {
                         if (data.status === 200) {
@@ -213,7 +213,7 @@ export default {
 
                 Http({
                     type: 'POST',
-                    url: sessionStorage.getItem("relativePath") + 'service/epgservice/index.php?MessageType=GetSysParamReq',
+                    url: sessionStorage.getItem("relativePath") + '/epgservice/index.php?MessageType=GetSysParamReq',
                     data: JSON.stringify(tmpObj),
                     complete: function(data) {
                         if (data.status === 200) {

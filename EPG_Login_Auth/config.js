@@ -13,7 +13,7 @@
 
     '云南': {
       province: '云南',
-      relativePath: '/iptv/ppthdplay/SYHOTEL/',
+      relativePath: '/iptv/ppthdplay/SYHOTEL/service',
     },
     '湖北': {
       province: '湖北',

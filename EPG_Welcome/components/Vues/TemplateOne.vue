@@ -226,7 +226,7 @@ export default {
                 };
                 Http({
                     type: 'post',
-                    url: sessionStorage.getItem("relativePath") + 'service/epgservice/index.php?MessageType=GetWifiInfoReq',
+                    url: sessionStorage.getItem("relativePath") + '/epgservice/index.php?MessageType=GetWifiInfoReq',
                     data: JSON.stringify(tmpObj),
                     complete: function(data) {
                         if (data.status === 200) {
@@ -435,7 +435,7 @@ export default {
 
                 Http({
                     type: 'post',
-                    url: sessionStorage.getItem("relativePath") + 'service/epgservice/index.php?MessageType=GetWelcomePageReq',
+                    url: sessionStorage.getItem("relativePath") + '/epgservice/index.php?MessageType=GetWelcomePageReq',
                     data: JSON.stringify(tmpObj),
                     complete: function(data) {
                         if (data.status === 200) {
@@ -484,7 +484,7 @@ export default {
                 };
                 Http({
                     type: 'POST',
-                    url: sessionStorage.getItem("relativePath") + 'service/epgservice/index.php?MessageType=EPGLogReq',
+                    url: sessionStorage.getItem("relativePath") + '/epgservice/index.php?MessageType=EPGLogReq',
                     data: JSON.stringify(tmpObj),
                     complete: function(data) {
                     },
