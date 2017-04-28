@@ -1,43 +1,5 @@
 <style scoped>
-.rootView {
-    width: 19.2rem;
-    height: 10.8rem;
-    position: relative;
-}
-
-.swiperLevel {
-    position: absolute;
-    z-index: 1;
-}
-
-.contentLevel {
-    z-index: 2;
-    position: absolute;
-}
-
-.bottom {
-    position: absolute;
-    width: 19.2rem;
-    height: 1.82rem;
-    bottom: 0;
-}
-
-.wifi {
-    width: 16rem;
-    height: 1.2rem;
-    position: relative;
-    padding-left: 0.2rem;
-    line-height: 1.2rem;
-    float: left;
-    display: none;
-}
-
-#wifiaccount {
-    display: block;
-    font-size: 0.5rem;
-    color: white;
-}
-
+/*
 .time {
     width: 3rem;
     height: 1.2rem;
@@ -133,7 +95,7 @@ a:focus .breatheFrame {
         opacity: 35;
         box-shadow: 0 0.01rem 0.3rem rgba(6, 127, 210, 1);
     }
-}
+}*/
 </style>
 <template>
     <div class="rootView" id="welcomeLayout">
@@ -556,8 +518,9 @@ export default {
 </script>
 <style scoped>
 .rootView {
-    width: 19.2rem;
-    height: 10.8rem;
+    width: 1280px;
+    height: 720px;
+    /*background-color: pink;*/
     position: relative;
 }
 
@@ -573,61 +536,61 @@ export default {
 
 .bottom {
     position: absolute;
-    width: 19.2rem;
+    width: 1280px;
     z-index: 100000;
-    height: 1.82rem;
+    height: 121px;
     bottom: 0;
 }
 
 .wifi {
-    width: 16rem;
-    height: 1.2rem;
+    width: 1067px;
+    height: 80px;
     position: relative;
-    padding-left: 0.2rem;
-    line-height: 1.2rem;
+    padding-left: 13.3px;
+    line-height: 80px;
     float: left;
     display: none;
 }
 
 #wifiaccount {
     display: block;
-    font-size: 0.5rem;
+    font-size: 33px;
     color: white;
 }
 
 .time {
-    width: 3rem;
-    height: 1.2rem;
-    line-height: 1.2rem;
+    width: 200px;
+    height: 80px;
+    line-height: 80px;
     position: relative;
     float: right;
 }
 
 #timetext {
-    font-size: 0.3rem;
+    font-size: 20px;
     color: white;
 }
 
 .langBtn {
-    width: 2.2rem;
+    width: 153px;
     float: left;
-    border-radius: 0.5rem;
-    height: 0.8rem;
-    font-size: 0.3rem;
+    border-radius: 33px;
+    height: 47px;
+    font-size: 20px;
     background-color: black;
     color: white;
 }
 
 .bottomTip {
-    width: 6rem;
-    padding-left: 2rem;
-    height: 0.8rem;
-    font-size: 0.35rem;
-    line-height: 0.8rem;
+    width: 400px;
+    padding-left: 133px;
+    height: 53px;
+    font-size: 23px;
+    line-height: 53px;
 }
 
 .english {
-    margin-left: 0.2rem;
+    margin-left: 13.3px;
 }
 
 .bottomTip span {
@@ -635,23 +598,23 @@ export default {
 }
 
 .surfaceLevel {
-    width: 19.2rem;
-    height: 9.6rem;
+    width: 1280px;
+    height: 960px;
     position: absolute;
 }
 
 .rightWelcome {
-    width: 5rem;
-    height: 0.6rem;
+    width: 333px;
+    height: 40px;
     float: right;
-    padding-top: 0.2rem;
-    line-height: 2rem;
-    font-size: 0.4rem;
+    padding-top: 13.3px;
+    line-height: 133px;
+    font-size: 26px;
 }
 
 .choice {
     /*width: 8rem;*/
-    height: 2rem;
+    height: 133px;
     float: left;
 }
 
@@ -665,31 +628,31 @@ export default {
 }
 
 .topBtn {
-    width: 7rem;
-    height: 0.8rem;
-    margin-top: 0.2rem;
-    margin-left: .5rem;
-    line-height: 0.9rem;
+    width: 467px;
+    height: 53px;
+    margin-top: 13.3px;
+    margin-left: 33px;
+    line-height: 60px;
     display: -webkit-box;
 }
 
 .topBtn a {
     display: block;
-    margin-left: .3rem;
-    width: 2.3rem;
-    border-radius: 0.5rem;
-    height: 0.7rem;
-    line-height: 0.7rem;
+    margin-left: 20px;
+    width: 153px;
+    border-radius: 33px;
+    height: 47px;
+    line-height: 47px;
     text-align: center;
     text-decoration: none;
-    font-size: 0.4rem;
+    font-size: 27px;
     background-color: black;
     color: white;
 }
 
 .topBtn a div {
-    height: 0.7rem;
-    line-height: 0.7rem;
+    height: 47px;
+    line-height: 47px;
 }
 
 .topBtn a.focus {
@@ -702,7 +665,7 @@ export default {
         box-shadow: 0 0 0 rgba(6, 127, 210, 1);
     }
     50% {
-        box-shadow: 0 0.01rem 0.3rem rgba(6, 127, 210, 1);
+        box-shadow: 0 0.66px 20px rgba(6, 127, 210, 1);
     }
     100% {
         box-shadow: 0 0 0 rgba(6, 127, 210, 1);
@@ -714,7 +677,7 @@ export default {
         box-shadow: 0 0 0 rgba(6, 127, 210, 1);
     }
     50% {
-        box-shadow: 0 0.01rem 0.3rem rgba(6, 127, 210, 1);
+        box-shadow: 0 0.66px 20px rgba(6, 127, 210, 1);
     }
     100% {
         box-shadow: 0 0 0 rgba(6, 127, 210, 1);

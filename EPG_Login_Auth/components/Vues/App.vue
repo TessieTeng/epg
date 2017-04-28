@@ -1,12 +1,5 @@
 <style>
-html {
-    font-size: 100px;
-}
 
-#app {
-    width: 19.2rem;
-    height: 10.8rem;
-}
 </style>
 <template>
     <div id="app">
@@ -302,10 +295,6 @@ export default {
         },
 
         ready() {
-            var html = document.getElementsByTagName('html')[0];
-            var width = html.offsetWidth;
-            html.style.fontSize = (width >= 1920 ? 1920 : width) / 1920 * 100 + 'px';
-
             this.getConfig();
             switch (sessionStorage.getItem('province')) {
                 case '云南':
