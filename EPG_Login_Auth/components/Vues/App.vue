@@ -86,9 +86,8 @@ export default {
                 this.isRequestStatus == true;
                 const tmpBody = {
                     
-                    "STBID": window.Authentication ? Authentication.CTCGetConfig("STBID") : '',
+                "STBID": window.Authentication ? Authentication.CTCGetConfig("STBID") : '',
 
-                }
                 switch (sessionStorage.getItem('province')) {
                     case '云南':
                        tmpBody.USERID = Authentication.CTCGetConfig("UserID");
