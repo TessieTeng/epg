@@ -1,13 +1,9 @@
 <style scoped>
-html {
-    font-size: 0.1rem;
-}
-
 .info {
     position: fixed;
     z-index: 2;
-    left: 0rem;
-    top: 0rem;
+    left: 0;
+    top: 0;
     width: 100%;
     height: 100%;
     font-family: "微软雅黑";
@@ -24,7 +20,7 @@ html {
 }
 
 .conent {
-    width: 19.2rem;
+    width: 1280px;
     height: 75%;
     margin: auto;
     background: no-repeat;
@@ -53,30 +49,30 @@ html {
     top: 0;
     margin: 0;
     padding: 0;
-    margin-left: 0.8rem;
+    margin-left: 53.34px;
 }
 
 .city ul li {
     float: left;
-    padding: 0.04rem 0.5rem;
-    height: 1.2rem;
-    line-height: 1.2rem;
+    padding: 2.67px 33.34px;
+    height: 80px;
+    line-height: 80px;
 }
 
 .city ul li a img {
-    height: 0.9rem;
-    width: 1.95rem;
-    border-radius: 0.1rem;
+    height: 60px;
+    width: 130px;
+    border-radius: 6.67px;
 }
 
 .city ul li a {
     display: inline-block;
     font-size: 0;
-    height: 0.8rem;
+    height: 53.34px;
 }
 
 .city ul li a:focus img {
-    box-shadow: 0.005rem 0.005rem 0.02rem 0.1rem #1A7FD2;
+    box-shadow: 0.34px 0.34px 1.34px 6.67px #1A7FD2;
 }
 
 .common {
@@ -87,49 +83,49 @@ html {
 }
 
 .cityinfo {
-    margin-top: 1.8rem;
+    margin-top: 120px;
     color: white;
-    font-size: 0.6rem;
+    font-size: 40px;
 }
 
 .citytem {
-    margin-top: 0.8rem;
+    margin-top: 53.34px;
     color: white;
-    font-size: 0.6rem;
+    font-size: 40px;
 }
 
 .date {
-    margin-top: 2.4rem;
-    font-size: 0.4rem;
+    margin-top: 160px;
+    font-size: 26.67px;
     color: white;
 }
 
 .weatherimg {
-    margin-top: 0.8rem;
-    width: 2.5rem;
-    height: 2.5rem;
+    margin-top: 53.34px;
+    width: 150px;
+    height: 150px;
 }
 
 .other {
-    margin-top: 1.6rem;
-    font-size: 0.4rem;
+    margin-top: 106.67px;
+    font-size: 26.67px;
     color: white;
 }
 
 .weatherimgother {
-    margin-top: 0.5rem;
-    width: 1.5rem;
-    height: 1.5rem;
+    margin-top: 33.34px;
+    width: 100px;
+    height: 100px;
 }
 
 .special {
-    font-size: 0.4rem;
+    font-size: 26.67px;
     color: white;
-    margin-top: 0.25rem;
+    margin-top: 16.67px;
 }
 
 .cityImg {
-    font-size: 0.5rem;
+    font-size: 33.34px;
     text-align: center;
     background-color: #ccc;
     color: black;

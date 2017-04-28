@@ -1,13 +1,9 @@
 <style scoped>
-html {
-    font-size: 100px;
-}
-
 .info {
     position: fixed;
     z-index: 2;
-    left: 0rem;
-    top: 0rem;
+    left: 0;
+    top: 0;
     width: 100%;
     height: 100%;
     font-family: "微软雅黑";
@@ -19,19 +15,19 @@ html {
 .main {
     width: 100%;
     height: 100%;
-    padding-top: 1.5rem;
+    padding-top: 100px;
 }
 
 .conent {
-    width: 16rem;
-    height: 6rem;
+    width: 1066.67px;
+    height: 400px;
     margin: auto;
 }
 
 .capitaltime {
     text-align: center;
     height: 12%;
-    font-size: 0.45rem;
+    font-size: 30px;
     color: #FFC90E;
 }
 
@@ -42,26 +38,26 @@ html {
 }
 
 .other {
-    height: 0.5rem;
+    height: 33.34px;
     width: 100%;
-    font-size: 0.35rem;
+    font-size: 23.34px;
     color: white;
 }
 
 .time {
-    height: 0.5rem;
+    height: 33.34px;
     width: 100%;
-    font-size: 0.35rem;
+    font-size: 23.34px;
     color: #FF8000;
 }
 
 .detail ul li {
-    padding: 0 0.16rem;
-    text-align: center;
+    padding: 0 0.1066.67px;
+    text-align: 400px;
     list-style: none;
     float: left;
-    height: 1.8rem;
-    width: 5.0rem;
+    height: 120px;
+    width: 333.34px;
     margin: auto;
 }
 </style>

@@ -1,13 +1,9 @@
 <style scoped>
-html {
-    font-size: 100px;
-}
-
 .info {
     position: fixed;
     z-index: 2;
-    left: 0rem;
-    top: 0rem;
+    left: 0;
+    top: 0;
     width: 100%;
     height: 100%;
     font-family: "微软雅黑";
@@ -17,27 +13,23 @@ html {
 
 .top {
     width: 100%;
-    height: 2.7rem;
-    line-height: 2.7rem;
+    height: 180px;
+    line-height: 180px;
     text-align: center;
 }
 
 .all {
-    padding: 0.2rem;
+    padding: 13.34px;
     background-color: #47B1F0;
     color: white;
-    font-size: 0.4rem;
-    letter-spacing: 0.2rem;
+    font-size: 26.67px;
+    letter-spacing: 13.34px;
     text-align: center;
-
-     padding: 
-
-
 }
 
 .middle {
-    width: 19.2rem;
-    height: 7rem;
+    width: 1280px;
+    height: 466.67px;
     overflow: auto;
 }
 
@@ -67,7 +59,7 @@ html {
 }
 
 .middle ul li a img {
-    width: 3.6rem;
+    width: 240px;
     height: 100%;
     text-align: center;
     vertical-align: middle;
@@ -84,13 +76,13 @@ html {
 }
 
 .middle ul li a:focus img {
-    box-shadow: 0 0 0.1rem 0.1rem #609EDE, inset 0px 0px 0.02rem .05rem rgb(255, 255, 255);
+    box-shadow: 0 0 6.67px 6.67px #609EDE, inset 0px 0px 1.34px 3.34px rgb(255, 255, 255);
 }
 
 .footer {
     position: fixed;
     width: 100%;
-    height: 0.75rem;
+    height: 50px;
     bottom: 0;
     background-image: url("../../assets/images/bg_path1.png");
 }
@@ -98,26 +90,26 @@ html {
 .lefts {
     position: fixed;
     z-index: 5;
-    bottom: 0.02rem;
-    margin-left: 1rem;
+    bottom: 1.34px;
+    margin-left: 66.67px;
 }
 
 .hint {
     position: fixed;
     z-index: 5;
-    bottom: 0.15rem;
-    margin-left: 2.1rem;
-    font-size: 0.3rem;
+    bottom: 10px;
+    margin-left: 140px;
+    font-size: 20px;
     color: white;
    
 }
 
 .rights {
     position: fixed;
-    right: 1.5rem;
+    right: 100px;
     z-index: 5;
-    bottom: 0.15rem;
-    font-size: 0.3rem;
+    bottom: 10px;
+    font-size: 20px;
     color: white;
 }
 </style>

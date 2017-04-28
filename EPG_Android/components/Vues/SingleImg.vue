@@ -1,16 +1,16 @@
 <style scoped>
 .singleRootDiv {
-    width: 19.2rem;
-    height: 10.8rem;
-    line-height: 10.8rem;
+    width: 1280px;
+    height: 720px;
     background-color: black;
+    line-height: 720px;
     text-align: center;
 }
 
 .qrcode {
-    width: 17rem;
-    height: 8rem;
-    margin-top: 1.4rem;
+    width: 1133.34px;
+    height: 533.34px;
+    margin-top: 93.34px;
 }
 </style>
 <template>

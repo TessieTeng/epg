@@ -194,10 +194,8 @@ export default {
                     case "iptv":
                         // this.$dispatch("stopVideo");
                         this.$nextTick(() => {
-                            // window.location.href ="http:222.221.25.243:6166/iptv/ppthdplay/apps/index/index_epg.html";
                             var address = sessionStorage.getItem("indexUrl");
-                            window.location.href = sessionStorage.getItem("indexUrl");
-                           
+                            window.parent.location.href = sessionStorage.getItem("indexUrl");
                         });
                         break;
                     case "weather_list":
@@ -341,10 +339,10 @@ export default {
 
             this.$nextTick(() => {
                 if (this.firstVideoPlay) {
-                    //this.$dispatch("playVideo");
+                    // this.$dispatch("playVideo");
                     this.updateFirstVideoPlay(false);
                 } else {
-                    //this.$dispatch("resumeVideo");
+                    // this.$dispatch("resumeVideo");
                 }
             });
 

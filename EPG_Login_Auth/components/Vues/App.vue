@@ -174,7 +174,7 @@ export default {
                                 sessionStorage.setItem("LoginID", _msgBody.LoginID);
                                 sessionStorage.setItem("RootCategoryID", _msgBody.RootCategoryID);
                                 sessionStorage.setItem("Token", _msgBody.Token);
-                                // _this.getVideoAddr();
+                                // _this.getSysParam();
                                 _this.goToWelcome();
                             } else {
                                 console.log("Auth请求数据失败");
@@ -195,7 +195,7 @@ export default {
                 });
             },
 
-            getVideoAddr() {
+            getSysParam() {
                 var _this = this;
                 if (this.isRequestStatus) {
                     return;
@@ -207,7 +207,7 @@ export default {
                         "MessageBody": {
                             "ParamList": {
                                 "Param": [{
-                                    "Name": "bg_media_url"
+                                    "Name": "bg_media_url",
                                 }]
                             },
                             "Token": sessionStorage.getItem("Token"),
@@ -224,25 +224,18 @@ export default {
                             const _data = JSON.parse(data.response);
                             const _msgBody = _data.Message.MessageBody;
                             if (_msgBody.ResultCode == 200) {
-                                var videoUrl = (_msgBody.ParamList.Param[0].Value);
-
-                                if (videoUrl == "undefined" || null == videoUrl) {
-                                    console.log("背景视频暂时没有");
-
-                                } else {
-                                    console.log("有视频链接");
-                                    sessionStorage.setItem("EPGVideoUrl", videoUrl);
-                                }
-
+                                _msgBody.ParamList.Param.map(item => {
+                                    sessionStorage.setItem(item.Name, item.Value);
+                                });
                                 _this.goToWelcome();
 
                             } else {
                                 console.log("视频数据获取失败");
-                                _this.goToIptv();
+                                _this.goToIptv("视频数据获取失败");
                             }
                         } else {
                             console.log("视频网络请求失败");
-                            _this.goToIptv();
+                            _this.goToIptv("视频网络请求失败");
                         }
 
                         _this.isRequestStatus = false;
@@ -250,7 +243,7 @@ export default {
                     },
                     error: function(err) {
                         console.log(err);
-                        _this.goToIptv();
+                        _this.goToIptv(err);
                     },
                 });
 
