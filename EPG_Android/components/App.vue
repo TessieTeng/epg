@@ -259,6 +259,16 @@ export default {
                 }
             },
 
+            listenBackKey() {
+                window.addEventListener('keydown', (keyEvent) => {
+                    keyEvent = keyEvent ? keyEvent : window.event;
+                    var keyvalue = keyEvent.which ? keyEvent.which : keyEvent.keyCode;
+                    if (keyvalue == 181) {
+                        window.parent.location.href = '../../portal.html';
+                    }
+                });
+            },
+
         },
         events: {
             playVideo() {
@@ -295,17 +305,12 @@ export default {
             },
         },
         ready() {
+            this.listenBackKey();
             this.updateFirstClassTab(0);
             this.updateSecondClassTab(0);
             var html = document.getElementsByTagName('html')[0];
             var width = html.offsetWidth;
-            // if (navigator.vendor === 'ZTE' && navigator.appName === 'ztebw' && navigator.userAgent.match(/\|ztebw\|/)) {
-            //     width = width * 1.4;
-            //     html.style.webkitTransform = 'scale(1.4)';
-            // }
-
             html.style.fontSize = (width >= 1920 ? 1920 : width) / 1920 * 100 + 'px';
-            // 判断中兴盒子
         },
         store: store,
 }
