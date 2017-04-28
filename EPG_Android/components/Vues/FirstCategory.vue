@@ -341,10 +341,10 @@ export default {
 
             this.$nextTick(() => {
                 if (this.firstVideoPlay) {
-                    //this.$dispatch("playVideo");
+                    // this.$dispatch("playVideo");
                     this.updateFirstVideoPlay(false);
                 } else {
-                    //this.$dispatch("resumeVideo");
+                    // this.$dispatch("resumeVideo");
                 }
             });
 

@@ -563,11 +563,11 @@ export default {
 }
 
 .time {
-    width: 200px;
+    float: right;
+    position: relative;
+    padding: 0 30px;
     height: 80px;
     line-height: 80px;
-    position: relative;
-    float: right;
 }
 
 #timetext {
