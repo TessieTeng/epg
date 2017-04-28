@@ -6,7 +6,7 @@
 
 (function(window) {
   // 当前省份
-  var province = '云南';
+  var province = '湖北';
   
   // 所有省份
   var ConfigObj = {
