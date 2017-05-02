@@ -171,7 +171,7 @@ export default {
             },
 
             listenBackKey() {
-                document.querySelector('#goodslist').addEventListener('keypress', (keyEvent) => {
+                document.querySelector('#goodslist').addEventListener('keydown', (keyEvent) => {
                     keyEvent = keyEvent ? keyEvent : window.event;
                     var keyvalue = keyEvent.which ? keyEvent.which : keyEvent.keyCode;
                     if (keyvalue == 8) {

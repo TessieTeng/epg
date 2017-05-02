@@ -22,7 +22,6 @@
                 </ul>
             </div>
         </div>
-        <!-- <loading v-if="showLoading"></loading> -->
     </div>
 </template>
 <script>
@@ -44,7 +43,7 @@ export default {
                 isRequestStatus: false,
                 bgimg: '',
                 adPic: [{
-                    AdUrl: '../../assets/images/ad_s.jpg'
+                    AdUrl: ''
                 }],
                 showLoading: true,
                 categoryList: [{
@@ -221,7 +220,7 @@ export default {
             },
 
             listenBackKey() {
-                document.querySelector('#secondTabItem').addEventListener('keypress', (keyEvent) => {
+                document.querySelector('#secondTabItem').addEventListener('keydown', (keyEvent) => {
                     keyEvent = keyEvent ? keyEvent : window.event;
                     var keyvalue = keyEvent.which ? keyEvent.which : keyEvent.keyCode;
                     if (keyvalue == 8) {

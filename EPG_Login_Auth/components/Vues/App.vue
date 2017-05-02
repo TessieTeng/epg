@@ -63,6 +63,7 @@ export default {
                     console.log("helo>>>>", this.server_ip);
 
                     // 后期如果从url参数拿到indexUrl，则要在这里set到sessionStorage里面
+
                     this.doLogin();
                 } else {
                     this.goToIptv('获取不了url参数');
@@ -298,6 +299,7 @@ export default {
                     break;
                 case '湖北':
                     this.getUrlParams();
+                    sessionStorage.setItem("indexUrl", "http://116.210.255.120:8080/HBEpg/epg/broadBandTV.jsp");
                     break;
                 default:
                     break;

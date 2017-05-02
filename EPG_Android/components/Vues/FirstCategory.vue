@@ -10,9 +10,9 @@
     <div>
         <div class="rootDiv">
             <div class="bgimg" :style='{"background-image": "url(" + bgimg +  ")"}'></div>
-            <div class="menuTab firstCategory" id="firstCategoryLayout">
+            <div class="menuTab">
                 <div class="advertisement">
-                    <img class="advertisement" :src='adPic[0].AdUrl'>
+                    <img class="advertisement" v-bind:src='adPic[0].AdUrl'>
                 </div>
                 <ul id="firstTabItem">
                     <li v-for="item in categoryList">
@@ -20,7 +20,8 @@
                             <div class="imgFrame">
                                 <img v-bind:src='getNormalIcon(item)'>
                                 <img v-bind:src='getFocusIcon(item)'>
-                                <div class="breatheFrame"></div>
+                                <div class="breatheFrame">
+                                </div>
                             </div>
                         </a>
                     </li>
@@ -104,7 +105,7 @@ export default {
 
             },
             listenBackKey() {
-                document.querySelector('#firstCategoryLayout').addEventListener('keydown', (keyEvent) => {
+                document.querySelector('#firstTabItem').addEventListener('keydown', (keyEvent) => {
                     keyEvent = keyEvent ? keyEvent : window.event;
                     var keyvalue = keyEvent.which ? keyEvent.which : keyEvent.keyCode;
                     if (keyvalue == 8) {
@@ -346,7 +347,7 @@ export default {
                 }
             });
 
-        },
+        }
 
 
 }
