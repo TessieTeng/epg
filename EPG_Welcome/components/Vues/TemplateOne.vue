@@ -107,7 +107,7 @@ a:focus .breatheFrame {
         <div class="rootView contentLevel">
             <div class="top">
                 <div class="top wifi">
-                    <span id="wifiaccount">{{wifiTip}}</span>
+                    <span id="wifiaccount"><img class='wifiicon' src='../../assets/images/wifi.png' /><span>{{wifiTip}}</span> </span>
                 </div>
                 <div class="top time">
                     <span id="timetext">{{currentTime}}</span>
@@ -150,7 +150,14 @@ export default {
                 showBreathe: false,
                 totalPictureList: [],
                 pictureList: [],
-                wifiTip: "WIFI:******密码:******",
+                UiWord: {
+                    chi: {
+                        wifi_where_tip: '',
+                    },
+                    eng: {
+                        wifi_where_tip: '',
+                    }
+                },
                 welcomeData: "欢迎下榻本酒店",
                 opretorGuide: "请按“确定”键进入主菜单",
                 currentTime: '',
@@ -166,6 +173,11 @@ export default {
                 picIndex: 0,
             };
 
+        },
+        computed: {
+            wifiTip() {
+                return this.UiWord[this.currentLang].wifi_where_tip;
+            },
         },
 
         methods: {
@@ -211,39 +223,41 @@ export default {
             saveLangCode(language) {
                 this.currentLang = language;
             },
-            getWifiInfo() {
+            getUiWord(lang = '', UiWordList = []) {
                 var _this = this;
+                const Variable = UiWordList.map(item => ({
+                    Name: item,
+                }));
                 const tmpObj = {
                     "Message": {
-                        "MessageType": "GetWifiInfoReq",
+                        "MessageType": "GetUiWordReq",
                         "MessageBody": {
-                            "UserID": sessionStorage.getItem("UserID"),
-                            "EpgGroupID": sessionStorage.getItem("EpgGroupID"),
-                            "LangCode": this.currentLang,
+                            "LangCode": lang,
+                            "VariableList": {
+                                Variable,
+                            },
                             "Token": sessionStorage.getItem("Token"),
                         }
                     }
                 };
                 Http({
                     type: 'post',
-                    url: sessionStorage.getItem("relativePath") + '/epgservice/index.php?MessageType=GetWifiInfoReq',
+                    url: sessionStorage.getItem("relativePath") + '/epgservice/index.php?MessageType=GetUiWordReq',
                     data: JSON.stringify(tmpObj),
                     complete: function(data) {
                         if (data.status === 200) {
                             const _data = JSON.parse(data.response);
                             const _msgBody = _data.Message.MessageBody;
-                            console.log(_data);
                             if (_msgBody.ResultCode === 200) {
-                                console.log("wifi请求成功!");
-                                console.log(_msgBody);
+                                console.log("UiWord获取数据成功!");
+                                _msgBody.VariableList.Variable.map(item => {
+                                    _this.UiWord[lang][item.Name] = item.Value;
+                                });
                             } else {
-                                console.log("wifi请求失败!");
-                                console.log("数据获取失败");
+                                console.log("UiWord获取数据失败!");
                             }
                         } else {
-                            console.log("网络请求失败");
-                            document.querySelector(".wifi").style.visibility = 'hidden';
-
+                            console.log("UiWord网络请求失败");
                         }
                     },
                     error: function(err) {
@@ -254,10 +268,7 @@ export default {
             },
             changeChinese() {
                 this.saveLangCode("chi");
-                this.wifiTip = "Wifi:******密码:****** ";
 
-                console.log("中文");
-                console.log(this.opretorObj);
                 if (this.opretorObj == undefined || null == this.opretorObj) {
                     console.log("操作词为空");
                 } else {
@@ -293,7 +304,6 @@ export default {
 
             changeEnglish() {
                 this.saveLangCode("eng");
-                this.wifiTip = "Wifi:******Password:****** ";
                 if (this.opretorObj == undefined || null == this.opretorObj) {
                     console.log("操作词为空");
                 } else {
@@ -448,8 +458,6 @@ export default {
                             } else {
                                 _this.isRequestStatus = false;
                                 console.log("获取数据失败");
-                                console.log("数据获取失败");
-
                             }
                         } else {
                             _this.isRequestStatus = false;
@@ -503,7 +511,8 @@ export default {
             document.querySelector("#defaultLang").focus();
             this.canNotGoBack = true;
             this.listenBackKey();
-            // this.getWifiInfo();
+            this.getUiWord('chi', ['wifi_where_tip']);
+            this.getUiWord('eng', ['wifi_where_tip']);
             this.getWelcomeData();
             setTimeout(() => {
                 this.tabIndex = 0;
@@ -524,7 +533,6 @@ export default {
 .rootView {
     width: 1280px;
     height: 720px;
-    /*background-color: pink;*/
     position: relative;
 }
 
@@ -547,19 +555,28 @@ export default {
 }
 
 .wifi {
-    width: 1067px;
+    width: 700px;
     height: 80px;
     position: relative;
-    padding-left: 13.3px;
+    padding-left: 30px;
     line-height: 80px;
     float: left;
-    display: none;
 }
 
 #wifiaccount {
     display: block;
-    font-size: 33px;
+    font-size: 26px;
     color: white;
+}
+
+.wifiicon {
+    margin-right: 10px;
+    height: 26px;
+    vertical-align: middle;
+}
+
+#wifiaccount span {
+    vertical-align: middle;
 }
 
 .time {
