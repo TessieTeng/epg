@@ -1,5 +1,4 @@
 <style>
-
 </style>
 <template>
     <div id="app">
@@ -32,8 +31,8 @@ export default {
                 this.totalUrl = decodeURIComponent(location.href);
                 // this.totalUrl = decodeURIComponent("http://218.17.162.117:10003/iptv/portal.html?epg_info=%3Cserver_ip%3E27.31.32.37%3C%2Fserver_ip%3E%3Cgroup_name%3Ehbgd%3C%2Fgroup_name%3E%3Cgroup_path%3Ehttp%3A%2F%2F27.31.32.37%3A33200%2FEPG%2Fjsp%2Fhbgd%3C%2Fgroup_path%3E%3Coss_user_id%3Ehwxf150423204%3C%2Foss_user_id%3E%3Cpage_url%3Ehttp%3A%2F%2F27.31.32.37%3A33200%2FEPG%2Fjsp%2Fhbgd%2Fen%2Fau_PlayFilm.jsp%3C%2Fpage_url%3E%3Cpartner%3EHUAWEI%3C%2Fpartner%3E%3Cgroup_id%3E323%3C%2Fgroup_id%3E%3Carea_id%3E10004%3C%2Farea_id%3E%3Ccsm_id%3EHBGD%3C%2Fcsm_id%3E%3Ccdc_group_id%3E639893a00e18451eb6a69110da086401%3C%2Fcdc_group_id%3E#!/app?epg_info=%253Cserver_ip%253E27.31.32.37%253C%252Fserver_ip%253E%253Cgroup_name%253Ehbgd%253C%252Fgroup_name%253E%253Cgroup_path%253Ehttp%253A%252F%252F27.31.32.37%253A33200%252FEPG%252Fjsp%252Fhbgd%253C%252Fgroup_path%253E%253Coss_user_id%253Ehwxf150423204%253C%252Foss_user_id%253E%253Cpage_url%253Ehttp%253A%252F%252F27.31.32.37%253A33200%252FEPG%252Fjsp%252Fhbgd%252Fen%252Fau_PlayFilm.jsp%253C%252Fpage_url%253E%253Cpartner%253EHUAWEI%253C%252Fpartner%253E%253Cgroup_id%253E323%253C%252Fgroup_id%253E%253Carea_id%253E10004%253C%252Farea_id%253E%253Ccsm_id%253EHBGD%253C%252Fcsm_id%253E%253Ccdc_group_id%253E639893a00e18451eb6a69110da086401%253C%252Fcdc_group_id%253E");
                 console.log("this.totalUrl:", this.totalUrl);
-               // var param = decodeURIComponent(this.totalUrl.split("#!/app?")[1]);
-               var param = this.totalUrl;
+                // var param = decodeURIComponent(this.totalUrl.split("#!/app?")[1]);
+                var param = this.totalUrl;
                 console.log("param是：", param);
                 if (param) {
                     var xmlSource = param.split("=")[1];
@@ -85,13 +84,13 @@ export default {
                 }
                 this.isRequestStatus == true;
                 const tmpBody = {
-                    
-                "STBID": window.Authentication ? Authentication.CTCGetConfig("STBID") : '',
 
+                    "STBID": window.Authentication ? Authentication.CTCGetConfig("STBID") : '',
+                }
                 switch (sessionStorage.getItem('province')) {
                     case '云南':
-                       tmpBody.USERID = Authentication.CTCGetConfig("UserID");
-                        tmpBody.USERID ="";
+                        tmpBody.USERID = Authentication.CTCGetConfig("UserID");
+                        tmpBody.USERID = "";
                         break;
                     case '湖北':
                         tmpBody.USERID = this.oss_user_id;
@@ -254,7 +253,7 @@ export default {
                 var r = location.search.substr(1).match(reg);
                 if (r != null) return unescape(r[2]);
                 return null;
-            }, 
+            },
 
             getObjStr(obj) {
                 let str = '';
@@ -266,7 +265,7 @@ export default {
 
             goToIptv(err) {
                 let str = '';
-                if ((typeof err).toLowerCase() === 'string'){
+                if ((typeof err).toLowerCase() === 'string') {
                     str = err;
                 } else {
                     str = this.getObjStr(err);
