@@ -91,7 +91,6 @@ export default {
                 switch (sessionStorage.getItem('province')) {
                     case '云南':
                         tmpBody.USERID = Authentication.CTCGetConfig("UserID");
-                        tmpBody.USERID = "";
                         break;
                     case '湖北':
                         tmpBody.USERID = this.oss_user_id;
