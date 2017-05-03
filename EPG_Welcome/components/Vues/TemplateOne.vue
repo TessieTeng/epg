@@ -613,13 +613,13 @@ export default {
 
 #wifiaccount {
     display: block;
-    font-size: 26px;
+    font-size: 24px;
     color: white;
 }
 
 .wifiicon {
     margin-right: 10px;
-    height: 26px;
+    height: 24px;
     vertical-align: middle;
 }
 
