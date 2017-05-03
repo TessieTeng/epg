@@ -136,23 +136,23 @@
     <div>
         <div class="info" v-if='showLayout'>
             <div class="main">
-                <div class="conent weatherMain" v-bind:style="{ 'background-image': 'url('+ './'+currentItem.WeatherList.Weather[0].BigImageUrl+')'}">
+                <div class="conent weatherMain" v-bind:style="{ 'background-image': 'url(' + getImgFromUrl(currentItem.WeatherList.Weather[0].BigImageUrl) + ')'}">
                     <div class="common">
                         <div class="cityinfo">{{currentItem.CityName}}</div>
                         <div class="citytem">{{currentItem.temprature}}</div>
                     </div>
                     <div class="common">
                         <div class="date">{{today}}</div>
-                        <div><img class="weatherimg" v-bind:src="'./'+currentItem.WeatherList.Weather[0].SmallImageUrl"></div>
+                        <div><img class="weatherimg" v-bind:src="getImgFromUrl(currentItem.WeatherList.Weather[0].SmallImageUrl)"></div>
                     </div>
                     <div class="common">
                         <div class="other">{{tomorrow}}</div>
-                        <div><img id="tomorrowTemprature" class="weatherimgother" v-bind:src="'./'+currentItem.WeatherList.Weather[1].SmallImageUrl"></div>
+                        <div><img id="tomorrowTemprature" class="weatherimgother" v-bind:src="getImgFromUrl(currentItem.WeatherList.Weather[1].SmallImageUrl)"></div>
                         <div class="special">{{getTomorrowTemperature(currentItem.WeatherList.Weather[1])}}</div>
                     </div>
                     <div class="common">
                         <div class="other">{{others}}</div>
-                        <div><img id="thirdDayTemprature" class="weatherimgother" v-bind:src="'./'+currentItem.WeatherList.Weather[2].SmallImageUrl"></div>
+                        <div><img id="thirdDayTemprature" class="weatherimgother" v-bind:src="getImgFromUrl(currentItem.WeatherList.Weather[2].SmallImageUrl)"></div>
                         <div class="special">{{getThirdDayTemp(currentItem.WeatherList.Weather[2])}}</div>
                     </div>
                 </div>
@@ -201,7 +201,7 @@ export default {
                 today:"",
                 tomorrow:"",
                 others:"",
-
+                weatherRoot: '../../assets/images/weather/',
             };
         },
 
@@ -210,7 +210,6 @@ export default {
             changeCity(item) {
                 this.currentItem = item;
                 this.currentItem.temprature = item.WeatherList.Weather[0].LowTemperature + "℃ - " + item.WeatherList.Weather[0].HighTemperature + "℃";
-
 
              //图片地址设置
              /*   var url = item.CityImageUrl;
@@ -247,9 +246,9 @@ export default {
                     "Message": {
                         "MessageType": "GetWeatherInfoReq",
                         "MessageBody": {
-                            "LangCode": window.sessionStorage ? sessionStorage.getItem("currLangCode") : Cookie.read("currLangCode"),
+                            "LangCode": sessionStorage.getItem("currLangCode"),
                             "EpgGroupID": 1,
-                            "Token": window.sessionStorage ? sessionStorage.getItem("Token") : Cookie.read("Token"),
+                            "Token": sessionStorage.getItem("Token"),
                         }
                     }
                 };
@@ -259,7 +258,7 @@ export default {
                     url: sessionStorage.getItem("relativePath") + '/epgservice/index.php?MessageType=GetWeatherInfoReq',
                     data: JSON.stringify(tmpObj),
                     complete: function(data) {
-                        console.log(data);
+                        // console.log(data);
                         if (data.status === 200) {
                             console.log("请求成功");
                             const _data = JSON.parse(data.response);
@@ -287,7 +286,7 @@ export default {
                                         });
                                     },
                                     onProgress: function(precent) {
-                                        console.log("加载中" + precent);
+                                        // console.log("加载中" + precent);
                                     }
                                 });
                             } else {
@@ -313,7 +312,9 @@ export default {
                     }
                 };
             },
-
+            getImgFromUrl(url) {
+                return `${this.weatherRoot}${url.match(/\/(\w*\.(?:gif|png|jpg))$/)[1]}`;
+            },
         },
 
         events: {

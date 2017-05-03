@@ -110,6 +110,10 @@ a:focus .breatheFrame {
                     <span id="wifiaccount"><img class='wifiicon' src='../../assets/images/wifi.png' /><span>{{wifiTip}}</span> </span>
                 </div>
                 <div class="top time">
+                    <span class='weather'>
+                        <img class='weathericon' :src='weather.SmallImageUrl' />
+                        {{weather.LowTemperature + '℃-' + weather.HighTemperature + '℃'}}
+                    </span>
                     <span id="timetext">{{currentTime}}</span>
                 </div>
             </div>
@@ -157,6 +161,12 @@ export default {
                     eng: {
                         wifi_where_tip: '',
                     }
+                },
+                weatherRoot: '../../assets/images/weather/',
+                weather: {
+                    SmallImageUrl: '',
+                    LowTemperature: '0',
+                    HighTemperature: '0',
                 },
                 welcomeData: "欢迎下榻本酒店",
                 opretorGuide: "请按“确定”键进入主菜单",
@@ -249,7 +259,7 @@ export default {
                             const _data = JSON.parse(data.response);
                             const _msgBody = _data.Message.MessageBody;
                             if (_msgBody.ResultCode === 200) {
-                                console.log("UiWord获取数据成功!");
+                                // console.log("UiWord获取数据成功!");
                                 _msgBody.VariableList.Variable.map(item => {
                                     _this.UiWord[lang][item.Name] = item.Value;
                                 });
@@ -468,8 +478,45 @@ export default {
                     }
 
                 });
+            },
+            getHereWeatherInfo() {
+                var _this = this;
+                const tmpObj = {
+                    "Message": {
+                        "MessageType": "GetHereWeatherInfoReq",
+                        "MessageBody": {
+                            "EpgGroupID": sessionStorage.getItem("EpgGroupID"),
+                            "LangCode": this.currentLang,
+                            "Token": sessionStorage.getItem("Token"),
+                        }
+                    }
+                };
 
+                Http({
+                    type: 'post',
+                    url: sessionStorage.getItem("relativePath") + '/epgservice/index.php?MessageType=GetHereWeatherInfoReq',
+                    data: JSON.stringify(tmpObj),
+                    complete: function(data) {
+                        if (data.status === 200) {
+                            const _data = JSON.parse(data.response);
+                            const _msgBody = _data.Message.MessageBody;
+                            if (_msgBody.ResultCode === 200) {
+                                _this.isRequestStatus = false;
+                                // 第一天天气
+                                console.log(_data)
+                                _this.weather = _msgBody.WeatherList.Weather[0];
+                                _this.weather.SmallImageUrl = `${_this.weatherRoot}${_this.weather.SmallImageUrl.match(/\/(\w*\.(?:gif|png|jpg))$/)[1]}`;
+                            } else {
+                                console.log("获取天气数据失败");
+                            }
+                        } else {
+                            _this.isRequestStatus = false;
+                            console.log("天气网络请求失败");
+                            //欢迎页异常处理
+                        }
+                    }
 
+                });
             },
             getObjStr(obj) {
                 let str = '';
@@ -513,10 +560,11 @@ export default {
             this.listenBackKey();
             this.getUiWord('chi', ['wifi_where_tip']);
             this.getUiWord('eng', ['wifi_where_tip']);
+            this.getHereWeatherInfo();
             this.getWelcomeData();
             setTimeout(() => {
                 this.tabIndex = 0;
-            }, 100)
+            }, 100);
         },
         directives: {
             focus(val) {
@@ -585,6 +633,19 @@ export default {
     padding: 0 30px;
     height: 80px;
     line-height: 80px;
+}
+
+.weather {
+    margin-right: 10px;
+    padding-right: 10px;
+    border-right: 1px solid #fff;
+    color: #fff;
+    font-size: 20px;
+}
+
+.weathericon {
+    height: 30px;
+    vertical-align: middle;
 }
 
 #timetext {
