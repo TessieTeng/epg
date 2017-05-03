@@ -265,20 +265,16 @@ export default {
                             const _msgBody = _data.Message.MessageBody;
                             if (_msgBody.ResultCode == 200) {
                                 const tempPicList = [];
-                                for (var i = 0; i < _msgBody.CityList.City.length; i++) {
-                                    tempPicList.push(_msgBody.CityList.City[i].WeatherList.Weather[0])
-                                }
-                                // console.log(tempPicList);
+                                tempPicList.push(_this.getImgFromUrl(_msgBody.CityList.City[0].WeatherList.Weather[0].BigImageUrl));
+                                // for (var i = 0; i < _msgBody.CityList.City.length; i++) {
+                                //     tempPicList.push(_msgBody.CityList.City[i].CityImageUrl);
+                                // }
                                 ImageLoader({
                                     data: tempPicList,
                                     onFinish: function() {
                                         _this.showLoading = false;
                                         _this.showLayout = true;
                                         _this.WeatherCityList = _msgBody.CityList.City;
-
-                                        console.log("MMM");
-                                        console.log(_this.WeatherCityList);
-                                        console.log("EEE");
                                         _this.changeCity(_this.WeatherCityList[0]);
                                         _this.$nextTick(() => {
                                             var weatherUl = document.getElementById("weatherListUl");
