@@ -31,7 +31,7 @@ module.exports = {
             exclude: /node_modules/,
             query: {
                 cacheDirectory: true,
-                presets: ['es2015-loose'],
+                presets: [["es2015", {"loose": true}]],
                 // plugins: ['transform-runtime'],
             }
         }, {
@@ -50,7 +50,8 @@ module.exports = {
     },
     vue: {
         loaders: {
-            css: ExtractText.extract('css')
+            css: ExtractText.extract('css'),
+            js: 'babel?{cacheDirectory: true, presets:[["es2015", {loose: true}]]}',
         }
     },
     // externals: {
