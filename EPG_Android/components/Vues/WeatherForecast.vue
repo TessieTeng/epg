@@ -37,38 +37,38 @@
 /*.adv { margin: 0.3rem 0; float: left; width: 20%; height: 100%; text-align: center; }*/
 
 .city {
-    float: left;
     width: 100%;
     height: 100%;
     overflow: auto;
-    background: url(../../assets/images/bg_portal_bottom.png);
+    background-image: url(../../assets/images/bg_portal_bottom.png);
 }
 
 .city ul {
     list-style: none;
-    top: 0;
-    margin: 0;
-    padding: 0;
-    margin-left: 53.34px;
+    padding-top: 20px;
+    margin-left: 53px;
+}
+
+.city ul:after {
+    content: '';
+    display: block;
+    clear: both;
 }
 
 .city ul li {
     float: left;
-    padding: 2.67px 33.34px;
-    height: 80px;
-    line-height: 80px;
+    padding: 0 33.34px 20px;
+}
+
+.city ul li a {
+    display: block;
 }
 
 .city ul li a img {
     height: 60px;
     width: 130px;
     border-radius: 6.67px;
-}
-
-.city ul li a {
-    display: inline-block;
-    font-size: 0;
-    height: 53.34px;
+    vertical-align: middle;
 }
 
 .city ul li a:focus img {
@@ -148,12 +148,12 @@
                     <div class="common">
                         <div class="other">{{tomorrow}}</div>
                         <div><img id="tomorrowTemprature" class="weatherimgother" v-bind:src="getImgFromUrl(currentItem.WeatherList.Weather[1].SmallImageUrl)"></div>
-                        <div class="special">{{getTomorrowTemperature(currentItem.WeatherList.Weather[1])}}</div>
+                        <div class="special">{{formatTemperature(currentItem.WeatherList.Weather[1])}}</div>
                     </div>
                     <div class="common">
                         <div class="other">{{others}}</div>
                         <div><img id="thirdDayTemprature" class="weatherimgother" v-bind:src="getImgFromUrl(currentItem.WeatherList.Weather[2].SmallImageUrl)"></div>
-                        <div class="special">{{getThirdDayTemp(currentItem.WeatherList.Weather[2])}}</div>
+                        <div class="special">{{formatTemperature(currentItem.WeatherList.Weather[2])}}</div>
                     </div>
                 </div>
                 <div class="footer">
@@ -162,8 +162,8 @@
                 </div> -->
                     <div class="city">
                         <ul id="weatherListUl">
-                            <li v-for="item in WeatherCityList">
-                                <a href="javascript:;" v-on:focus="changeCity(item)">
+                            <li v-for="(index, item) in CurList" track-by='$index'>
+                                <a href="javascript:;" @focus="changeCity(item)" @keydown='changeCurList($event, index)'>
                                     <img :src="item.CityImageUrl" class="cityImg" :alt="item.CityName">
                                 </a>
                             </li>
@@ -183,8 +183,6 @@ export default {
     data() {
             return {
                 isRequestStatus: false,
-
-                WeatherCityList: [],
                 showLayout: false,
                 showLoading: true,
                 currentItem: {
@@ -202,37 +200,38 @@ export default {
                 tomorrow:"",
                 others:"",
                 weatherRoot: '../../assets/images/weather/',
+                WeatherCityList: [],
+                curListPage: 1,
+                CurListLen: 12,
             };
         },
-
-
+        computed: {
+            CurList() {
+                return this.WeatherCityList.slice((this.curListPage - 1) * this.CurListLen, this.curListPage * this.CurListLen);
+            },
+        },
+        watch: {
+            curListPage() {
+                this.$nextTick(() => {
+                    document.querySelector('#weatherListUl li a').focus();
+                });
+            }
+        },
         methods: {
             changeCity(item) {
                 this.currentItem = item;
-                this.currentItem.temprature = item.WeatherList.Weather[0].LowTemperature + "℃ - " + item.WeatherList.Weather[0].HighTemperature + "℃";
-
-             //图片地址设置
-             /*   var url = item.CityImageUrl;
-                console.log('url########'+ url);
-                if (url == "") {
-                   console.log(url);
-                } else if (url.length > 0 && url.indexOf("iptv") >=0) {
-
-                    return "http://222.221.25.243:6166" + url;
-
-                } else {
-                 
-                    return url;
-
-                }*/
-
-
+                this.currentItem.temprature = this.formatTemperature(item.WeatherList.Weather[0]);
             },
-            getTomorrowTemperature(tomorrowTemprature) {
-                return tomorrowTemprature.LowTemperature + "℃ - " + tomorrowTemprature.HighTemperature + "℃";
+            changeCurList(event, index) {
+                if (event.keyCode === 38 && index < 6 && this.curListPage > 1) {
+                    this.curListPage--;
+                }
+                if (event.keyCode === 40 && index >= 6 && this.curListPage < Math.ceil(this.WeatherCityList.length / this.CurListLen)) {
+                    this.curListPage++;
+                }
             },
-            getThirdDayTemp(thirdDayTemprature) {
-                return thirdDayTemprature.LowTemperature + "℃ - " + thirdDayTemprature.HighTemperature + "℃";
+            formatTemperature(temperature) {
+                return temperature.LowTemperature + "℃ - " + temperature.HighTemperature + "℃";
             },
             getRootCategoryData(categoryId) {
                 var _this = this;
@@ -275,10 +274,8 @@ export default {
                                         _this.showLoading = false;
                                         _this.showLayout = true;
                                         _this.WeatherCityList = _msgBody.CityList.City;
-                                        _this.changeCity(_this.WeatherCityList[0]);
                                         _this.$nextTick(() => {
-                                            var weatherUl = document.getElementById("weatherListUl");
-                                            weatherUl.children[0].children[0].focus();
+                                            document.querySelector('#weatherListUl li a').focus();
                                         });
                                     },
                                     onProgress: function(precent) {
@@ -309,6 +306,9 @@ export default {
                 };
             },
             getImgFromUrl(url) {
+                if (!url) {
+                    return '';
+                }
                 return `${this.weatherRoot}${url.match(/\/(\w*\.(?:gif|png|jpg))$/)[1]}`;
             },
         },
