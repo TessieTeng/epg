@@ -39,7 +39,7 @@ export default {
         },
         methods: {
             listenBackKey() {
-                document.querySelector('#singleRootDiv').addEventListener('keydown', (keyEvent) => {
+                document.addEventListener('keydown', (keyEvent) => {
                     keyEvent = keyEvent ? keyEvent : window.event;
                     var keyvalue = keyEvent.which ? keyEvent.which : keyEvent.keyCode;
                     if (keyvalue == 8) {
