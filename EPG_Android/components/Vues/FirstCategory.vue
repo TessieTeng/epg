@@ -278,7 +278,7 @@ export default {
                     "Message": {
                         "MessageType": "EPGLogReq",
                         "MessageBody": {
-                            "USERID": Authentication.CTCGetConfig("STBID"),
+                            "USERID": sessionStorage.getItem("STBID"),
                             "HostID": sessionStorage.getItem("HostID"),
                             "OperationCode": params.OperationCode,
                             "Detail": params.Detail,
@@ -402,13 +402,13 @@ export default {
             });
 
             if (sessionStorage.getItem("MainPath") === 'test') {
-                return ;
                 this.EPGLog({
                     OperationCode: '盒子信息: ',
                     Detail: JSON.stringify({
                         HostID: sessionStorage.getItem("HostID"),
                         UserID: sessionStorage.getItem("UserID"),
                         USERID: sessionStorage.getItem("USERID"),
+                        STBID: sessionStorage.getItem("STBID"),
                         EpgGroupID: sessionStorage.getItem("EpgGroupID"),
                         LoginID: sessionStorage.getItem("LoginID"),
                         RootCategoryID: sessionStorage.getItem("RootCategoryID"),

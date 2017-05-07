@@ -81,6 +81,7 @@ export default {
                     sessionStorage.setItem("UrlOrigin", Authentication.CTCGetConfig('EPGDomain').match(/^(https?:\/\/.*:\d+)\//)[1]);
                     sessionStorage.setItem("UserToken", Authentication.CTCGetConfig('UserToken'));
                     sessionStorage.setItem("USERID", Authentication.CTCGetConfig("UserID"));
+                    sessionStorage.setItem("STBID", Authentication.CTCGetConfig("STBID"));
                 }
             },
 
