@@ -405,7 +405,15 @@ export default {
                 if ((typeof(SubscriberName) == undefined) || null == SubscriberName) {
                     console.log("客人姓名为空");
                 } else {
-                    SubscriberName.MultiLangInfo.map(item => this.UiWord[item.LangCode].SubscriberName = item.Name);
+                    SubscriberName.MultiLangInfo.map(item => {
+                        let tmp = '';
+                        if (item.LangCode === 'chi') {
+                             tmp = '尊敬的';
+                        } else if (item.LangCode === 'eng') {
+                            tmp = 'Dear ';
+                        }
+                        this.UiWord[item.LangCode].SubscriberName = `${tmp}${item.Name}`;
+                    });
                 }
 
                 //轮播图片
