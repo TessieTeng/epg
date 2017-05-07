@@ -28,6 +28,7 @@
 }
 
 .middle {
+    position: relative;
     width: 1280px;
     height: 466.67px;
     overflow: auto;
@@ -112,6 +113,13 @@
     font-size: 20px;
     color: white;
 }
+.page-container {
+    position: absolute;
+    right: 40px;
+    bottom: 10px;
+    color: #fff;
+    font-size: 20px;
+}
 </style>
 <template>
     <div class="info">
@@ -120,15 +128,14 @@
         </div>
         <div class="middle">
             <ul id="goodslist">
-                <li v-for="item in storePicList">
-                    <a href="javascript:;" id='_{{item.ObjectID}}' @click="scaleimg(item)" v-if="$index !== storePicList.length - 1">
-                        <img v-bind:src='getPicItem(item)'>
-                    </a>
-                    <a href="javascript:;" id='_{{item.ObjectID}}' @click="scaleimg(item)" v-if="$index === storePicList.length - 1" class="finalListItem">
+                <li v-for="item in curList">
+                    <a href="javascript:;" id='goodsImage_{{storePicList.indexOf(item)}}'
+                        @focus='imgFocus(item)' @click="scaleimg(item)" @keydown='switchFocus($event, $index)'>
                         <img v-bind:src='getPicItem(item)'>
                     </a>
                 </li>
             </ul>
+            <div class='page-container'>{{curIndex + ' / ' + storePicList.length}}</div>
         </div>
         <div class="footer">
             <img class="lefts" src="../../assets/images/img_portal.png">
@@ -152,49 +159,44 @@ import {
 export default {
     data() {
             return {
-                isRequestStatus: false,
                 storePicList: [],
+                curList: [],
+                curPage: 1,
+                listLen: 4,
+                curIndex: 0,
                 tophint: "",
                 lefthint: "",
                 righthint:"",
             };
         },
 
-        computed: {},
+        computed: {
+            curList() {
+                return this.storePicList.slice((this.curPage - 1) * this.listLen, this.curPage * this.listLen);
+            },
+        },
 
         methods: {
-            addClassToLastLi() {
-                var lis = document.querySelectorAll("#goodslist li:last-child a");
-                var lisFirst = document.querySelectorAll("#goodslist li:first-child a");
-                lis[0].className = "finalListItem";
-                lisFirst[0].className = "firstListItem";
+            switchFocus(event, index) {
+                if (event.keyCode === 37 && index === 0 && this.curPage > 1) {
+                    this.curPage--;
+                    this.$nextTick(() => {
+                        document.querySelector('#goodslist li:last-child a').focus();
+                    });
+                }
+                if (event.keyCode === 39 && index === this.listLen - 1 && this.curPage < Math.ceil(this.storePicList.length / this.listLen)) {
+                    this.curPage++;
+                    this.$nextTick(() => {
+                        document.querySelector('#goodslist li a').focus();
+                    });
+                }
+                if (event.keyCode === 8) {
+                    history.back();
+                }
             },
-
-            listenBackKey() {
-                document.querySelector('#goodslist').addEventListener('keydown', (keyEvent) => {
-                    keyEvent = keyEvent ? keyEvent : window.event;
-                    var keyvalue = keyEvent.which ? keyEvent.which : keyEvent.keyCode;
-                    if (keyvalue == 8) {
-                        history.back();
-                    }
-
-                });
-
-
-                document.querySelector(".finalListItem").addEventListener('focus', (keyEvent) => {
-
-                    var list = document.querySelector(".middle");
-                    list.scrollLeft  = list.scrollWidth - list.clientWidth;
-
-                });
-
-                document.querySelector(".firstListItem").addEventListener('focus', (keyEvent) => {
-                    var list = document.querySelector(".middle");
-                    list.scrollLeft = 0;
-
-                });
+            imgFocus(item) {
+                this.curIndex = this.storePicList.indexOf(item) + 1;
             },
-
             getPicItem(item) {
                 var goodPic;
                 var urlTemp = item.PictureList.Picture;
@@ -208,10 +210,6 @@ export default {
 
             getStoreData(myId) {
                 var _this = this;
-                if (this.isRequestStatus) {
-                    return;
-                }
-                this.isRequestStatus = true;
                 const tmpObj = {
                     "Message": {
                         "MessageType": "GetObjectInfoReq",
@@ -219,10 +217,10 @@ export default {
                             "ObjectID": myId,
                             "ObjectType": 1,
                             "ChildrenLevel": 1,
-                            "LangCode": window.sessionStorage ? sessionStorage.getItem("currLangCode") : Cookie.read("currLangCode"),
-                            "EpgGroupID": 1,
-                            "UserID": "888888",
-                            "Token": window.sessionStorage ? sessionStorage.getItem("Token") : Cookie.read("Token"),
+                            "LangCode": sessionStorage.getItem("currLangCode"),
+                            "EpgGroupID": sessionStorage.getItem("EpgGroupID"),
+                            "UserID": sessionStorage.getItem("UserID"),
+                            "Token": sessionStorage.getItem("Token"),
                         }
                     }
                 };
@@ -232,44 +230,23 @@ export default {
                     url: sessionStorage.getItem("relativePath") + '/epgservice/index.php?MessageType=GetObjectInfoReq',
                     data: JSON.stringify(tmpObj),
                     complete: function(data) {
-                        console.log(data);
                         if (data.status === 200) {
-                            console.log("请求成功");
                             const _data = JSON.parse(data.response);
                             const _msgBody = _data.Message.MessageBody;
                             if (_msgBody.ResultCode == 200) {
-                                console.log("获取数据成功");
-                                console.log(_msgBody.ChildrenObjectList.Object);
-                                var currList = _msgBody.ChildrenObjectList.Object;
-                                const tempPicList = [];
-                                for (var i = 0; i < currList.length; i++) {
-                                    tempPicList.push(currList[i].PictureList.Picture[0].PictureUrl);
-                                }
+                                const tempPicList = _msgBody.ChildrenObjectList.Object.map(item => item.PictureList.Picture[0].PictureUrl);
                                 ImageLoader({
                                     data: tempPicList,
                                     onFinish: function() {
                                         _this.storePicList = _msgBody.ChildrenObjectList.Object;
+                                        // 从详情页回来要切换到对应页面
+                                        _this.curPage = Math.ceil((_this.getLastStore + 1) / _this.listLen);
                                         _this.$nextTick(() => {
-                                            if (_this.getLastStore == 0) {
-                                                console.log("null.................");
-                                                var goodsUi = document.getElementById("goodslist");
-                                                goodsUi.children[0].children[0].focus();
-                                                // _this.addClassToLastLi();
-
-                                            } else {
-                                                console.log("have value................");
-                                                console.log("_" + _this.getLastStore);
-                                                console.log(document.getElementById("_" + _this.getLastStore));
-                                                document.getElementById("_" + _this.getLastStore).focus();
-
-                                            }
-
-                                            _this.addClassToLastLi();
-                                            _this.listenBackKey();
+                                            document.getElementById("goodsImage_" + _this.getLastStore).focus();
                                         })
                                     },
                                     onProgress: function(precent) {
-                                        console.log("加载中" + precent);
+                                        // console.log("加载中" + precent);
                                     }
                                 });
 
@@ -289,17 +266,16 @@ export default {
 
             scaleimg(item) {
                 var imgUrl = '';
-                var imgObjectID = '';
+                // var imgObjectID = item.ObjectID; //列表改了实现方法，现在用index比较方便
+                var imgObjectID = this.storePicList.indexOf(item);
                 for (var i = 0; i < item.PictureList.Picture.length; i++) {
                     if (item.PictureList.Picture[i].PictureType == 15) {
                         imgUrl = item.PictureList.Picture[i].PictureUrl;
-                        imgObjectID = item.ObjectID;;
                     }
                 }
                 this.updateScaleImgUrl(imgUrl);
-                this.$router.go("/scaleimg");
                 this.updateLastStore(imgObjectID);
-
+                this.$router.go("/scaleimg");
 
             },
         },
@@ -316,17 +292,15 @@ export default {
         },
 
         ready() {
-            var _this = this;
             var hint = sessionStorage.getItem("currLangCode");
-            if (hint === "chi") {
-                _this.tophint = "全部商品";
-                _this.lefthint = "酒店商城";
-                _this.righthint = '"确认进入","返回"退出';
-
-            } else if (hint === "eng") {
-                _this.tophint = "All Proudcts";
-                _this.lefthint = "Hotel Mall";
-                _this.righthint = 'Press "OK"enter, "Return"exit';
+            if (hint === "eng") {
+                this.tophint = "All Proudcts";
+                this.lefthint = "Hotel Mall";
+                this.righthint = 'Press "OK"enter, "Return"exit';
+            } else {
+                this.tophint = "全部商品";
+                this.lefthint = "酒店商城";
+                this.righthint = '"确认进入","返回"退出';
             }
 
             this.getStoreData(this.$route.params.id);
