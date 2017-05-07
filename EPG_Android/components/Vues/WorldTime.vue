@@ -145,7 +145,7 @@ export default {
                     keyEvent = keyEvent ? keyEvent : window.event;
                     var keyvalue = keyEvent.which ? keyEvent.which : keyEvent.keyCode;
                     if (keyvalue == 8) {
-                        // this.$dispatch("stopVideo");
+                        this.$dispatch("stopVideo");
                         history.back();
                     }
                 });
@@ -283,7 +283,7 @@ export default {
 
             this.listenBackKey();
             this.getTimeData();
-           // this.$dispatch("pauseVideo");
+           this.$dispatch("pauseVideo");
         },
 
 }

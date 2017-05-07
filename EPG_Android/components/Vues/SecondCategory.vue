@@ -3,7 +3,7 @@
 <template>
     <div>
         <div class="rootDiv">
-            <div class="bgimg" :style='{"background-image": "url(" + bgimg +  ")"}'></div>
+            <div class="bgimg" :style='{"background-image": "url(" + bgimg +  ")"}' v-if='!hasVideo'></div>
             <div class="menuTab">
                 <div class="advertisement">
                     <img class="advertisement" v-bind:src='adPic[0].AdUrl'>
@@ -42,6 +42,7 @@ export default {
             return {
                 isRequestStatus: false,
                 bgimg: '',
+                hasVideo: false,
                 adPic: [{
                     AdUrl: ''
                 }],
@@ -252,7 +253,11 @@ export default {
             this.listenBackKey();
             this.updateIsMainLayout(false);
             this.getRootCategoryData(this.$route.params.id);
-            //this.$dispatch("resumeVideo");
+            this.$dispatch("resumeVideo");
+            // 判断是否有视频
+            if (!!sessionStorage.getItem('bg_media_url')) {
+                this.hasVideo = true;
+            }
 
             this.tempList == [];
         }

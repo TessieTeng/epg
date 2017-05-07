@@ -66,7 +66,7 @@ export default {
             this.listenBackKey();
             this.updateIsMainLayout(false);
             this.qrCode = this.getScaleImgUrl;
-           //this.$dispatch("pauseVideo");
+           this.$dispatch("pauseVideo");
         }
 
 }

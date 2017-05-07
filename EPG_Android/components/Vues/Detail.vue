@@ -152,7 +152,7 @@ export default {
 
         ready() {
             this.listenBackKey();
-            //this.$dispatch("pauseVideo");
+            this.$dispatch("pauseVideo");
             this.pictureList = this.lastPicList;
         },
 }

@@ -174,7 +174,7 @@ export default {
 
         ready() {
             this.getRootCategoryData(this.$route.params.id);
-           // this.$dispatch("resmeVideo");
+           this.$dispatch("resmeVideo");
         }
 }
 </script>

@@ -9,7 +9,7 @@
 <template>
     <div>
         <div class="rootDiv">
-            <div class="bgimg" :style='{"background-image": "url(" + bgimg +  ")"}'></div>
+            <div class="bgimg" :style='{"background-image": "url(" + bgimg +  ")"}' v-if='!hasVideo'></div>
             <div class="menuTab">
                 <div class="advertisement">
                     <img class="advertisement" v-bind:src='adPic[0].AdUrl'>
@@ -54,6 +54,7 @@ export default {
                 firstEnter: true,
                 exitTime: 0,
                 bgimg: '',
+                hasVideo: false,
                 adPic: [{
                     AdUrl: ''
                 }],
@@ -193,7 +194,7 @@ export default {
                 this.updateSecondClassTab(0);
                 switch (item.RelatedAction) {
                     case "iptv":
-                        // this.$dispatch("stopVideo");
+                        this.$dispatch("stopVideo");
                         this.$nextTick(() => {
                             var address = sessionStorage.getItem("indexUrl");
                             window.parent.location.href = sessionStorage.getItem("indexUrl");
@@ -305,6 +306,56 @@ export default {
                 var currLangCode = window.parent.location.search.substr(1).split('=')[1];
                 sessionStorage.setItem('currLangCode', currLangCode);
             },
+            getProgramInfo() {
+                const _this = this;
+                const UrlOrigin = sessionStorage.getItem('UrlOrigin');
+                const USERID = sessionStorage.getItem('USERID');
+                const UserToken = sessionStorage.getItem('UserToken');
+                const contentID = sessionStorage.getItem('bg_media_url');
+                /**
+                 * 详情请参考文档《电信 EPG 与 BO 接口规范说明》
+                 * programId、productIDs 可以为空
+                 * userFlag 为 Authentication.CTCGetConfig('UserID')
+                 * userToken 为 Authentication.CTCGetConfig('UserToken')
+                 * contentID 为 视频32位的id，如：90000001000000015984724636843325、90000001000000015985026379023502
+                */
+                Http({
+                    type: 'GET',
+                    url: UrlOrigin + '/GetProgramInfo?programId=78&userFlag=' + USERID + '&userToken=' + UserToken + '&contentID=' + contentID + '&productIDs=',
+                    data: '',
+                    complete: function(data) {
+                        if (data.status === 200) {
+                            const res = JSON.parse(data.response);
+                            _this.selectionStart(res.assetId, UrlOrigin, UserToken);
+                        } else {
+                            console.log('error: ' + data.status);
+                        }
+                    },
+                    error: function(err) {
+                        console.log('网络请求错误：' + err);
+                    },
+                });
+            },
+            selectionStart(assetId, UrlOrigin, UserToken) {
+                const _this = this;
+                Http({
+                    type: 'GET',
+                    url: UrlOrigin + '/SelectionStart?assetId=' + assetId + '&userToken=' + UserToken,
+                    data: '',
+                    complete: function(data) {
+                        if (data.status === 200) {
+                            const res = JSON.parse(data.response);
+                            sessionStorage.setItem('playUrl', res.playUrl);
+                            _this.$dispatch("playVideo");
+                        } else {
+                            console.log('error: ' + data.status);
+                        }
+                    },
+                    error: function(err) {
+                        console.log(err);
+                    },
+                });
+            },
         },
 
         store: store,
@@ -339,13 +390,35 @@ export default {
             this.updateLastStore(0);
 
             this.$nextTick(() => {
-                if (this.firstVideoPlay) {
-                    // this.$dispatch("playVideo");
-                    this.updateFirstVideoPlay(false);
-                } else {
-                    // this.$dispatch("resumeVideo");
+                if (!!sessionStorage.getItem('bg_media_url')) {
+                    this.hasVideo = true;
+                    if (this.firstVideoPlay) {
+                        this.updateFirstVideoPlay(false);
+                        this.getProgramInfo();
+                    } else {
+                        this.$dispatch("resumeVideo");
+                    }
                 }
             });
+
+            if (sessionStorage.getItem("MainPath") === 'test') {
+                return ;
+                this.EPGLog({
+                    OperationCode: '盒子信息: ',
+                    Detail: JSON.stringify({
+                        HostID: sessionStorage.getItem("HostID"),
+                        UserID: sessionStorage.getItem("UserID"),
+                        USERID: sessionStorage.getItem("USERID"),
+                        EpgGroupID: sessionStorage.getItem("EpgGroupID"),
+                        LoginID: sessionStorage.getItem("LoginID"),
+                        RootCategoryID: sessionStorage.getItem("RootCategoryID"),
+                        bg_media_url: sessionStorage.getItem("bg_media_url"),
+                        EPGDomain: sessionStorage.getItem("EPGDomain"),
+                        UserToken: sessionStorage.getItem("UserToken"),
+                        Token: sessionStorage.getItem("Token"),
+                    }),
+                });
+            }
 
         }
 

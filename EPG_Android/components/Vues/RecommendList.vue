@@ -212,7 +212,7 @@ export default {
             this.updateIsMainLayout(false);
             this.listenBackKey();
             this.getRecommentList(this.$route.params.id);
-            //this.$dispatch("pauseVideo");
+            this.$dispatch("pauseVideo");
         },
 
 }

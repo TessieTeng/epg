@@ -331,7 +331,7 @@ export default {
 
             this.getStoreData(this.$route.params.id);
 
-            //this.$dispatch("pauseVideo");
+            this.$dispatch("pauseVideo");
         }
 
 }

@@ -76,6 +76,12 @@ export default {
                 }
                 // sessionStorage.setItem("relativePath", Config.relativePath);
                 // sessionStorage.setItem("province", Config.province);
+                if (!!window.Authentication) {
+                    sessionStorage.setItem("EPGDomain", Authentication.CTCGetConfig('EPGDomain'));
+                    sessionStorage.setItem("UrlOrigin", Authentication.CTCGetConfig('EPGDomain').match(/^(https?:\/\/.*:\d+)\//)[1]);
+                    sessionStorage.setItem("UserToken", Authentication.CTCGetConfig('UserToken'));
+                    sessionStorage.setItem("USERID", Authentication.CTCGetConfig("UserID"));
+                }
             },
 
             doLogin() {
@@ -85,7 +91,6 @@ export default {
                 }
                 this.isRequestStatus == true;
                 const tmpBody = {
-
                     "STBID": window.Authentication ? Authentication.CTCGetConfig("STBID") : '',
                 }
                 switch (sessionStorage.getItem('province')) {
@@ -172,8 +177,8 @@ export default {
                                 sessionStorage.setItem("LoginID", _msgBody.LoginID);
                                 sessionStorage.setItem("RootCategoryID", _msgBody.RootCategoryID);
                                 sessionStorage.setItem("Token", _msgBody.Token);
-                                // _this.getSysParam();
-                                _this.goToWelcome();
+                                _this.getSysParam();
+                                // _this.goToWelcome();
                             } else {
                                 console.log("Auth请求数据失败");
                                 _this.goToIptv("Auth请求数据失败");

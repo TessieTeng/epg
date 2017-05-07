@@ -189,7 +189,7 @@ export default {
                 // var playUrl = "http://222.221.25.243:6166/iptv/ppthdplay/hotelapps/index/SYHOTEL/assets/video/back_video_4M_out.mp4";
                 // alert(sessionStorage.getItem("bg_media_url"));
                 // console.log('bg_media_url: ' + sessionStorage.getItem("bg_media_url"))
-                var playUrl = sessionStorage.getItem("bg_media_url");
+                var playUrl = sessionStorage.getItem("playUrl");
 
                 this.mediaStr = '[{mediaUrl:"' + playUrl + '",';
                 this.mediaStr += 'mediaCode: "jsoncode1",';
@@ -234,7 +234,7 @@ export default {
                 this.mp.setMuteUIFlag(1);
                 this.mp.setAudioVolumeUIFlag(1);
                 this.mp.refreshVideoDisplay();
-                console.log(this.mp);
+                console.log('mediaUrl: ' + playUrl);
             },
             //视频播放完毕后跳转
             isEnd() {

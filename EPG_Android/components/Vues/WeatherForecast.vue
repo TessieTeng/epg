@@ -346,7 +346,7 @@ export default {
 
             this.getRootCategoryData();
             this.listenBackKey();
-            //this.$dispatch("pauseVideo");
+            this.$dispatch("pauseVideo");
         },
 }
 </script>
