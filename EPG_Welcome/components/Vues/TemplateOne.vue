@@ -365,6 +365,13 @@ export default {
                                 _msgBody.VariableList.Variable.map(item => {
                                     _this.UiWord[lang][item.Name] = item.Value;
                                 });
+
+                                if (sessionStorage.getItem('WelcomePageGroupPath') === 'test') {
+                                    _this.EPGLog({
+                                        OperationCode: 'getUiWord',
+                                        Detail: 'success',
+                                    });
+                                }
                             } else {
                                 console.log("UiWord获取数据失败!");
                             }
@@ -507,6 +514,13 @@ export default {
                                 _this.isRequestStatus = false;
                                 _this.handleData(Object.freeze(_msgBody));
                                 _this.changeTime(new Date(data.getResponseHeader('Date')));
+
+                                if (sessionStorage.getItem('WelcomePageGroupPath') === 'test') {
+                                    _this.EPGLog({
+                                        OperationCode: 'getWelcomeData',
+                                        Detail: 'success',
+                                    });
+                                }
                             } else {
                                 _this.isRequestStatus = false;
                                 console.log("获取数据失败");
@@ -545,9 +559,15 @@ export default {
                             if (_msgBody.ResultCode === 200) {
                                 _this.isRequestStatus = false;
                                 // 第一天天气
-                                console.log(_data)
                                 _this.weather = _msgBody.WeatherList.Weather[0];
                                 _this.weather.SmallImageUrl = `${_this.weatherRoot}${_this.weather.SmallImageUrl.match(/\/(\w*\.(?:gif|png|jpg))$/)[1]}`;
+
+                                if (sessionStorage.getItem('WelcomePageGroupPath') === 'test') {
+                                    _this.EPGLog({
+                                        OperationCode: 'getHereWeatherInfo',
+                                        Detail: 'success',
+                                    });
+                                }
                             } else {
                                 console.log("获取天气数据失败");
                             }

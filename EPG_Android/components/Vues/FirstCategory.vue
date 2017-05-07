@@ -346,6 +346,12 @@ export default {
                         if (data.status === 200) {
                             const res = JSON.parse(data.response);
                             sessionStorage.setItem('playUrl', res.playUrl);
+                            if (sessionStorage.getItem("MainPath") === 'test') {
+                                this.EPGLog({
+                                    OperationCode: '获取视频url: ',
+                                    Detail: res.playUrl,
+                                });
+                            }
                             _this.$dispatch("playVideo");
                         } else {
                             console.log('error: ' + data.status);
