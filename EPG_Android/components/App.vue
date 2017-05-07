@@ -272,6 +272,7 @@ export default {
         },
         events: {
             playVideo() {
+                return ;
                 // alert("重新播放HAHHAA");
                 this.initMediaPlay();
                 this.mp.playFromStart(); //从头开始播放
@@ -281,16 +282,19 @@ export default {
                 this.z = setInterval(this.isEnd, 2000);
             },
             resumeVideo() {
+                return ;
                 this.mp.setVideoDisplayArea(0, 0, window.innerWidth, window.innerHeight);
                 this.mp.resume();
                 this.mp.refreshVideoDisplay();
             },
             pauseVideo() {
+                return ;
                 this.mp.pause();
                 this.mp.setVideoDisplayArea(0, 0, 0, 0);
                 this.mp.refreshVideoDisplay();
             },
             stopVideo() {
+                return ;
                 var nativePlayerInstanceId = this.mp.getNativePlayerInstanceID();
                 this.mp.releaseMediaPlayer(nativePlayerInstanceId);
                 // this.mp.stop();

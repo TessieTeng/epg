@@ -256,7 +256,8 @@ export default {
             this.$dispatch("resumeVideo");
             // 判断是否有视频
             if (!!sessionStorage.getItem('bg_media_url')) {
-                this.hasVideo = true;
+                this.hasVideo = false;
+                // this.hasVideo = true;
             }
 
             this.tempList == [];

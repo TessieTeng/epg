@@ -110,7 +110,7 @@ export default {
                     keyEvent = keyEvent ? keyEvent : window.event;
                     var keyvalue = keyEvent.which ? keyEvent.which : keyEvent.keyCode;
                     if (keyvalue == 8) {
-                        // this.$dispatch("stopVideo");
+                        this.$dispatch("stopVideo");
                         history.back();
                     }
                 });
@@ -397,7 +397,8 @@ export default {
 
             this.$nextTick(() => {
                 if (!!sessionStorage.getItem('bg_media_url')) {
-                    this.hasVideo = true;
+                    this.hasVideo = false;
+                    // this.hasVideo = true;
                     if (this.firstVideoPlay) {
                         this.updateFirstVideoPlay(false);
                         this.getProgramInfo();
