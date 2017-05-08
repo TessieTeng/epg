@@ -115,6 +115,10 @@
     color: white;
 }
 
+.rightWelcome > div {
+    height: 46px;
+}
+
 .choice {
     float: left;
 }
@@ -246,7 +250,6 @@ a:focus .breatheFrame {
             </div>
         </div>
     </div>
-    </div>
 </template>
 <script>
 import Http from '../../assets/lib/Http';
@@ -260,6 +263,7 @@ export default {
                 showBreathe: false,
                 totalPictureList: [],
                 pictureList: [],
+                RoomInfo: {},
                 currentLang: 'chi',
                 UiWord: {
                     chi: {
@@ -414,12 +418,16 @@ export default {
                 } else {
                     SubscriberName.MultiLangInfo.map(item => {
                         let tmp = '';
-                        if (item.LangCode === 'chi') {
-                             tmp = '尊敬的';
-                        } else if (item.LangCode === 'eng') {
-                            tmp = 'Dear ';
+                        let name = '';
+                        if (!!this.RoomInfo.GuestList.Guest[0] && !!this.RoomInfo.GuestList.Guest[0].Name) {
+                            name = this.RoomInfo.GuestList.Guest.map(item => item.Name).join('，');
+                            if (item.LangCode === 'chi') {
+                                tmp = '尊敬的';
+                            } else if (item.LangCode === 'eng') {
+                                tmp = 'Dear ';
+                            }
                         }
-                        this.UiWord[item.LangCode].SubscriberName = `${tmp}${item.Name}`;
+                        this.UiWord[item.LangCode].SubscriberName = `${tmp}${name}`;
                     });
                 }
 
@@ -618,6 +626,40 @@ export default {
                 });
             },
 
+            getRoomInfoReq() {
+                var _this = this;
+                const tmpObj = {
+                    "Message": {
+                        "MessageType": "GetRoomInfoReq",
+                        "MessageBody": {
+                            "UserID": sessionStorage.getItem("UserID"),
+                            "Token": sessionStorage.getItem("Token"),
+                        }
+                    }
+                };
+
+                Http({
+                    type: 'post',
+                    url: sessionStorage.getItem("relativePath") + '/epgservice/index.php?MessageType=GetRoomInfoReq',
+                    data: JSON.stringify(tmpObj),
+                    complete: function(data) {
+                        if (data.status === 200) {
+                            const _data = JSON.parse(data.response);
+                            const _msgBody = _data.Message.MessageBody;
+                            if (_msgBody.ResultCode === 200) {
+                                _this.RoomInfo = _msgBody;
+                                _this.getWelcomeData();
+                            } else {
+                                console.log("获取入住信息数据失败");
+                            }
+                        } else {
+                            console.log("入住信息网络请求失败");
+                        }
+                    }
+
+                });
+            }
+
         },
 
         components: {
@@ -631,7 +673,7 @@ export default {
             this.getUiWord('chi', ['wifi_where_tip']);
             this.getUiWord('eng', ['wifi_where_tip']);
             this.getHereWeatherInfo();
-            this.getWelcomeData();
+            this.getRoomInfoReq();
             setTimeout(() => {
                 this.tabIndex = 0;
             }, 100);
