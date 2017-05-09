@@ -3,7 +3,7 @@
 <template>
     <div>
         <div class="rootDiv">
-            <div class="bgimg" :style='{"background-image": "url(" + bgimg +  ")"}'></div>
+            <div class="bgimg" :style='{"background-image": "url(" + bgimg +  ")"}' v-if='!hasVideo'></div>
             <div class="menuTab">
                 <div class="advertisement">
                     <img class="advertisement" v-bind:src='adPic[0].AdUrl'>
@@ -22,7 +22,6 @@
                 </ul>
             </div>
         </div>
-        <!-- <loading v-if="showLoading"></loading> -->
     </div>
 </template>
 <script>
@@ -43,8 +42,9 @@ export default {
             return {
                 isRequestStatus: false,
                 bgimg: '',
+                hasVideo: false,
                 adPic: [{
-                    AdUrl: '../../assets/images/ad_s.jpg'
+                    AdUrl: ''
                 }],
                 showLoading: true,
                 categoryList: [{
@@ -168,7 +168,7 @@ export default {
                 };
                 Http({
                     type: 'POST',
-                    url: sessionStorage.getItem("relativePath") + 'service/epgservice/index.php?MessageType=GetObjectInfoReq',
+                    url: sessionStorage.getItem("relativePath") + '/epgservice/index.php?MessageType=GetObjectInfoReq',
                     // url: '.' + sessionStorage.getItem('esaddr') + '?MessageType=GetObjectInfoReq',
                     data: JSON.stringify(tmpObj),
                     complete: function(data) {
@@ -221,7 +221,7 @@ export default {
             },
 
             listenBackKey() {
-                document.querySelector('#secondTabItem').addEventListener('keypress', (keyEvent) => {
+                document.querySelector('#secondTabItem').addEventListener('keydown', (keyEvent) => {
                     keyEvent = keyEvent ? keyEvent : window.event;
                     var keyvalue = keyEvent.which ? keyEvent.which : keyEvent.keyCode;
                     if (keyvalue == 8) {
@@ -253,7 +253,12 @@ export default {
             this.listenBackKey();
             this.updateIsMainLayout(false);
             this.getRootCategoryData(this.$route.params.id);
-            //this.$dispatch("resumeVideo");
+            this.$dispatch("resumeVideo");
+            // 判断是否有视频
+            if (!!sessionStorage.getItem('bg_media_url')) {
+                this.hasVideo = false;
+                // this.hasVideo = true;
+            }
 
             this.tempList == [];
         }

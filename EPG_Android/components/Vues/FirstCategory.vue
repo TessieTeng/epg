@@ -1,7 +1,7 @@
 <style scoped>
 .rootDiv {
-    width: 19.2rem;
-    height: 10.8rem;
+    width: 1280px;
+    height: 720px;
     position: relative;
     background-color: transparent;
 }
@@ -9,10 +9,10 @@
 <template>
     <div>
         <div class="rootDiv">
-            <div class="bgimg" :style='{"background-image": "url(" + bgimg +  ")"}'></div>
-            <div class="menuTab firstCategory" id="firstCategoryLayout">
+            <div class="bgimg" :style='{"background-image": "url(" + bgimg +  ")"}' v-if='!hasVideo'></div>
+            <div class="menuTab">
                 <div class="advertisement">
-                    <img class="advertisement" :src='adPic[0].AdUrl'>
+                    <img class="advertisement" v-bind:src='adPic[0].AdUrl'>
                 </div>
                 <ul id="firstTabItem">
                     <li v-for="item in categoryList">
@@ -20,7 +20,8 @@
                             <div class="imgFrame">
                                 <img v-bind:src='getNormalIcon(item)'>
                                 <img v-bind:src='getFocusIcon(item)'>
-                                <div class="breatheFrame"></div>
+                                <div class="breatheFrame">
+                                </div>
                             </div>
                         </a>
                     </li>
@@ -53,6 +54,7 @@ export default {
                 firstEnter: true,
                 exitTime: 0,
                 bgimg: '',
+                hasVideo: false,
                 adPic: [{
                     AdUrl: ''
                 }],
@@ -104,12 +106,13 @@ export default {
 
             },
             listenBackKey() {
-                document.querySelector('#firstCategoryLayout').addEventListener('keydown', (keyEvent) => {
+                document.querySelector('#firstTabItem').addEventListener('keydown', (keyEvent) => {
                     keyEvent = keyEvent ? keyEvent : window.event;
                     var keyvalue = keyEvent.which ? keyEvent.which : keyEvent.keyCode;
                     if (keyvalue == 8) {
+                        // 在主页一级菜单不允许返回
                         // this.$dispatch("stopVideo");
-                        history.back();
+                        // history.back();
                     }
                 });
             },
@@ -136,7 +139,7 @@ export default {
 
                 Http({
                     type: 'POST',
-                    url: sessionStorage.getItem("relativePath") + 'service/epgservice/index.php?MessageType=GetObjectInfoReq',
+                    url: sessionStorage.getItem("relativePath") + '/epgservice/index.php?MessageType=GetObjectInfoReq',
                     data: JSON.stringify(tmpObj),
                     complete: function(data) {
                         if (data.status === 200) {
@@ -192,12 +195,10 @@ export default {
                 this.updateSecondClassTab(0);
                 switch (item.RelatedAction) {
                     case "iptv":
-                        // this.$dispatch("stopVideo");
+                        this.$dispatch("stopVideo");
                         this.$nextTick(() => {
-                            // window.location.href ="http:222.221.25.243:6166/iptv/ppthdplay/apps/index/index_epg.html";
                             var address = sessionStorage.getItem("indexUrl");
-                            window.location.href = sessionStorage.getItem("indexUrl");
-                           
+                            window.parent.location.href = sessionStorage.getItem("indexUrl");
                         });
                         break;
                     case "weather_list":
@@ -278,7 +279,7 @@ export default {
                     "Message": {
                         "MessageType": "EPGLogReq",
                         "MessageBody": {
-                            "USERID": Authentication.CTCGetConfig("STBID"),
+                            "USERID": sessionStorage.getItem("STBID"),
                             "HostID": sessionStorage.getItem("HostID"),
                             "OperationCode": params.OperationCode,
                             "Detail": params.Detail,
@@ -287,7 +288,7 @@ export default {
                 };
                 Http({
                     type: 'POST',
-                    url: sessionStorage.getItem("relativePath") + 'service/epgservice/index.php?MessageType=EPGLogReq',
+                    url: sessionStorage.getItem("relativePath") + '/epgservice/index.php?MessageType=EPGLogReq',
                     data: JSON.stringify(tmpObj),
                     complete: function(data) {
                     },
@@ -302,13 +303,66 @@ export default {
                 }
                 return str;
             },
-            getCurrLangCodeFromTopWindow () {
-                let currLangCode = 'chi';
-                var reg = new RegExp("(^|&)currLangCode=([^&]*)(&|$)");
-                var r = window.top.location.search.substr(1).match(reg);
-                if (r != null) currLangCode = unescape(r[2]);
+            getCurrLangCodeFromParentWindow () {
+                var currLangCode = window.parent.location.search.substr(1).split('=')[1];
                 sessionStorage.setItem('currLangCode', currLangCode);
-            }
+            },
+            getProgramInfo() {
+                const _this = this;
+                const UrlOrigin = sessionStorage.getItem('UrlOrigin');
+                const USERID = sessionStorage.getItem('USERID');
+                const UserToken = sessionStorage.getItem('UserToken');
+                const contentID = sessionStorage.getItem('bg_media_url');
+                /**
+                 * 详情请参考文档《电信 EPG 与 BO 接口规范说明》
+                 * programId、productIDs 可以为空
+                 * userFlag 为 Authentication.CTCGetConfig('UserID')
+                 * userToken 为 Authentication.CTCGetConfig('UserToken')
+                 * contentID 为 视频32位的id，如：90000001000000015984724636843325、90000001000000015985026379023502
+                */
+                Http({
+                    type: 'GET',
+                    url: UrlOrigin + '/GetProgramInfo?programId=78&userFlag=' + USERID + '&userToken=' + UserToken + '&contentID=' + contentID + '&productIDs=',
+                    data: '',
+                    complete: function(data) {
+                        if (data.status === 200) {
+                            const res = JSON.parse(data.response);
+                            _this.selectionStart(res.assetId, UrlOrigin, UserToken);
+                        } else {
+                            console.log('error: ' + data.status);
+                        }
+                    },
+                    error: function(err) {
+                        console.log('网络请求错误：' + err);
+                    },
+                });
+            },
+            selectionStart(assetId, UrlOrigin, UserToken) {
+                const _this = this;
+                Http({
+                    type: 'GET',
+                    url: UrlOrigin + '/SelectionStart?assetId=' + assetId + '&userToken=' + UserToken,
+                    data: '',
+                    complete: function(data) {
+                        if (data.status === 200) {
+                            const res = JSON.parse(data.response);
+                            sessionStorage.setItem('playUrl', res.playUrl);
+                            if (sessionStorage.getItem("MainPath") === 'test') {
+                                this.EPGLog({
+                                    OperationCode: '获取视频url: ',
+                                    Detail: res.playUrl,
+                                });
+                            }
+                            _this.$dispatch("playVideo");
+                        } else {
+                            console.log('error: ' + data.status);
+                        }
+                    },
+                    error: function(err) {
+                        console.log(err);
+                    },
+                });
+            },
         },
 
         store: store,
@@ -332,8 +386,8 @@ export default {
         },
         ready() {
             // 兼容UT盒子从main_outer.html进入时取不到currLangCode的问题
-            if (/main_outer.html/.test(window.top.location.pathname)) {
-                this.getCurrLangCodeFromTopWindow();
+            if (/main_outer.html/.test(window.parent.location.pathname)) {
+                this.getCurrLangCodeFromParentWindow();
             }
             var categary = document.getElementById("firstTabItem");
             categary.children[0].children[0].focus();
@@ -343,15 +397,38 @@ export default {
             this.updateLastStore(0);
 
             this.$nextTick(() => {
-                if (this.firstVideoPlay) {
-                    //this.$dispatch("playVideo");
-                    this.updateFirstVideoPlay(false);
-                } else {
-                    //this.$dispatch("resumeVideo");
+                if (!!sessionStorage.getItem('bg_media_url')) {
+                    this.hasVideo = false;
+                    // this.hasVideo = true;
+                    if (this.firstVideoPlay) {
+                        this.updateFirstVideoPlay(false);
+                        this.getProgramInfo();
+                    } else {
+                        this.$dispatch("resumeVideo");
+                    }
                 }
             });
 
-        },
+            if (sessionStorage.getItem("MainPath") === 'test') {
+                this.EPGLog({
+                    OperationCode: '盒子信息: ',
+                    Detail: JSON.stringify({
+                        HostID: sessionStorage.getItem("HostID"),
+                        UserID: sessionStorage.getItem("UserID"),
+                        USERID: sessionStorage.getItem("USERID"),
+                        STBID: sessionStorage.getItem("STBID"),
+                        EpgGroupID: sessionStorage.getItem("EpgGroupID"),
+                        LoginID: sessionStorage.getItem("LoginID"),
+                        RootCategoryID: sessionStorage.getItem("RootCategoryID"),
+                        bg_media_url: sessionStorage.getItem("bg_media_url"),
+                        EPGDomain: sessionStorage.getItem("EPGDomain"),
+                        UserToken: sessionStorage.getItem("UserToken"),
+                        Token: sessionStorage.getItem("Token"),
+                    }),
+                });
+            }
+
+        }
 
 
 }

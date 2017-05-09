@@ -1,13 +1,10 @@
 <style scoped>
-html {
-    font-size: 0.1rem;
-}
 
 .info {
     position: fixed;
     z-index: 2;
-    left: 0rem;
-    top: 0rem;
+    left: 0;
+    top: 0;
     width: 100%;
     height: 100%;
     font-family: "微软雅黑";
@@ -20,14 +17,14 @@ html {
 }
 
 .conent {
-    width: 17rem;
-    height: 1.5rem;
+    width: 1133.33px;
+    height: 100px;
     margin: auto;
 }
 
 .footer {
-    width: 17rem;
-    height: 9rem;
+    width: 1133.33px;
+    height: 600px;
     margin: auto;
     overflow: auto;
 }
@@ -35,9 +32,9 @@ html {
 .title {
     height: 100%;
     color: white;
-    font-size: 0.6rem;
-    padding-top: 0.4rem;
-    margin-left: 0.2rem;
+    font-size: 40px;
+    padding-top: 26.67px;
+    margin-left: 13.34px;
 }
 
 .recommendImg {
@@ -51,20 +48,20 @@ html {
     list-style: none;
     top: 0;
     margin: 0;
-    margin-top: 0.4rem;
+    margin-top: 26.67px;
     padding: 0;
 }
 
 .recommendImg ul li {
     float: left;
-    height: 2.0rem;
-    padding-bottom: 1.8rem;
-    margin: 0 0.16rem;
+    height: 133.34px;
+    padding-bottom: 120px;
+    margin: 0 10.67px;
 }
 
 .recommendImg ul li a img {
-    width: 2.5rem;
-    border-radius: 0.1rem;
+    width: 166.67px;
+    border-radius: 6.67px;
 }
 
 .recommendImg ul li a {
@@ -73,8 +70,8 @@ html {
 }
 
 .recommendImg ul li a:focus img {
-    border-radius: 0.1rem;
-    box-shadow: 0 0 0.5rem 0 #609EDE, inset 0px 0px 0.02rem .05rem rgb(255, 255, 255);
+    border-radius: 6.67px;
+    box-shadow: 0 0 33.34px 0 #609EDE, inset 0px 0px 1.33px 3.34px rgb(255, 255, 255);
 }
 </style>
 <!--******************特别推荐*******************-->
@@ -146,7 +143,7 @@ export default {
 
                 Http({
                     type: 'POST',
-                    url: sessionStorage.getItem("relativePath") + 'service/epgservice/index.php?MessageType=GetObjectInfoReq',
+                    url: sessionStorage.getItem("relativePath") + '/epgservice/index.php?MessageType=GetObjectInfoReq',
                     data: JSON.stringify(tmpObj),
                     complete: function(data) {
                         console.log(data);
@@ -215,7 +212,7 @@ export default {
             this.updateIsMainLayout(false);
             this.listenBackKey();
             this.getRecommentList(this.$route.params.id);
-            //this.$dispatch("pauseVideo");
+            this.$dispatch("pauseVideo");
         },
 
 }

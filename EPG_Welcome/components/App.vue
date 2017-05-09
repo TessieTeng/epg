@@ -1,7 +1,7 @@
 <style>
-html {
+/*html {
     font-size: 100px;
-}
+}*/
 </style>
 <template>
     <div id="app">
@@ -25,9 +25,9 @@ export default {
         },
         store: store,
         ready() {
-            var html = document.getElementsByTagName('html')[0];
-            var width = html.offsetWidth;
-            html.style.fontSize = (width >= 1920 ? 1920 : width) / 1920 * 100 + 'px';
+            // var html = document.getElementsByTagName('html')[0];
+            // var width = html.offsetWidth;
+            // html.style.fontSize = (width >= 1920 ? 1920 : width) / 1920 * 100 + 'px';
         },
 }
 </script>

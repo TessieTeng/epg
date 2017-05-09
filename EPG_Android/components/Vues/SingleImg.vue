@@ -1,16 +1,16 @@
 <style scoped>
 .singleRootDiv {
-    width: 19.2rem;
-    height: 10.8rem;
-    line-height: 10.8rem;
+    width: 1280px;
+    height: 720px;
     background-color: black;
+    line-height: 720px;
     text-align: center;
 }
 
 .qrcode {
-    width: 17rem;
-    height: 8rem;
-    margin-top: 1.4rem;
+    width: 1133.34px;
+    height: 533.34px;
+    margin-top: 93.34px;
 }
 </style>
 <template>
@@ -39,7 +39,7 @@ export default {
         },
         methods: {
             listenBackKey() {
-                document.querySelector('#singleRootDiv').addEventListener('keypress', (keyEvent) => {
+                document.addEventListener('keydown', (keyEvent) => {
                     keyEvent = keyEvent ? keyEvent : window.event;
                     var keyvalue = keyEvent.which ? keyEvent.which : keyEvent.keyCode;
                     if (keyvalue == 8) {
@@ -70,7 +70,7 @@ export default {
                 };
                 Http({
                     type: 'POST',
-                    url: sessionStorage.getItem("relativePath") + 'service/epgservice/index.php?MessageType=GetObjectInfoReq',
+                    url: sessionStorage.getItem("relativePath") + '/epgservice/index.php?MessageType=GetObjectInfoReq',
                     data: JSON.stringify(tmpObj),
                     complete: function(data) {
                         console.log(data);

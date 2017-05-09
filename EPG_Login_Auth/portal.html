@@ -5,18 +5,9 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta name="page-view-size" content="1280*720">
     <title>EPG_Login</title>
     <script type="text/javascript">
-    var width = 1280,
-        height = 720;
-    if (window.innerWidth === 1920) {
-        width = 1920;
-        height = 1080;
-    }
-    var meta = document.createElement('meta');
-    meta.setAttribute('name', 'page-view-size');
-    meta.setAttribute('content', width + '*' + height);
-    document.querySelector('head').appendChild(meta);
     window.onerror = function(a, b, c, d) {
         var str = '';
         if ((typeof a).toLowerCase() === 'string') {
@@ -40,7 +31,7 @@
 <body>
     <div id="app">
     </div>
-    <!-- <script type="text/javascript" src="assets/debug/alloy_lever.min.js"></script> -->
+     <!--<script type="text/javascript" src="assets/debug/alloy_lever.js"></script> -->
      <script type="text/javascript" src='./config.js'></script> 
 </body>
 

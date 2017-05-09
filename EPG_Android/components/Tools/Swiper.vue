@@ -1,12 +1,9 @@
 <style lang="css" scoped>
-html {
-    font-size: 100px;
-}
 
 @import '../../assets/lib/swiper-3.3.1.min.css';
 img {
-    width: 17.2rem;
-    height: 9.2rem;
+    width: 1146.67px;
+    height: 613.34px;
 }
 
 .swiper-pagination-bullet {
@@ -43,7 +40,7 @@ img {
 }
 
 .swiper-pagination {
-    font-size: 0.38rem;
+    font-size: 25.34px;
     color: white;
     text-align: right;
 }

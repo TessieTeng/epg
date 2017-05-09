@@ -6,16 +6,16 @@
 
 (function(window) {
   // 当前省份
-  var province = '云南';
+  var province = 'hubei';
   
   // 所有省份
   var ConfigObj = {
 
-    '云南': {
+    'yunnan': {
       province: '云南',
-      relativePath: '/iptv/ppthdplay/SYHOTEL/',
+      relativePath: '/iptv/ppthdplay/SYHOTEL/service',
     },
-    '湖北': {
+    'hubei': {
       province: '湖北',
       relativePath: '',
     },
