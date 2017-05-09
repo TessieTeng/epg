@@ -30,13 +30,12 @@
 .middle {
     position: relative;
     width: 1280px;
-    height: 466.67px;
-    overflow: auto;
+    height: 466px;
 }
 
 .middle ul {
     padding-top: 10px;
-    height: 100%;
+    height: 456px;
     white-space: nowrap;
     /*规定段落中的文本不进行换行：*/
 }
