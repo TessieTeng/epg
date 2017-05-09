@@ -283,13 +283,13 @@ export default {
             goToWelcome() {
                 if (/^https?:\/\//.test(sessionStorage.getItem("WelcomePageGroupPath"))) {
                     // 链接跳转
-                    location.href = sessionStorage.getItem("WelcomePageGroupPath");
+                    location.replace(sessionStorage.getItem("WelcomePageGroupPath"));
                 } else if (sessionStorage.getItem("WelcomePageGroupPath") == "test") {
                     // 测试路径
-                    location.href = "./epggroup_welcomes/welcome_test/welcome.html";
+                    location.replace("./epggroup_welcomes/welcome_test/welcome.html");
                 } else {
                     // 正式路径
-                    location.href = "./epggroup_welcomes/welcome_default/welcome.html";
+                    location.replace("./epggroup_welcomes/welcome_default/welcome.html");
                 }
             },
 
@@ -303,8 +303,8 @@ export default {
                     this.doLogin();
                     break;
                 case '湖北':
-                    this.getUrlParams();
                     sessionStorage.setItem("indexUrl", "http://116.210.255.120:8080/HBEpg/epg/broadBandTV.jsp");
+                    this.getUrlParams();
                     break;
                 default:
                     break;
