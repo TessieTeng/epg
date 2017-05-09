@@ -264,7 +264,8 @@ export default {
                     keyEvent = keyEvent ? keyEvent : window.event;
                     var keyvalue = keyEvent.which ? keyEvent.which : keyEvent.keyCode;
                     if (keyvalue == 181) {
-                        window.parent.location.href = '../../portal.html';
+                        //window.parent.location.href = '../../portal.html';
+                        this.$router.go("/firstcategory");
                     }
                 });
             },
