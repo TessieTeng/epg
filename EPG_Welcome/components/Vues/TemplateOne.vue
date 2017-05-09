@@ -420,7 +420,7 @@ export default {
                         let tmp = '';
                         let name = '';
                         if (!!this.RoomInfo.GuestList.Guest[0] && !!this.RoomInfo.GuestList.Guest[0].Name) {
-                            name = this.RoomInfo.GuestList.Guest.map(item => item.Name).join('，');
+                            name = item.Name;
                             if (item.LangCode === 'chi') {
                                 tmp = '尊敬的';
                             } else if (item.LangCode === 'eng') {

@@ -110,8 +110,9 @@ export default {
                     keyEvent = keyEvent ? keyEvent : window.event;
                     var keyvalue = keyEvent.which ? keyEvent.which : keyEvent.keyCode;
                     if (keyvalue == 8) {
-                        this.$dispatch("stopVideo");
-                        history.back();
+                        // 在主页一级菜单不允许返回
+                        // this.$dispatch("stopVideo");
+                        // history.back();
                     }
                 });
             },
