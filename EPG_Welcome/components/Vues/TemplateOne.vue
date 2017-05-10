@@ -438,7 +438,7 @@ export default {
                     this.pictureList = PictureList.ImageList;
                     setInterval(() => {
                         this.picIndex = ++this.picIndex % this.pictureList.length;
-                    }, 2000)
+                    }, 3000)
                 }
             },
             listenBackKey() {
