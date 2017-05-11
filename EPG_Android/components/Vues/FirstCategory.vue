@@ -17,7 +17,8 @@
 .marquee {
     text-align: center;
     line-height: 50px;
-    font-size: 150%;
+    font-size: 300%;
+    font-weight: bold;
 }
 </style>
 <template>
@@ -427,11 +428,11 @@ export default {
                                 if (_msgBody.MsgList == "") {
                                     document.querySelector(".scrolls").style.visibility = "hidden";
                                 } else {
-                                    var MsgList = _msgBody.MsgList;
-                                    console.log("MsgList:" + MsgList);  
-                                    for (var i = 0; i < MsgList.length; i++) {
-                                        _this.MsgText = MsgList[0].MsgText;
-                                        console.log(_this.MsgText);
+                                    var TvmsMsg = _msgBody.MsgList.TvmsMsg;
+                                    console.log("MsgList:" + TvmsMsg);
+                                    for (var i = 0; i < TvmsMsg.length; i++) {
+                                        _this.MsgText = TvmsMsg[0].MsgText;
+                                        console.log("滚动消息"+_this.MsgText);
                                     }
 
                                 }
@@ -452,50 +453,6 @@ export default {
                 });
             },
 
-            //获得客信消息列表
-            getRoomMsg() {
-                var _this = this;
-                if (this.isRequestStatus) {
-                    return;
-                }
-                this.isRequestStatus = true;
-                const tmpObj = {
-                    "Message": {
-                        "MessageType": "GetRoomMsgReq",
-                        "MessageBody": {
-                            "UserID": sessionStorage.getItem("UserID"),
-                            "LangCode": sessionStorage.getItem("currLangCode"),
-                            "Token": sessionStorage.getItem("Token"),
-                        }
-                    }
-                };
-
-                Http({
-                    type: 'POST',
-                    url: sessionStorage.getItem("relativePath") + '/epgservice/index.php?MessageType=GetRoomMsgReq',
-                    data: JSON.stringify(tmpObj),
-                    complete: function(data) {
-                        if (data.status === 200) {
-                            const _data = JSON.parse(data.response);
-                            const _msgBody = _data.Message.MessageBody;
-                            console.log(_msgBody);
-                            if (_msgBody.ResultCode == 200) {
-                               console.log("_msgBody"+_msgBody);
-                            } else {
-                                console.log("请求数据失败");
-                            }
-                        } else {
-                            console.log("网络请求失败");
-                        }
-
-                        _this.isRequestStatus = false;
-                        _this.showLoading = false;
-                    },
-                    error: function(err) {
-                        console.log(err);
-                    },
-                });
-            },
         },
 
         store: store,
@@ -524,12 +481,11 @@ export default {
             }
             var categary = document.getElementById("firstTabItem");
             categary.children[0].children[0].focus();
-            //this.getTvmsMsg();
-            //this.getRoomMsg();
             this.listenBackKey();
             this.getRootCategoryData(sessionStorage.getItem("RootCategoryID"));
             this.updateIsMainLayout(true);
             this.updateLastStore(0);
+            this.getTvmsMsg();
             this.$nextTick(() => {
                 if (!!sessionStorage.getItem('bg_media_url')) {
                     this.hasVideo = false;

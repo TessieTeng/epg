@@ -658,7 +658,52 @@ export default {
                     }
 
                 });
-            }
+            },
+
+            //获得客信消息列表
+            getRoomMsg() {
+                var _this = this;
+                if (this.isRequestStatus) {
+                    return;
+                }
+                this.isRequestStatus = true;
+                const tmpObj = {
+                    "Message": {
+                        "MessageType": "GetRoomMsgReq",
+                        "MessageBody": {
+                            "UserID": sessionStorage.getItem("UserID"),
+                            "LangCode": this.currentLang,
+                            "Token": sessionStorage.getItem("Token"),
+                        }
+                    }
+                };
+
+                Http({
+                    type: 'POST',
+                    url: sessionStorage.getItem("relativePath") + '/epgservice/index.php?MessageType=GetRoomMsgReq',
+                    data: JSON.stringify(tmpObj),
+                    complete: function(data) {
+                        if (data.status === 200) {
+                            const _data = JSON.parse(data.response);
+                            const _msgBody = _data.Message.MessageBody;
+                            console.log(_msgBody);
+                            if (_msgBody.ResultCode == 200) {
+                               console.log("客信消息"+_msgBody);
+                            } else {
+                                console.log("请求数据失败");
+                            }
+                        } else {
+                            console.log("网络请求失败");
+                        }
+
+                        _this.isRequestStatus = false;
+                        _this.showLoading = false;
+                    },
+                    error: function(err) {
+                        console.log(err);
+                    },
+                });
+            },
 
         },
 
@@ -674,6 +719,7 @@ export default {
             this.getUiWord('eng', ['wifi_where_tip']);
             this.getHereWeatherInfo();
             this.getRoomInfoReq();
+            this.getRoomMsg();
             setTimeout(() => {
                 this.tabIndex = 0;
             }, 100);
