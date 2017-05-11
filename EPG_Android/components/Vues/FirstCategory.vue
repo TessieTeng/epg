@@ -187,7 +187,6 @@ export default {
                                 if (tmpFullScreenImgs.length > 0) {
                                     _this.bgimg = tmpFullScreenImgs[0].AdUrl;
                                 }
-                                // 暂时只取了第一张
                                 if (tmpLeftBottomImgs.length > 0) {
                                     _this.adPic = tmpLeftBottomImgs[0].AdUrl;
                                 }
@@ -492,7 +491,7 @@ export default {
                     // this.hasVideo = true;
                     if (this.firstVideoPlay) {
                         this.updateFirstVideoPlay(false);
-                        this.getProgramInfo();
+                        // this.getProgramInfo();
                     } else {
                         this.$dispatch("resumeVideo");
                     }
