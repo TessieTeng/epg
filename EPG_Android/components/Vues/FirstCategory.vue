@@ -1,7 +1,7 @@
 <style scoped>
 .rootDiv {
-    width: 19.2rem;
-    height: 10.8rem;
+    width: 1280px;
+    height: 720px;
     position: relative;
     background-color: transparent;
 }
@@ -9,8 +9,8 @@
 <template>
     <div>
         <div class="rootDiv">
-            <div class="bgimg"></div>
-            <div class="menuTab firstCategory" id="firstCategoryLayout">
+            <div class="bgimg" :style='{"background-image": "url(" + bgimg +  ")"}' v-if='!hasVideo'></div>
+            <div class="menuTab">
                 <div class="advertisement">
                     <img class="advertisement" v-bind:src='adPic[0].AdUrl'>
                 </div>
@@ -20,7 +20,8 @@
                             <div class="imgFrame">
                                 <img v-bind:src='getNormalIcon(item)'>
                                 <img v-bind:src='getFocusIcon(item)'>
-                                <div class="breatheFrame"></div>
+                                <div class="breatheFrame">
+                                </div>
                             </div>
                         </a>
                     </li>
@@ -52,6 +53,8 @@ export default {
                 isRequestStatus: false,
                 firstEnter: true,
                 exitTime: 0,
+                bgimg: '',
+                hasVideo: false,
                 adPic: [{
                     AdUrl: ''
                 }],
@@ -59,15 +62,15 @@ export default {
                 categoryList: [{
                     PictureList: {
                         Picture: [{
-                            PictureUrl: '../../assets/images/iptv_a.png',
+                            PictureUrl: '',
                         }, {
-                            PictureUrl: '../../assets/images/jieshao_a.png',
+                            PictureUrl: '',
                         }, {
-                            PictureUrl: '../../assets/images/shangcheng_a.png',
+                            PictureUrl: '',
                         }, {
-                            PictureUrl: '../../assets/images/tuijian_a.png',
+                            PictureUrl: '',
                         }, {
-                            PictureUrl: '../../assets/images/youxi_a.png',
+                            PictureUrl: '',
                         }, ]
                     }
                 }],
@@ -103,14 +106,13 @@ export default {
 
             },
             listenBackKey() {
-                var _this = this;
-                // document.querySelector('#firstCategoryLayout').addEventListener('keypress', (keyEvent) => {
-                document.querySelector('#firstCategoryLayout').addEventListener('keydown', (keyEvent) => {
+                document.querySelector('#firstTabItem').addEventListener('keydown', (keyEvent) => {
                     keyEvent = keyEvent ? keyEvent : window.event;
                     var keyvalue = keyEvent.which ? keyEvent.which : keyEvent.keyCode;
                     if (keyvalue == 8) {
+                        // 在主页一级菜单不允许返回
                         // this.$dispatch("stopVideo");
-                        history.back();
+                        // history.back();
                     }
                 });
             },
@@ -127,29 +129,34 @@ export default {
                             "ObjectID": categoryId,
                             "ObjectType": 1,
                             "ChildrenLevel": 1,
-                            "LangCode": window.sessionStorage ? sessionStorage.getItem("currLangCode") : Cookie.read("currLangCode"),
-                            "EpgGroupID": window.sessionStorage ? sessionStorage.getItem("EpgGroupID") : Cookie.read("EpgGroupID"),
-                            "UserID": window.sessionStorage ? sessionStorage.getItem("UserID") : Cookie.read("UserID"),
-                            "Token": window.sessionStorage ? sessionStorage.getItem("Token") : Cookie.read("Token"),
+                            "LangCode": sessionStorage.getItem("currLangCode"),
+                            "EpgGroupID": sessionStorage.getItem("EpgGroupID"),
+                            "UserID": sessionStorage.getItem("UserID"),
+                            "Token": sessionStorage.getItem("Token"),
                         }
                     }
                 };
 
                 Http({
                     type: 'POST',
-                    url: sessionStorage.getItem("relativePath") + 'service/epgservice/index.php?MessageType=GetObjectInfoReq',
+                    url: sessionStorage.getItem("relativePath") + '/epgservice/index.php?MessageType=GetObjectInfoReq',
                     data: JSON.stringify(tmpObj),
                     complete: function(data) {
-                        console.log(data);
                         if (data.status === 200) {
-                            console.log("请求成功");
                             const _data = JSON.parse(data.response);
                             const _msgBody = _data.Message.MessageBody;
                             if (_msgBody.ResultCode == 200) {
                                 _this.adPic = _msgBody.AdList.Ad;
-                                _this.categoryList = _msgBody.ChildrenObjectList.Object;
 
-                                console.log(_this.categoryList);
+                                const tmpAdImgs = _this.adPic.filter(item => {
+                                    return item.AdPosNo === "pos00";
+                                });
+                                // 暂时只取了第一张
+                                if (tmpAdImgs.length > 0) {
+                                    _this.bgimg = tmpAdImgs[0].AdUrl;
+                                }
+
+                                _this.categoryList = _msgBody.ChildrenObjectList.Object;
 
                                 _this.$nextTick(() => {
                                     if (!_this.firstClassTab == 0) {
@@ -158,6 +165,10 @@ export default {
                                         var categary = document.getElementById("firstTabItem");
                                         categary.children[0].children[0].focus();
                                     }
+                                    _this.EPGLog({
+                                        OperationCode: '主页获取列表数据',
+                                        Detail: 'success',
+                                    });
                                 })
                             } else {
                                 console.log("请求数据失败");
@@ -177,19 +188,17 @@ export default {
 
             excuteAction(item) {
                 var _this = this;
-                console.log(item);
-                console.log(item.ObjectID);
-                console.log(item.RelatedAction);
+                // console.log(item);
+                // console.log(item.ObjectID);
+                // console.log(item.RelatedAction);
                 this.updateFirstClassTab(item.ObjectID);
                 this.updateSecondClassTab(0);
                 switch (item.RelatedAction) {
                     case "iptv":
-                        // this.$dispatch("stopVideo");
+                        this.$dispatch("stopVideo");
                         this.$nextTick(() => {
-                            // window.location.href ="http:222.221.25.243:6166/iptv/ppthdplay/apps/index/index_epg.html";
                             var address = sessionStorage.getItem("indexUrl");
-                            window.location.href = sessionStorage.getItem("indexUrl");
-
+                            window.parent.location.href = sessionStorage.getItem("indexUrl");
                         });
                         break;
                     case "weather_list":
@@ -265,6 +274,95 @@ export default {
                 }
 
             },
+            EPGLog(params = {OperationCode: '', Detail: ''}) {
+                const tmpObj = {
+                    "Message": {
+                        "MessageType": "EPGLogReq",
+                        "MessageBody": {
+                            "USERID": sessionStorage.getItem("STBID"),
+                            "HostID": sessionStorage.getItem("HostID"),
+                            "OperationCode": params.OperationCode,
+                            "Detail": params.Detail,
+                        },
+                    }
+                };
+                Http({
+                    type: 'POST',
+                    url: sessionStorage.getItem("relativePath") + '/epgservice/index.php?MessageType=EPGLogReq',
+                    data: JSON.stringify(tmpObj),
+                    complete: function(data) {
+                    },
+                    error: function(err) {
+                    },
+                });
+            },
+            getObjStr(obj) {
+                let str = '';
+                for (const key in obj) {
+                    str += key + ': ' + obj[key] + '; ';
+                }
+                return str;
+            },
+            getCurrLangCodeFromParentWindow () {
+                var currLangCode = window.parent.location.search.substr(1).split('=')[1];
+                sessionStorage.setItem('currLangCode', currLangCode);
+            },
+            getProgramInfo() {
+                const _this = this;
+                const UrlOrigin = sessionStorage.getItem('UrlOrigin');
+                const USERID = sessionStorage.getItem('USERID');
+                const UserToken = sessionStorage.getItem('UserToken');
+                const contentID = sessionStorage.getItem('bg_media_url');
+                /**
+                 * 详情请参考文档《电信 EPG 与 BO 接口规范说明》
+                 * programId、productIDs 可以为空
+                 * userFlag 为 Authentication.CTCGetConfig('UserID')
+                 * userToken 为 Authentication.CTCGetConfig('UserToken')
+                 * contentID 为 视频32位的id，如：90000001000000015984724636843325、90000001000000015985026379023502
+                */
+                Http({
+                    type: 'GET',
+                    url: UrlOrigin + '/GetProgramInfo?programId=78&userFlag=' + USERID + '&userToken=' + UserToken + '&contentID=' + contentID + '&productIDs=',
+                    data: '',
+                    complete: function(data) {
+                        if (data.status === 200) {
+                            const res = JSON.parse(data.response);
+                            _this.selectionStart(res.assetId, UrlOrigin, UserToken);
+                        } else {
+                            console.log('error: ' + data.status);
+                        }
+                    },
+                    error: function(err) {
+                        console.log('网络请求错误：' + err);
+                    },
+                });
+            },
+            selectionStart(assetId, UrlOrigin, UserToken) {
+                const _this = this;
+                Http({
+                    type: 'GET',
+                    url: UrlOrigin + '/SelectionStart?assetId=' + assetId + '&userToken=' + UserToken,
+                    data: '',
+                    complete: function(data) {
+                        if (data.status === 200) {
+                            const res = JSON.parse(data.response);
+                            sessionStorage.setItem('playUrl', res.playUrl);
+                            if (sessionStorage.getItem("MainPath") === 'test') {
+                                this.EPGLog({
+                                    OperationCode: '获取视频url: ',
+                                    Detail: res.playUrl,
+                                });
+                            }
+                            _this.$dispatch("playVideo");
+                        } else {
+                            console.log('error: ' + data.status);
+                        }
+                    },
+                    error: function(err) {
+                        console.log(err);
+                    },
+                });
+            },
         },
 
         store: store,
@@ -287,25 +385,50 @@ export default {
             Loading,
         },
         ready() {
-
+            // 兼容UT盒子从main_outer.html进入时取不到currLangCode的问题
+            if (/main_outer.html/.test(window.parent.location.pathname)) {
+                this.getCurrLangCodeFromParentWindow();
+            }
             var categary = document.getElementById("firstTabItem");
             categary.children[0].children[0].focus();
             this.listenBackKey();
             this.getRootCategoryData(sessionStorage.getItem("RootCategoryID"));
             this.updateIsMainLayout(true);
             this.updateLastStore(0);
-            console.log(this);
 
             this.$nextTick(() => {
-                if (this.firstVideoPlay) {
-                    //this.$dispatch("playVideo");
-                    this.updateFirstVideoPlay(false);
-                } else {
-                    //this.$dispatch("resumeVideo");
+                if (!!sessionStorage.getItem('bg_media_url')) {
+                    this.hasVideo = false;
+                    // this.hasVideo = true;
+                    if (this.firstVideoPlay) {
+                        this.updateFirstVideoPlay(false);
+                        this.getProgramInfo();
+                    } else {
+                        this.$dispatch("resumeVideo");
+                    }
                 }
             });
 
-        },
+            if (sessionStorage.getItem("MainPath") === 'test') {
+                this.EPGLog({
+                    OperationCode: '盒子信息: ',
+                    Detail: JSON.stringify({
+                        HostID: sessionStorage.getItem("HostID"),
+                        UserID: sessionStorage.getItem("UserID"),
+                        USERID: sessionStorage.getItem("USERID"),
+                        STBID: sessionStorage.getItem("STBID"),
+                        EpgGroupID: sessionStorage.getItem("EpgGroupID"),
+                        LoginID: sessionStorage.getItem("LoginID"),
+                        RootCategoryID: sessionStorage.getItem("RootCategoryID"),
+                        bg_media_url: sessionStorage.getItem("bg_media_url"),
+                        EPGDomain: sessionStorage.getItem("EPGDomain"),
+                        UserToken: sessionStorage.getItem("UserToken"),
+                        Token: sessionStorage.getItem("Token"),
+                    }),
+                });
+            }
+
+        }
 
 
 }

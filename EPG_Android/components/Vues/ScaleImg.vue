@@ -1,16 +1,16 @@
 <style scoped>
 .singleRootDiv {
-    width: 19.2rem;
-    height: 10.8rem;
+    width: 1280px;
+    height: 720px;
     background-color: black;
-    line-height: 10.8rem;
+    line-height: 720px;
     text-align: center;
 }
 
 .qrcode {
-    width: 17rem;
-    height: 8rem;
-    margin-top: 1.4rem;
+    width: 1133.34px;
+    height: 533.34px;
+    margin-top: 93.34px;
 }
 </style>
 <template>
@@ -42,13 +42,12 @@ export default {
         },
         methods: {
             listenBackKey() {
-                document.querySelector('#singleRootDiv').addEventListener('keypress', (keyEvent) => {
-                    keyEvent = keyEvent ? keyEvent : window.event;
-                    var keyvalue = keyEvent.which ? keyEvent.which : keyEvent.keyCode;
-                    if (keyvalue == 8) {
+                window.onkeydown = function(event) {
+                    var e = event || window.event;
+                    if (e.keyCode == 8) {
                         history.back();
                     }
-                });
+                };
             },
 
         },
@@ -67,7 +66,7 @@ export default {
             this.listenBackKey();
             this.updateIsMainLayout(false);
             this.qrCode = this.getScaleImgUrl;
-           //this.$dispatch("pauseVideo");
+           this.$dispatch("pauseVideo");
         }
 
 }

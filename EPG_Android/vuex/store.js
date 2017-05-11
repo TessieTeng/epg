@@ -11,7 +11,7 @@ const state = {
     lastPicList: [],
     isMainLayout: true,
     scaleImgUrl: null,
-    lastStore: null
+    lastStore: 0
 }
 
 const mutations = {

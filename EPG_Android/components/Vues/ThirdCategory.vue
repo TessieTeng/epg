@@ -125,7 +125,7 @@ export default {
 
                 Http({
                     type: 'POST',
-                    url: sessionStorage.getItem("relativePath") + 'service/epgservice/index.php?MessageType=GetObjectInfoReq',
+                    url: sessionStorage.getItem("relativePath") + '/epgservice/index.php?MessageType=GetObjectInfoReq',
                     // url: '.' + sessionStorage.getItem('esaddr') + '?MessageType=GetObjectInfoReq',
                     data: JSON.stringify(tmpObj),
                     complete: function(data) {
@@ -174,7 +174,7 @@ export default {
 
         ready() {
             this.getRootCategoryData(this.$route.params.id);
-           // this.$dispatch("resmeVideo");
+           this.$dispatch("resmeVideo");
         }
 }
 </script>

@@ -1,13 +1,9 @@
 <style scoped>
-html {
-    font-size: 100px;
-}
-
 .info {
     position: fixed;
     z-index: 2;
-    left: 0rem;
-    top: 0rem;
+    left: 0;
+    top: 0;
     width: 100%;
     height: 100%;
     font-family: "微软雅黑";
@@ -19,19 +15,19 @@ html {
 .main {
     width: 100%;
     height: 100%;
-    padding-top: 1.5rem;
+    padding-top: 100px;
 }
 
 .conent {
-    width: 16rem;
-    height: 6rem;
+    width: 1066.67px;
+    height: 400px;
     margin: auto;
 }
 
 .capitaltime {
     text-align: center;
     height: 12%;
-    font-size: 0.45rem;
+    font-size: 30px;
     color: #FFC90E;
 }
 
@@ -42,26 +38,26 @@ html {
 }
 
 .other {
-    height: 0.5rem;
+    height: 33.34px;
     width: 100%;
-    font-size: 0.35rem;
+    font-size: 23.34px;
     color: white;
 }
 
 .time {
-    height: 0.5rem;
+    height: 33.34px;
     width: 100%;
-    font-size: 0.35rem;
+    font-size: 23.34px;
     color: #FF8000;
 }
 
 .detail ul li {
-    padding: 0 0.16rem;
-    text-align: center;
+    padding: 0 0.1066.67px;
+    text-align: 400px;
     list-style: none;
     float: left;
-    height: 1.8rem;
-    width: 5.0rem;
+    height: 120px;
+    width: 333.34px;
     margin: auto;
 }
 </style>
@@ -110,12 +106,12 @@ export default {
 
         computed: {
             getCurrTime() {
-                var tempCurrTime = moment(this.currentTime).format('YYYY-MM-DD hh:mm:ss');
+                var tempCurrTime = moment(this.currentTime).format('YYYY-MM-DD HH:mm:ss');
                 var hint = sessionStorage.getItem("currLangCode");
                 if (hint == "chi") {
-                    tempCurrTime = moment(this.currentTime).format('YYYY-MM-DD hh:mm:ss');
+                    tempCurrTime = moment(this.currentTime).format('YYYY-MM-DD HH:mm:ss');
                 } else {
-                    tempCurrTime = moment(this.currentTime).format('MM/DD/YYYY hh:mm:ss');
+                    tempCurrTime = moment(this.currentTime).format('MM/DD/YYYY HH:mm:ss');
                 }
                 return tempCurrTime;
             },
@@ -137,12 +133,28 @@ export default {
             getHourMinute(timeZone) {
                 var localTime = this.currentTime;
                 var longTimestamp = localTime + (timeZone - 8) * 60 * 60 * 1000;
-                var longDate = moment(longTimestamp).format('hh:mm');
+                var longDate = moment(longTimestamp).format('HH:mm');
                 return longDate;
             },
 
             addSecond() {
                 this.currentTime += 1000;
+            },
+            listenBackKey() {
+                document.addEventListener('keydown', (keyEvent) => {
+                    keyEvent = keyEvent ? keyEvent : window.event;
+                    var keyvalue = keyEvent.which ? keyEvent.which : keyEvent.keyCode;
+                    if (keyvalue == 8) {
+                        history.back();
+                    }
+                });
+            },
+            getObjStr(obj) {
+                let str = '';
+                for (const key in obj) {
+                    str += key + ': ' + obj[key] + '; ';
+                }
+                return str;
             },
             //获取世界时间
             getTimeData() {
@@ -155,19 +167,19 @@ export default {
                     "Message": {
                         "MessageType": "GetWorldTimeListReq",
                         "MessageBody": {
-                            "LangCode": window.sessionStorage ? sessionStorage.getItem("currLangCode") : Cookie.read("currLangCode"),
+                            "LangCode": sessionStorage.getItem("currLangCode"),
                             "EpgGroupID": 1,
-                            "Token": window.sessionStorage ? sessionStorage.getItem("Token") : Cookie.read("Token"),
+                            "Token": sessionStorage.getItem("Token"),
                         }
                     }
                 };
 
                 Http({
                     type: 'POST',
-                    url: sessionStorage.getItem("relativePath") + 'service/epgservice/index.php?MessageType=GetWorldTimeListReq',
+                    url: sessionStorage.getItem("relativePath") + '/epgservice/index.php?MessageType=GetWorldTimeListReq',
                     data: JSON.stringify(tmpObj),
                     complete: function(data) {
-                        console.log(data);
+                        // console.log(data);
                         if (data.status === 200) {
                             console.log("请求成功");
                             const _data = JSON.parse(data.response);
@@ -179,9 +191,19 @@ export default {
                                 var arr = _this.TimeData.CurrentTime.split(" ");
                                 var arrDate = arr[0].split("-");
                                 var arrTime = arr[1].split(":");
-                                console.log(arrDate[0] + ">>" + arrDate[1] + ">>" + arrDate[2] + ">>" + arrTime[0] + ">>" + arrTime[1] + ">>" + arrTime[2]);
+                                // console.log(arrDate[0] + ">>" + arrDate[1] + ">>" + arrDate[2] + ">>" + arrTime[0] + ">>" + arrTime[1] + ">>" + arrTime[2]);
                                 _this.currentTime = new Date(arrDate[0], arrDate[1] - 1, arrDate[2], arrTime[0], arrTime[1], arrTime[2]).getTime();
-
+                                /**
+                                 * _this.TimeData.CityList.City[0].CityName字段格式
+                                 * {
+                                 *      wordid: '733',
+                                 *      variablename: 'beijing_time',
+                                 *      chiword: '北京时间',
+                                 *      engword: 'Beijing time',
+                                 *      jpnword: '北京時間',
+                                 *      ... ...
+                                 * }
+                                */
                                 var firstTimeZone = parseInt(_this.TimeData.CityList.City[0].TimeZone);
                                 _this.currentTime = _this.currentTime + firstTimeZone * 60 * 60 * 1000;
                                 _this.z = setInterval(() => {
@@ -250,18 +272,17 @@ export default {
         },
 
         ready() {
-            var _this = this;
             var hint = sessionStorage.getItem("currLangCode");
-            if (hint === "chi") {
-                _this.hint = "当前时间";
+            if (hint === "eng") {
+                this.hint = "Current  Time";
+            } else {
+                this.hint = "当前时间";
+            }  
+            
 
-            } else if (hint === "eng") {
-                _this.hint = "Current  Time";
-            }
-
-
+            this.listenBackKey();
             this.getTimeData();
-           // this.$dispatch("pauseVideo");
+           this.$dispatch("pauseVideo");
         },
 
 }

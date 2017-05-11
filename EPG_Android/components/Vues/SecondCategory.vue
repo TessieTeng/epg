@@ -3,7 +3,7 @@
 <template>
     <div>
         <div class="rootDiv">
-        <div class ="bgimg"></div>
+            <div class="bgimg" :style='{"background-image": "url(" + bgimg +  ")"}' v-if='!hasVideo'></div>
             <div class="menuTab">
                 <div class="advertisement">
                     <img class="advertisement" v-bind:src='adPic[0].AdUrl'>
@@ -22,7 +22,6 @@
                 </ul>
             </div>
         </div>
-        <!-- <loading v-if="showLoading"></loading> -->
     </div>
 </template>
 <script>
@@ -42,8 +41,10 @@ export default {
     data() {
             return {
                 isRequestStatus: false,
+                bgimg: '',
+                hasVideo: false,
                 adPic: [{
-                    AdUrl: '../../assets/images/ad_s.jpg'
+                    AdUrl: ''
                 }],
                 showLoading: true,
                 categoryList: [{
@@ -62,7 +63,7 @@ export default {
                 var tempPicList = item.PictureList.Picture;
                 for (var i = 0; i < tempPicList.length; i++) {
                     if (tempPicList[i].PictureType == 13) {
-                        console.log(tempPicList[i].PictureUrl);
+                        // console.log(tempPicList[i].PictureUrl);
                         return tempPicList[i].PictureUrl;
                     }
                 }
@@ -72,7 +73,7 @@ export default {
                 var tempPicList = item.PictureList.Picture;
                 for (var i = 0; i < tempPicList.length; i++) {
                     if (tempPicList[i].PictureType == 14) {
-                        console.log(tempPicList[i].PictureUrl);
+                        // console.log(tempPicList[i].PictureUrl);
                         return tempPicList[i].PictureUrl;
                     }
                 }
@@ -80,9 +81,9 @@ export default {
             },
             excuteAction(item) {
                 var _this = this;
-                console.log(item);
-                console.log(item.ObjectID);
-                console.log(item.RelatedAction);
+                // console.log(item);
+                // console.log(item.ObjectID);
+                // console.log(item.RelatedAction);
                 this.updateSecondClassTab(item.ObjectID);
 
                 switch (item.RelatedAction) {
@@ -158,32 +159,41 @@ export default {
                             "ObjectID": categoryId,
                             "ObjectType": 1,
                             "ChildrenLevel": 1,
-                            "LangCode": window.sessionStorage ? sessionStorage.getItem("currLangCode") : Cookie.read("currLangCode"),
-                            "EpgGroupID": window.sessionStorage ? sessionStorage.getItem("EpgGroupID") : Cookie.read("EpgGroupID"),
-                            "UserID": window.sessionStorage ? sessionStorage.getItem("UserID") : Cookie.read("UserID"),
-                            "Token": window.sessionStorage ? sessionStorage.getItem("Token") : Cookie.read("Token"),
+                            "LangCode": sessionStorage.getItem("currLangCode"),
+                            "EpgGroupID": sessionStorage.getItem("EpgGroupID"),
+                            "UserID": sessionStorage.getItem("UserID"),
+                            "Token": sessionStorage.getItem("Token"),
                         }
                     }
                 };
                 Http({
                     type: 'POST',
-                    url: sessionStorage.getItem("relativePath") + 'service/epgservice/index.php?MessageType=GetObjectInfoReq',
+                    url: sessionStorage.getItem("relativePath") + '/epgservice/index.php?MessageType=GetObjectInfoReq',
                     // url: '.' + sessionStorage.getItem('esaddr') + '?MessageType=GetObjectInfoReq',
                     data: JSON.stringify(tmpObj),
                     complete: function(data) {
-                        console.log(data);
+                        // console.log(data);
                         if (data.status === 200) {
                             console.log("请求成功");
                             const _data = JSON.parse(data.response);
                             const _msgBody = _data.Message.MessageBody;
                             if (_msgBody.ResultCode == 200) {
                                 _this.adPic = _msgBody.AdList.Ad;
+
+                                const tmpAdImgs = _this.adPic.filter(item => {
+                                    return item.AdPosNo === "pos00";
+                                });
+                                // 暂时只取了第一张
+                                if (tmpAdImgs.length > 0) {
+                                    _this.bgimg = tmpAdImgs[0].AdUrl;
+                                }
+
                                 _this.categoryList = _msgBody.ChildrenObjectList.Object;
                                 _this.childObj = _data.Message.MessageBody;
 
-                                console.log(_this.childObj);
-                                console.log("KKK");
-                                console.log(_this.categoryList);
+                                // console.log(_this.childObj);
+                                // console.log("KKK");
+                                // console.log(_this.categoryList);
                                 _this.$nextTick(() => {
                                     if (!_this.secondClassTab == 0) {
                                         document.getElementById("_" + _this.secondClassTab).focus();
@@ -211,7 +221,7 @@ export default {
             },
 
             listenBackKey() {
-                document.querySelector('#secondTabItem').addEventListener('keypress', (keyEvent) => {
+                document.querySelector('#secondTabItem').addEventListener('keydown', (keyEvent) => {
                     keyEvent = keyEvent ? keyEvent : window.event;
                     var keyvalue = keyEvent.which ? keyEvent.which : keyEvent.keyCode;
                     if (keyvalue == 8) {
@@ -243,7 +253,12 @@ export default {
             this.listenBackKey();
             this.updateIsMainLayout(false);
             this.getRootCategoryData(this.$route.params.id);
-            //this.$dispatch("resumeVideo");
+            this.$dispatch("resumeVideo");
+            // 判断是否有视频
+            if (!!sessionStorage.getItem('bg_media_url')) {
+                this.hasVideo = false;
+                // this.hasVideo = true;
+            }
 
             this.tempList == [];
         }

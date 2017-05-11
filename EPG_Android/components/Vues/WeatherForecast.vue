@@ -1,16 +1,13 @@
 <style scoped>
-html {
-    font-size: 0.1rem;
-}
-
 .info {
     position: fixed;
     z-index: 2;
-    left: 0rem;
-    top: 0rem;
+    left: 0;
+    top: 0;
     width: 100%;
     height: 100%;
     font-family: "微软雅黑";
+    background-color: black;
 }
 
 .one {
@@ -24,7 +21,7 @@ html {
 }
 
 .conent {
-    width: 19.2rem;
+    width: 1280px;
     height: 75%;
     margin: auto;
     background: no-repeat;
@@ -41,42 +38,42 @@ html {
 /*.adv { margin: 0.3rem 0; float: left; width: 20%; height: 100%; text-align: center; }*/
 
 .city {
-    float: left;
     width: 100%;
     height: 100%;
     overflow: auto;
-    background: url(../../assets/images/bg_portal_bottom.png);
+    background-image: url(../../assets/images/bg_portal_bottom.png);
 }
 
 .city ul {
     list-style: none;
-    top: 0;
-    margin: 0;
-    padding: 0;
-    margin-left: 0.8rem;
+    padding-top: 20px;
+    margin-left: 53px;
+}
+
+.city ul:after {
+    content: '';
+    display: block;
+    clear: both;
 }
 
 .city ul li {
     float: left;
-    padding: 0.04rem 0.5rem;
-    height: 1.2rem;
-    line-height: 1.2rem;
-}
-
-.city ul li a img {
-    height: 0.9rem;
-    width: 1.95rem;
-    border-radius: 0.1rem;
+    padding: 0 33.34px 20px;
 }
 
 .city ul li a {
-    display: inline-block;
-    font-size: 0;
-    height: 0.8rem;
+    display: block;
+}
+
+.city ul li a img {
+    height: 60px;
+    width: 130px;
+    border-radius: 6.67px;
+    vertical-align: middle;
 }
 
 .city ul li a:focus img {
-    box-shadow: 0.005rem 0.005rem 0.02rem 0.1rem #1A7FD2;
+    box-shadow: 0.34px 0.34px 1.34px 6.67px #1A7FD2;
 }
 
 .common {
@@ -87,49 +84,49 @@ html {
 }
 
 .cityinfo {
-    margin-top: 1.8rem;
+    margin-top: 120px;
     color: white;
-    font-size: 0.6rem;
+    font-size: 40px;
 }
 
 .citytem {
-    margin-top: 0.8rem;
+    margin-top: 53.34px;
     color: white;
-    font-size: 0.6rem;
+    font-size: 40px;
 }
 
 .date {
-    margin-top: 2.4rem;
-    font-size: 0.4rem;
+    margin-top: 160px;
+    font-size: 26.67px;
     color: white;
 }
 
 .weatherimg {
-    margin-top: 0.8rem;
-    width: 2.5rem;
-    height: 2.5rem;
+    margin-top: 53.34px;
+    width: 150px;
+    height: 150px;
 }
 
 .other {
-    margin-top: 1.6rem;
-    font-size: 0.4rem;
+    margin-top: 106.67px;
+    font-size: 26.67px;
     color: white;
 }
 
 .weatherimgother {
-    margin-top: 0.5rem;
-    width: 1.5rem;
-    height: 1.5rem;
+    margin-top: 33.34px;
+    width: 100px;
+    height: 100px;
 }
 
 .special {
-    font-size: 0.4rem;
+    font-size: 26.67px;
     color: white;
-    margin-top: 0.25rem;
+    margin-top: 16.67px;
 }
 
 .cityImg {
-    font-size: 0.5rem;
+    font-size: 33.34px;
     text-align: center;
     background-color: #ccc;
     color: black;
@@ -140,24 +137,24 @@ html {
     <div>
         <div class="info" v-if='showLayout'>
             <div class="main">
-                <div class="conent weatherMain" v-bind:style="{ 'background-image': 'url('+ './'+currentItem.WeatherList.Weather[0].BigImageUrl+')'}">
+                <div class="conent weatherMain" v-bind:style="{ 'background-image': 'url(' + getImgFromUrl(currentItem.WeatherList.Weather[0].BigImageUrl) + ')'}">
                     <div class="common">
                         <div class="cityinfo">{{currentItem.CityName}}</div>
                         <div class="citytem">{{currentItem.temprature}}</div>
                     </div>
                     <div class="common">
                         <div class="date">{{today}}</div>
-                        <div><img class="weatherimg" v-bind:src="'./'+currentItem.WeatherList.Weather[0].SmallImageUrl"></div>
+                        <div><img class="weatherimg" v-bind:src="getImgFromUrl(currentItem.WeatherList.Weather[0].SmallImageUrl)"></div>
                     </div>
                     <div class="common">
                         <div class="other">{{tomorrow}}</div>
-                        <div><img id="tomorrowTemprature" class="weatherimgother" v-bind:src="'./'+currentItem.WeatherList.Weather[1].SmallImageUrl"></div>
-                        <div class="special">{{getTomorrowTemperature(currentItem.WeatherList.Weather[1])}}</div>
+                        <div><img id="tomorrowTemprature" class="weatherimgother" v-bind:src="getImgFromUrl(currentItem.WeatherList.Weather[1].SmallImageUrl)"></div>
+                        <div class="special">{{formatTemperature(currentItem.WeatherList.Weather[1])}}</div>
                     </div>
                     <div class="common">
                         <div class="other">{{others}}</div>
-                        <div><img id="thirdDayTemprature" class="weatherimgother" v-bind:src="'./'+currentItem.WeatherList.Weather[2].SmallImageUrl"></div>
-                        <div class="special">{{getThirdDayTemp(currentItem.WeatherList.Weather[2])}}</div>
+                        <div><img id="thirdDayTemprature" class="weatherimgother" v-bind:src="getImgFromUrl(currentItem.WeatherList.Weather[2].SmallImageUrl)"></div>
+                        <div class="special">{{formatTemperature(currentItem.WeatherList.Weather[2])}}</div>
                     </div>
                 </div>
                 <div class="footer">
@@ -166,8 +163,8 @@ html {
                 </div> -->
                     <div class="city">
                         <ul id="weatherListUl">
-                            <li v-for="item in WeatherCityList">
-                                <a href="javascript:;" v-on:focus="changeCity(item)">
+                            <li v-for="(index, item) in CurList" track-by='$index'>
+                                <a href="javascript:;" @focus="changeCity(item)" @keydown='changeCurList($event, index)'>
                                     <img :src="item.CityImageUrl" class="cityImg" :alt="item.CityName">
                                 </a>
                             </li>
@@ -187,8 +184,6 @@ export default {
     data() {
             return {
                 isRequestStatus: false,
-
-                WeatherCityList: [],
                 showLayout: false,
                 showLoading: true,
                 currentItem: {
@@ -205,39 +200,39 @@ export default {
                 today:"",
                 tomorrow:"",
                 others:"",
-
+                weatherRoot: '../../assets/images/weather/',
+                WeatherCityList: [],
+                curListPage: 1,
+                CurListLen: 12,
             };
         },
-
-
+        computed: {
+            CurList() {
+                return this.WeatherCityList.slice((this.curListPage - 1) * this.CurListLen, this.curListPage * this.CurListLen);
+            },
+        },
+        watch: {
+            curListPage() {
+                this.$nextTick(() => {
+                    document.querySelector('#weatherListUl li a').focus();
+                });
+            }
+        },
         methods: {
             changeCity(item) {
                 this.currentItem = item;
-                this.currentItem.temprature = item.WeatherList.Weather[0].LowTemperature + "℃ - " + item.WeatherList.Weather[0].HighTemperature + "℃";
-
-
-             //图片地址设置
-             /*   var url = item.CityImageUrl;
-                console.log('url########'+ url);
-                if (url == "") {
-                   console.log(url);
-                } else if (url.length > 0 && url.indexOf("iptv") >=0) {
-
-                    return "http://222.221.25.243:6166" + url;
-
-                } else {
-                 
-                    return url;
-
-                }*/
-
-
+                this.currentItem.temprature = this.formatTemperature(item.WeatherList.Weather[0]);
             },
-            getTomorrowTemperature(tomorrowTemprature) {
-                return tomorrowTemprature.LowTemperature + "℃ - " + tomorrowTemprature.HighTemperature + "℃";
+            changeCurList(event, index) {
+                if (event.keyCode === 38 && index < 6 && this.curListPage > 1) {
+                    this.curListPage--;
+                }
+                if (event.keyCode === 40 && index >= 6 && this.curListPage < Math.ceil(this.WeatherCityList.length / this.CurListLen)) {
+                    this.curListPage++;
+                }
             },
-            getThirdDayTemp(thirdDayTemprature) {
-                return thirdDayTemprature.LowTemperature + "℃ - " + thirdDayTemprature.HighTemperature + "℃";
+            formatTemperature(temperature) {
+                return temperature.LowTemperature + "℃ - " + temperature.HighTemperature + "℃";
             },
             getRootCategoryData(categoryId) {
                 var _this = this;
@@ -251,47 +246,41 @@ export default {
                     "Message": {
                         "MessageType": "GetWeatherInfoReq",
                         "MessageBody": {
-                            "LangCode": window.sessionStorage ? sessionStorage.getItem("currLangCode") : Cookie.read("currLangCode"),
+                            "LangCode": sessionStorage.getItem("currLangCode"),
                             "EpgGroupID": 1,
-                            "Token": window.sessionStorage ? sessionStorage.getItem("Token") : Cookie.read("Token"),
+                            "Token": sessionStorage.getItem("Token"),
                         }
                     }
                 };
 
                 Http({
                     type: 'POST',
-                    url: sessionStorage.getItem("relativePath") + 'service/epgservice/index.php?MessageType=GetWeatherInfoReq',
+                    url: sessionStorage.getItem("relativePath") + '/epgservice/index.php?MessageType=GetWeatherInfoReq',
                     data: JSON.stringify(tmpObj),
                     complete: function(data) {
-                        console.log(data);
+                        // console.log(data);
                         if (data.status === 200) {
                             console.log("请求成功");
                             const _data = JSON.parse(data.response);
                             const _msgBody = _data.Message.MessageBody;
                             if (_msgBody.ResultCode == 200) {
                                 const tempPicList = [];
-                                for (var i = 0; i < _msgBody.CityList.City.length; i++) {
-                                    tempPicList.push(_msgBody.CityList.City[i].WeatherList.Weather[0])
-                                }
-                                // console.log(tempPicList);
+                                tempPicList.push(_this.getImgFromUrl(_msgBody.CityList.City[0].WeatherList.Weather[0].BigImageUrl));
+                                // for (var i = 0; i < _msgBody.CityList.City.length; i++) {
+                                //     tempPicList.push(_msgBody.CityList.City[i].CityImageUrl);
+                                // }
                                 ImageLoader({
                                     data: tempPicList,
                                     onFinish: function() {
                                         _this.showLoading = false;
                                         _this.showLayout = true;
                                         _this.WeatherCityList = _msgBody.CityList.City;
-
-                                        console.log("MMM");
-                                        console.log(_this.WeatherCityList);
-                                        console.log("EEE");
-                                        _this.changeCity(_this.WeatherCityList[0]);
                                         _this.$nextTick(() => {
-                                            var weatherUl = document.getElementById("weatherListUl");
-                                            weatherUl.children[0].children[0].focus();
+                                            document.querySelector('#weatherListUl li a').focus();
                                         });
                                     },
                                     onProgress: function(precent) {
-                                        console.log("加载中" + precent);
+                                        // console.log("加载中" + precent);
                                     }
                                 });
                             } else {
@@ -309,7 +298,20 @@ export default {
                     },
                 });
             },
-
+            listenBackKey() {
+                window.onkeydown = function(event) {
+                    var e = event || window.event;
+                    if (e.keyCode == 8) {
+                        history.back();
+                    }
+                };
+            },
+            getImgFromUrl(url) {
+                if (!url) {
+                    return '';
+                }
+                return `${this.weatherRoot}${url.match(/\/(\w*\.(?:gif|png|jpg))$/)[1]}`;
+            },
         },
 
         events: {
@@ -344,7 +346,8 @@ export default {
             }
 
             this.getRootCategoryData();
-            //this.$dispatch("pauseVideo");
+            this.listenBackKey();
+            this.$dispatch("pauseVideo");
         },
 }
 </script>
