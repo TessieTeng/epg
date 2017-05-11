@@ -17,7 +17,6 @@
 .marquee {
     text-align: center;
     line-height: 50px;
-    font-size: 300%;
     font-weight: bold;
 }
 </style>
@@ -25,8 +24,8 @@
     <div>
         <div class="rootDiv">
             <div class="scrolls">
-                <marquee class="marquee" behavior="scroll" scrollamount="2" scrolldelay="0" loop="-1" height="50">
-                    {{MsgText}}
+                <marquee class="marquee" behavior="scroll" scrollamount="3" scrolldelay="0"  height="50" v-bind:style="{fontSize: TvmsMsg.FontSize + 'px', loop:TvmsMsg.ScrollTimes}">
+                    {{TvmsMsg.MsgText}}
                 </marquee>
             </div>
             <div class="bgimg" :style='{"background-image": "url(" + bgimg +  ")"}' v-if='!hasVideo'></div>
@@ -95,19 +94,17 @@ export default {
                     }
                 }],
                 isFoucs: false,
-
-                MsgList: {
-                    TvmsMsg: [{
-                        PolicyID: "",
-                        MsgSeq: "",
-                        MsgText: "",
-                        ScrollTimes: "",
-                        Top: "",
-                        Left: "",
-                        Width: "",
-                        FontSize: "",
-                    }]
+                TvmsMsg: {
+                    PolicyID: "",
+                    MsgSeq: "",
+                    MsgText: "",
+                    ScrollTimes: "",
+                    Top: "",
+                    Left: "",
+                    Width: "",
+                    FontSize: "",
                 },
+
             };
         },
         methods: {
@@ -400,11 +397,12 @@ export default {
 
             //获得TVMS消息列表
             getTvmsMsg() {
+                console.log("getTvmsMsg");
                 var _this = this;
-                if (this.isRequestStatus) {
-                    return;
-                }
-                this.isRequestStatus = true;
+                // if (this.isRequestStatus) {
+                //     return;
+                // }
+                // this.isRequestStatus = true;
                 const tmpObj = {
                     "Message": {
                         "MessageType": "GetTvmsMsgReq",
@@ -421,21 +419,14 @@ export default {
                     data: JSON.stringify(tmpObj),
                     complete: function(data) {
                         if (data.status === 200) {
+                            console.log("complete 200");
                             const _data = JSON.parse(data.response);
                             const _msgBody = _data.Message.MessageBody;
-                            console.log(_msgBody);
+                            console.log("msgBody" + _msgBody);
                             if (_msgBody.ResultCode == 200) {
-                                if (_msgBody.MsgList == "") {
-                                    document.querySelector(".scrolls").style.visibility = "hidden";
-                                } else {
-                                    var TvmsMsg = _msgBody.MsgList.TvmsMsg;
-                                    console.log("MsgList:" + TvmsMsg);
-                                    for (var i = 0; i < TvmsMsg.length; i++) {
-                                        _this.MsgText = TvmsMsg[0].MsgText;
-                                        console.log("滚动消息"+_this.MsgText);
-                                    }
-
-                                }
+                                console.log("请求成功");
+                                //暂时取第一个
+                                _this.TvmsMsg = _msgBody.MsgList.TvmsMsg[0];
 
                             } else {
                                 console.log("请求数据失败");
@@ -475,6 +466,7 @@ export default {
             Loading,
         },
         ready() {
+
             // 兼容UT盒子从main_outer.html进入时取不到currLangCode的问题
             if (/main_outer.html/.test(window.parent.location.pathname)) {
                 this.getCurrLangCodeFromParentWindow();
@@ -483,9 +475,10 @@ export default {
             categary.children[0].children[0].focus();
             this.listenBackKey();
             this.getRootCategoryData(sessionStorage.getItem("RootCategoryID"));
+            this.getTvmsMsg();
             this.updateIsMainLayout(true);
             this.updateLastStore(0);
-            this.getTvmsMsg();
+
             this.$nextTick(() => {
                 if (!!sessionStorage.getItem('bg_media_url')) {
                     this.hasVideo = false;
