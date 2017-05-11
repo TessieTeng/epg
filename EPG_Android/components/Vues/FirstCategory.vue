@@ -5,10 +5,29 @@
     position: relative;
     background-color: transparent;
 }
+
+.scrolls {
+    width: 100%;
+    opacity: 0.8;
+    z-index: 50;
+    position: fixed;
+    top: 5px;
+}
+
+.marquee {
+    text-align: center;
+    line-height: 50px;
+    font-weight: bold;
+}
 </style>
 <template>
     <div>
         <div class="rootDiv">
+            <div class="scrolls">
+                <marquee class="marquee" behavior="scroll" scrollamount="3" scrolldelay="0"  height="50" v-bind:style="{fontSize: TvmsMsg.FontSize + 'px', loop:TvmsMsg.ScrollTimes}">
+                    {{TvmsMsg.MsgText}}
+                </marquee>
+            </div>
             <div class="bgimg" :style='{"background-image": "url(" + bgimg +  ")"}' v-if='!hasVideo'></div>
             <div class="menuTab">
                 <div class="advertisement">
@@ -75,6 +94,17 @@ export default {
                     }
                 }],
                 isFoucs: false,
+                TvmsMsg: {
+                    PolicyID: "",
+                    MsgSeq: "",
+                    MsgText: "",
+                    ScrollTimes: "",
+                    Top: "",
+                    Left: "",
+                    Width: "",
+                    FontSize: "",
+                },
+
             };
         },
         methods: {
@@ -274,7 +304,10 @@ export default {
                 }
 
             },
-            EPGLog(params = {OperationCode: '', Detail: ''}) {
+            EPGLog(params = {
+                OperationCode: '',
+                Detail: ''
+            }) {
                 const tmpObj = {
                     "Message": {
                         "MessageType": "EPGLogReq",
@@ -290,10 +323,8 @@ export default {
                     type: 'POST',
                     url: sessionStorage.getItem("relativePath") + '/epgservice/index.php?MessageType=EPGLogReq',
                     data: JSON.stringify(tmpObj),
-                    complete: function(data) {
-                    },
-                    error: function(err) {
-                    },
+                    complete: function(data) {},
+                    error: function(err) {},
                 });
             },
             getObjStr(obj) {
@@ -303,7 +334,7 @@ export default {
                 }
                 return str;
             },
-            getCurrLangCodeFromParentWindow () {
+            getCurrLangCodeFromParentWindow() {
                 var currLangCode = window.parent.location.search.substr(1).split('=')[1];
                 sessionStorage.setItem('currLangCode', currLangCode);
             },
@@ -319,7 +350,7 @@ export default {
                  * userFlag 为 Authentication.CTCGetConfig('UserID')
                  * userToken 为 Authentication.CTCGetConfig('UserToken')
                  * contentID 为 视频32位的id，如：90000001000000015984724636843325、90000001000000015985026379023502
-                */
+                 */
                 Http({
                     type: 'GET',
                     url: UrlOrigin + '/GetProgramInfo?programId=78&userFlag=' + USERID + '&userToken=' + UserToken + '&contentID=' + contentID + '&productIDs=',
@@ -363,6 +394,56 @@ export default {
                     },
                 });
             },
+
+            //获得TVMS消息列表
+            getTvmsMsg() {
+                console.log("getTvmsMsg");
+                var _this = this;
+                // if (this.isRequestStatus) {
+                //     return;
+                // }
+                // this.isRequestStatus = true;
+                const tmpObj = {
+                    "Message": {
+                        "MessageType": "GetTvmsMsgReq",
+                        "MessageBody": {
+                            "UserID": sessionStorage.getItem("UserID"),
+                            "Token": sessionStorage.getItem("Token"),
+                        }
+                    }
+                };
+
+                Http({
+                    type: 'POST',
+                    url: sessionStorage.getItem("relativePath") + '/epgservice/index.php?MessageType=GetTvmsMsgReq',
+                    data: JSON.stringify(tmpObj),
+                    complete: function(data) {
+                        if (data.status === 200) {
+                            console.log("complete 200");
+                            const _data = JSON.parse(data.response);
+                            const _msgBody = _data.Message.MessageBody;
+                            console.log("msgBody" + _msgBody);
+                            if (_msgBody.ResultCode == 200) {
+                                console.log("请求成功");
+                                //暂时取第一个
+                                _this.TvmsMsg = _msgBody.MsgList.TvmsMsg[0];
+
+                            } else {
+                                console.log("请求数据失败");
+                            }
+                        } else {
+                            console.log("网络请求失败");
+                        }
+
+                        _this.isRequestStatus = false;
+                        _this.showLoading = false;
+                    },
+                    error: function(err) {
+                        console.log(err);
+                    },
+                });
+            },
+
         },
 
         store: store,
@@ -385,6 +466,7 @@ export default {
             Loading,
         },
         ready() {
+
             // 兼容UT盒子从main_outer.html进入时取不到currLangCode的问题
             if (/main_outer.html/.test(window.parent.location.pathname)) {
                 this.getCurrLangCodeFromParentWindow();
@@ -393,6 +475,7 @@ export default {
             categary.children[0].children[0].focus();
             this.listenBackKey();
             this.getRootCategoryData(sessionStorage.getItem("RootCategoryID"));
+            this.getTvmsMsg();
             this.updateIsMainLayout(true);
             this.updateLastStore(0);
 
