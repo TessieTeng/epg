@@ -23,15 +23,16 @@
 <template>
     <div>
         <div class="rootDiv">
-            <div class="scrolls">
-                <marquee class="marquee" behavior="scroll" scrollamount="3" scrolldelay="0"  height="50" v-bind:style="{fontSize: TvmsMsg.FontSize + 'px', loop:TvmsMsg.ScrollTimes}">
+            <div class="scrolls"  v-if='!!TvmsMsg.MsgText'>
+                <marquee class="marquee" behavior="scroll" scrollamount="3" scrolldelay="0"  height="50" 
+                    v-bind:style="{fontSize: TvmsMsg.FontSize + 'px', loop:TvmsMsg.ScrollTimes}">
                     {{TvmsMsg.MsgText}}
                 </marquee>
             </div>
             <div class="bgimg" :style='{"background-image": "url(" + bgimg +  ")"}' v-if='!hasVideo'></div>
             <div class="menuTab">
                 <div class="advertisement">
-                    <img class="advertisement" v-bind:src='adPic[0].AdUrl'>
+                    <img class="advertisement" v-bind:src='adPic'>
                 </div>
                 <ul id="firstTabItem">
                     <li v-for="item in categoryList">
@@ -72,11 +73,9 @@ export default {
                 isRequestStatus: false,
                 firstEnter: true,
                 exitTime: 0,
-                bgimg: '',
                 hasVideo: false,
-                adPic: [{
-                    AdUrl: ''
-                }],
+                bgimg: '',
+                adPic: '',
                 showLoading: true,
                 categoryList: [{
                     PictureList: {
@@ -178,12 +177,19 @@ export default {
                             if (_msgBody.ResultCode == 200) {
                                 _this.adPic = _msgBody.AdList.Ad;
 
-                                const tmpAdImgs = _this.adPic.filter(item => {
+                                const tmpFullScreenImgs = _this.adPic.filter(item => {
                                     return item.AdPosNo === "pos00";
                                 });
+                                const tmpLeftBottomImgs = _this.adPic.filter(item => {
+                                    return item.AdPosNo === "pos03";
+                                });
                                 // 暂时只取了第一张
-                                if (tmpAdImgs.length > 0) {
-                                    _this.bgimg = tmpAdImgs[0].AdUrl;
+                                if (tmpFullScreenImgs.length > 0) {
+                                    _this.bgimg = tmpFullScreenImgs[0].AdUrl;
+                                }
+                                // 暂时只取了第一张
+                                if (tmpLeftBottomImgs.length > 0) {
+                                    _this.adPic = tmpLeftBottomImgs[0].AdUrl;
                                 }
 
                                 _this.categoryList = _msgBody.ChildrenObjectList.Object;
@@ -426,8 +432,9 @@ export default {
                             if (_msgBody.ResultCode == 200) {
                                 console.log("请求成功");
                                 //暂时取第一个
-                                _this.TvmsMsg = _msgBody.MsgList.TvmsMsg[0];
-
+                                if (!!_msgBody.MsgList && !!_msgBody.MsgList.TvmsMsg && _msgBody.MsgList.TvmsMsg.length > 0) {
+                                    _this.TvmsMsg = _msgBody.MsgList.TvmsMsg[0];
+                                }
                             } else {
                                 console.log("请求数据失败");
                             }
