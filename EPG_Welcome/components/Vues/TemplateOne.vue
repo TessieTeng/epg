@@ -7,7 +7,7 @@
 
 .swiperLevel {
     position: absolute;
-    z-index: 1;
+    z-index: 2;
 }
 
 .contentLevel {
@@ -18,7 +18,7 @@
 .bottom {
     position: absolute;
     width: 1280px;
-    z-index: 100000;
+    z-index: 2;
     height: 121px;
     bottom: 0;
 }
@@ -203,10 +203,42 @@ a:focus .breatheFrame {
         box-shadow: 0 0.01rem 0.3rem rgba(6, 127, 210, 1);
     }
 }*/
-</style>
 
+.kexin {
+    position: fixed;
+    background-color: red;
+    z-index: 3;
+    background-color: #ccc;
+    margin-top: 20px;
+}
+
+.info {
+    position: relative;
+    text-align: center;
+    background-color: #ccc;
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.hint{
+    display: block;
+    text-decoration: none;
+    height: 30px;
+    line-height: 30px;
+    text-align: center;
+    border-top: 1px solid black;
+    width: 100%;
+    font-size: 24px;
+
+}
+</style>
 <template>
     <div class="rootView" id="welcomeLayout">
+        <div class="kexin" :style="{height:MsgHeight + 'px',left:MsgLeft + 'px', top:MsgTop + 'px',width: MsgWidth + 'px'}">
+            <div class="info" :style="{height:RoomMsg.TextHeight + 'px', margin-left:RoomMsg.TextLeft + 'px',margin-top:RoomMsg.TextTop + 'px',width:RoomMsg.TextWidth + 'px'}"> {{{RoomMsg.MsgText}}}
+            </div>
+            <a href="javascript:;" class="hint">{{RoomMsg.OkButtonText}}</a>
+        </div>
         <div class="rootView swiperLevel">
             <div style="width: 19.2rem; height: 10.8rem; position: relative;">
                 <img style="transition: all 1s; position: absolute;" :style="{ opacity: $index === picIndex ? 1 : 0 }" v-for="item in pictureList" :src="item.ImageUrl">
@@ -287,6 +319,25 @@ export default {
                 },
                 currentTime: '',
                 picIndex: 0,
+                MsgHeight: '',
+                MsgLeft: '',
+                MsgWidth: '',
+                MsgTop: '',
+                RoomMsg: {
+                    BgImageSize: '',
+                    BgImageUrl: '',
+                    MsgText: '',
+                    OkButtonText: '',
+                    PolicyID: '',
+                    RelatedAction: '',
+                    RelatedInfo: '',
+                    SubscriptText: '',
+                    TextHeight: '',
+                    TextLeft: '',
+                    TextTop: '',
+                    TextWidth: '',
+                },
+
             };
 
         },
@@ -397,7 +448,12 @@ export default {
                 this.saveLangCode("eng");
             },
 
-            handleData({ OperationTips, WelcomeWords, SubscriberName, PictureList }) {
+            handleData({
+                OperationTips,
+                WelcomeWords,
+                SubscriberName,
+                PictureList
+            }) {
                 // 操作提示
                 if ((typeof(OperationTips) == undefined) || null == OperationTips) {
                     console.log("操作提示为空");
@@ -454,7 +510,7 @@ export default {
 
                     switch (keyvalue) {
                         // 返回
-                        case 8: 
+                        case 8:
                             if (this.canNotGoBack) {
                                 event.preventDefault();
                                 e.keyCode = 0;
@@ -463,13 +519,13 @@ export default {
                                 e.returnValue = true;
                             }
                             break;
-                        // left
-                        case 37: 
+                            // left
+                        case 37:
                             this.tabIndex = 0;
                             this.changeChinese();
                             break;
-                        // right
-                        case 39: 
+                            // right
+                        case 39:
                             this.tabIndex = 1;
                             this.changeEnglish();
                             break;
@@ -483,7 +539,11 @@ export default {
 
                 let path = '../../epggroup_mains/main_default/';
                 let file = 'main.html';
-                const {vendor, appName, userAgent} = navigator;
+                const {
+                    vendor,
+                    appName,
+                    userAgent
+                } = navigator;
 
                 if (/^https?:\/\//.test(sessionStorage.getItem("MainPath"))) {
                     // 链接跳转
@@ -603,7 +663,10 @@ export default {
                 }
                 return str;
             },
-            EPGLog(params = {OperationCode: '', Detail: ''}) {
+            EPGLog(params = {
+                OperationCode: '',
+                Detail: ''
+            }) {
                 const tmpObj = {
                     "Message": {
                         "MessageType": "EPGLogReq",
@@ -619,10 +682,8 @@ export default {
                     type: 'POST',
                     url: sessionStorage.getItem("relativePath") + '/epgservice/index.php?MessageType=EPGLogReq',
                     data: JSON.stringify(tmpObj),
-                    complete: function(data) {
-                    },
-                    error: function(err) {
-                    },
+                    complete: function(data) {},
+                    error: function(err) {},
                 });
             },
 
@@ -662,6 +723,7 @@ export default {
 
             //获得客信消息列表
             getRoomMsg() {
+                console.log("getRoomMsg.......");
                 var _this = this;
                 if (this.isRequestStatus) {
                     return;
@@ -688,7 +750,16 @@ export default {
                             const _msgBody = _data.Message.MessageBody;
                             console.log(_msgBody);
                             if (_msgBody.ResultCode == 200) {
-                               console.log("客信消息"+_msgBody);
+                                if (!!_msgBody.MsgList && !!_msgBody.MsgList.RoomMsg && _msgBody.MsgList.RoomMsg.length > 0) {
+                                    console.log("sunccess.......");
+                                    _this.MsgHeight = _msgBody.Height;
+                                    console.log(_this.MsgHeight);
+                                    _this.MsgLeft = _msgBody.Left;
+                                    _this.MsgTop = _msgBody.Top;
+                                    _this.MsgWidth = _msgBody.Width;
+                                    _this.RoomMsg = _msgBody.MsgList.RoomMsg[0];
+                                    console.log(_this.RoomMsg);
+                                }
                             } else {
                                 console.log("请求数据失败");
                             }
