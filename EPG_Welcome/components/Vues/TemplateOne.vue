@@ -209,35 +209,39 @@ a:focus .breatheFrame {
     background-color: red;
     z-index: 3;
     background-color: #ccc;
-    margin-top: 20px;
+    margin-top: 10px;
+    /* background-image: url('../../assets/images/message_bg.png');
+    background-size: cover;*/
 }
 
 .info {
     position: relative;
-    text-align: center;
-    background-color: #ccc;
     font-size: 24px;
     font-weight: bold;
+    text-align: center;
+    color: black;
+    padding: 20px 0;
 }
 
-.hint{
+.hint {
+    position: relative;
     display: block;
     text-decoration: none;
-    height: 30px;
-    line-height: 30px;
     text-align: center;
     border-top: 1px solid black;
     width: 100%;
     font-size: 24px;
-
+    height: 50px;
+    line-height: 50px;
+    color: black;
 }
 </style>
 <template>
     <div class="rootView" id="welcomeLayout">
-        <div class="kexin" :style="{height:MsgHeight + 'px',left:MsgLeft + 'px', top:MsgTop + 'px',width: MsgWidth + 'px'}">
-            <div class="info" :style="{height:RoomMsg.TextHeight + 'px', margin-left:RoomMsg.TextLeft + 'px',margin-top:RoomMsg.TextTop + 'px',width:RoomMsg.TextWidth + 'px'}"> {{{RoomMsg.MsgText}}}
+        <div class="kexin" :style="{'height':MsgHeight + 'px','left':MsgLeft + 'px', 'top':MsgTop + 'px','width': MsgWidth + 'px'}">
+            <div class="info" :style="{'height':MsgHeight-100 + 'px', 'marginLeft':0+ 'px','marinTop':RoomMsg.TextTop + 'px','width':MsgWidth + 'px'}"> {{{RoomMsg.MsgText}}}
             </div>
-            <a href="javascript:;" class="hint">{{RoomMsg.OkButtonText}}</a>
+            <a href="javascript:;" class="hint" @click="hideNotice">{{RoomMsg.OkButtonText}}</a>
         </div>
         <div class="rootView swiperLevel">
             <div style="width: 19.2rem; height: 10.8rem; position: relative;">
@@ -776,6 +780,10 @@ export default {
                 });
             },
 
+            hideNotice() {
+                document.querySelector(".kexin").style.visibility = "hidden";
+            },
+
         },
 
         components: {
@@ -783,6 +791,7 @@ export default {
         },
 
         ready() {
+            var _this = this;
             document.querySelector("#defaultLang").focus();
             this.canNotGoBack = true;
             this.listenBackKey();
@@ -790,7 +799,9 @@ export default {
             this.getUiWord('eng', ['wifi_where_tip']);
             this.getHereWeatherInfo();
             this.getRoomInfoReq();
-            this.getRoomMsg();
+            // setTimeout(() => {
+            //     _this.getRoomMsg();
+            // }, 5000);
             setTimeout(() => {
                 this.tabIndex = 0;
             }, 100);
