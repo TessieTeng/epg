@@ -179,7 +179,6 @@ export default {
                                 sessionStorage.setItem("RootCategoryID", _msgBody.RootCategoryID);
                                 sessionStorage.setItem("Token", _msgBody.Token);
                                 _this.getSysParam();
-                                // _this.goToWelcome();
                             } else {
                                 console.log("Auth请求数据失败");
                                 _this.goToIptv("Auth请求数据失败");
@@ -231,8 +230,11 @@ export default {
                                 _msgBody.ParamList.Param.map(item => {
                                     sessionStorage.setItem(item.Name, item.Value);
                                 });
-                                _this.goToWelcome();
-
+                                if (_this.GetQueryString("cKey") === 'back') {
+                                    _this.gotoMainLayout();
+                                } else {
+                                    _this.goToWelcome();
+                                }
                             } else {
                                 console.log("视频数据获取失败");
                                 _this.goToIptv("视频数据获取失败");
@@ -291,6 +293,30 @@ export default {
                     // 正式路径
                     location.replace("./epggroup_welcomes/welcome_default/welcome.html");
                 }
+            },
+            
+            gotoMainLayout() {
+                let path = './epggroup_mains/main_default/';
+                let file = 'main.html';
+                const {vendor, appName, userAgent} = navigator;
+
+                // 这里注释链接跳转，是因为这里为了处理IPTV按返回键做返回处理，忽略在后台配置的链接跳转
+                /*if (/^https?:\/\//.test(sessionStorage.getItem("MainPath"))) {
+                    // 链接跳转
+                    location.replace(sessionStorage.getItem("MainPath"));
+                    return;
+                } else */if (sessionStorage.getItem("MainPath") == "test") {
+                    // 测试路径
+                    path = './epggroup_mains/main_test/';
+                } else {
+                    // 正式路径
+                }
+                // UT盒子：MC8638
+                if (vendor === 'Apple Inc.' && appName === 'EIS iPanel' && userAgent === 'Sunniwell') {
+                    const lang = sessionStorage.getItem("currLangCode") || 'chi';
+                    file = `main_outer.html?currLangCode=${lang}`;
+                }
+                location.replace(path + file);
             },
 
         },
