@@ -8,10 +8,12 @@
 
 .scrolls {
     width: 100%;
-    opacity: 0.8;
     z-index: 50;
     position: fixed;
-    top: 5px;
+    background-image: url('../../assets/images/bg_path1.png');
+    background-size: cover;
+    height:50px;
+    color:white;
 }
 
 .marquee {
