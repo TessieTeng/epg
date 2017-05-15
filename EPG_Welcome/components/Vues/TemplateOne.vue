@@ -203,46 +203,9 @@ a:focus .breatheFrame {
         box-shadow: 0 0.01rem 0.3rem rgba(6, 127, 210, 1);
     }
 }*/
-
-.kexin {
-    position: fixed;
-    background-color: red;
-    z-index: 3;
-    background-color: #ccc;
-    margin-top: 10px;
-    /* background-image: url('../../assets/images/message_bg.png');
-    background-size: cover;*/
-}
-
-.info {
-    position: relative;
-    font-size: 24px;
-    font-weight: bold;
-    text-align: center;
-    color: black;
-    padding: 20px 0;
-}
-
-.hint {
-    position: relative;
-    display: block;
-    text-decoration: none;
-    text-align: center;
-    border-top: 1px solid black;
-    width: 100%;
-    font-size: 24px;
-    height: 50px;
-    line-height: 50px;
-    color: black;
-}
 </style>
 <template>
     <div class="rootView" id="welcomeLayout">
-        <div class="kexin" :style="{'height':MsgHeight + 'px','left':MsgLeft + 'px', 'top':MsgTop + 'px','width': MsgWidth + 'px'}">
-            <div class="info" :style="{'height':MsgHeight-100 + 'px', 'marginLeft':0+ 'px','marinTop':RoomMsg.TextTop + 'px','width':MsgWidth + 'px'}"> {{{RoomMsg.MsgText}}}
-            </div>
-            <a href="javascript:;" class="hint" @click="hideNotice">{{RoomMsg.OkButtonText}}</a>
-        </div>
         <div class="rootView swiperLevel">
             <div style="width: 19.2rem; height: 10.8rem; position: relative;">
                 <img style="transition: all 1s; position: absolute;" :style="{ opacity: $index === picIndex ? 1 : 0 }" v-for="item in pictureList" :src="item.ImageUrl">
@@ -323,24 +286,6 @@ export default {
                 },
                 currentTime: '',
                 picIndex: 0,
-                MsgHeight: '',
-                MsgLeft: '',
-                MsgWidth: '',
-                MsgTop: '',
-                RoomMsg: {
-                    BgImageSize: '',
-                    BgImageUrl: '',
-                    MsgText: '',
-                    OkButtonText: '',
-                    PolicyID: '',
-                    RelatedAction: '',
-                    RelatedInfo: '',
-                    SubscriptText: '',
-                    TextHeight: '',
-                    TextLeft: '',
-                    TextTop: '',
-                    TextWidth: '',
-                },
 
             };
 
@@ -725,65 +670,6 @@ export default {
                 });
             },
 
-            //获得客信消息列表
-            getRoomMsg() {
-                console.log("getRoomMsg.......");
-                var _this = this;
-                if (this.isRequestStatus) {
-                    return;
-                }
-                this.isRequestStatus = true;
-                const tmpObj = {
-                    "Message": {
-                        "MessageType": "GetRoomMsgReq",
-                        "MessageBody": {
-                            "UserID": sessionStorage.getItem("UserID"),
-                            "LangCode": this.currentLang,
-                            "Token": sessionStorage.getItem("Token"),
-                        }
-                    }
-                };
-
-                Http({
-                    type: 'POST',
-                    url: sessionStorage.getItem("relativePath") + '/epgservice/index.php?MessageType=GetRoomMsgReq',
-                    data: JSON.stringify(tmpObj),
-                    complete: function(data) {
-                        if (data.status === 200) {
-                            const _data = JSON.parse(data.response);
-                            const _msgBody = _data.Message.MessageBody;
-                            console.log(_msgBody);
-                            if (_msgBody.ResultCode == 200) {
-                                if (!!_msgBody.MsgList && !!_msgBody.MsgList.RoomMsg && _msgBody.MsgList.RoomMsg.length > 0) {
-                                    console.log("sunccess.......");
-                                    _this.MsgHeight = _msgBody.Height;
-                                    console.log(_this.MsgHeight);
-                                    _this.MsgLeft = _msgBody.Left;
-                                    _this.MsgTop = _msgBody.Top;
-                                    _this.MsgWidth = _msgBody.Width;
-                                    _this.RoomMsg = _msgBody.MsgList.RoomMsg[0];
-                                    console.log(_this.RoomMsg);
-                                }
-                            } else {
-                                console.log("请求数据失败");
-                            }
-                        } else {
-                            console.log("网络请求失败");
-                        }
-
-                        _this.isRequestStatus = false;
-                        _this.showLoading = false;
-                    },
-                    error: function(err) {
-                        console.log(err);
-                    },
-                });
-            },
-
-            hideNotice() {
-                document.querySelector(".kexin").style.visibility = "hidden";
-            },
-
         },
 
         components: {
@@ -791,7 +677,6 @@ export default {
         },
 
         ready() {
-            var _this = this;
             document.querySelector("#defaultLang").focus();
             this.canNotGoBack = true;
             this.listenBackKey();
@@ -799,9 +684,6 @@ export default {
             this.getUiWord('eng', ['wifi_where_tip']);
             this.getHereWeatherInfo();
             this.getRoomInfoReq();
-            // setTimeout(() => {
-            //     _this.getRoomMsg();
-            // }, 5000);
             setTimeout(() => {
                 this.tabIndex = 0;
             }, 100);
