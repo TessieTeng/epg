@@ -264,8 +264,7 @@ export default {
                     keyEvent = keyEvent ? keyEvent : window.event;
                     var keyvalue = keyEvent.which ? keyEvent.which : keyEvent.keyCode;
                     if (keyvalue == 181) {
-                        // 这里添加indexUrl是为了防止跳到portal页面获取到indexUrl为null
-                        window.parent.location.href = '../../portal.html?indexUrl=' + sessionStorage.getItem("indexUrl");
+                        window.parent.location.href = '../../portal.html';
                     }
                 });
             },
