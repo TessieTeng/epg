@@ -598,7 +598,7 @@ export default {
             categary.children[0].children[0].focus();
             this.listenBackKey();
             this.getRootCategoryData(sessionStorage.getItem("RootCategoryID"));
-            this.getTvmsMsg();
+            //this.getTvmsMsg();
             this.updateIsMainLayout(true);
             this.updateLastStore(0);
             // setTimeout(() => {
