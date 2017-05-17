@@ -7,7 +7,7 @@
 
 .swiperLevel {
     position: absolute;
-    z-index: 1;
+    z-index: 2;
 }
 
 .contentLevel {
@@ -18,7 +18,7 @@
 .bottom {
     position: absolute;
     width: 1280px;
-    z-index: 100000;
+    z-index: 2;
     height: 121px;
     bottom: 0;
 }
@@ -204,7 +204,6 @@ a:focus .breatheFrame {
     }
 }*/
 </style>
-
 <template>
     <div class="rootView" id="welcomeLayout">
         <div class="rootView swiperLevel">
@@ -218,7 +217,7 @@ a:focus .breatheFrame {
                     <span id="wifiaccount"><img class='wifiicon' src='../../assets/images/wifi.png' /><span>{{wifiTip}}</span> </span>
                 </div>
                 <div class="top time">
-                    <span class='weather'>
+                    <span class='weather' v-if='!!weather'>
                         <img class='weathericon' :src='weather.SmallImageUrl' />
                         {{weather.LowTemperature + '℃-' + weather.HighTemperature + '℃'}}
                     </span>
@@ -287,6 +286,7 @@ export default {
                 },
                 currentTime: '',
                 picIndex: 0,
+
             };
 
         },
@@ -397,7 +397,12 @@ export default {
                 this.saveLangCode("eng");
             },
 
-            handleData({ OperationTips, WelcomeWords, SubscriberName, PictureList }) {
+            handleData({
+                OperationTips,
+                WelcomeWords,
+                SubscriberName,
+                PictureList
+            }) {
                 // 操作提示
                 if ((typeof(OperationTips) == undefined) || null == OperationTips) {
                     console.log("操作提示为空");
@@ -454,7 +459,7 @@ export default {
 
                     switch (keyvalue) {
                         // 返回
-                        case 8: 
+                        case 8:
                             if (this.canNotGoBack) {
                                 event.preventDefault();
                                 e.keyCode = 0;
@@ -463,13 +468,13 @@ export default {
                                 e.returnValue = true;
                             }
                             break;
-                        // left
-                        case 37: 
+                            // left
+                        case 37:
                             this.tabIndex = 0;
                             this.changeChinese();
                             break;
-                        // right
-                        case 39: 
+                            // right
+                        case 39:
                             this.tabIndex = 1;
                             this.changeEnglish();
                             break;
@@ -483,7 +488,11 @@ export default {
 
                 let path = '../../epggroup_mains/main_default/';
                 let file = 'main.html';
-                const {vendor, appName, userAgent} = navigator;
+                const {
+                    vendor,
+                    appName,
+                    userAgent
+                } = navigator;
 
                 if (/^https?:\/\//.test(sessionStorage.getItem("MainPath"))) {
                     // 链接跳转
@@ -575,9 +584,12 @@ export default {
                             if (_msgBody.ResultCode === 200) {
                                 _this.isRequestStatus = false;
                                 // 第一天天气
-                                _this.weather = _msgBody.WeatherList.Weather[0];
-                                _this.weather.SmallImageUrl = `${_this.weatherRoot}${_this.weather.SmallImageUrl.match(/\/(\w*\.(?:gif|png|jpg))$/)[1]}`;
-
+                                if (!!_msgBody.WeatherList.Weather && _msgBody.WeatherList.Weather.length > 0) {
+                                    _this.weather = _msgBody.WeatherList.Weather[0];
+                                    _this.weather.SmallImageUrl = `${_this.weatherRoot}${_this.weather.SmallImageUrl.match(/\/(\w*\.(?:gif|png|jpg))$/)[1]}`;
+                                } else {
+                                    _this.weather = null;
+                                }
                                 if (sessionStorage.getItem('WelcomePageGroupPath') === 'test') {
                                     _this.EPGLog({
                                         OperationCode: 'getHereWeatherInfo',
@@ -603,7 +615,10 @@ export default {
                 }
                 return str;
             },
-            EPGLog(params = {OperationCode: '', Detail: ''}) {
+            EPGLog(params = {
+                OperationCode: '',
+                Detail: ''
+            }) {
                 const tmpObj = {
                     "Message": {
                         "MessageType": "EPGLogReq",
@@ -619,10 +634,8 @@ export default {
                     type: 'POST',
                     url: sessionStorage.getItem("relativePath") + '/epgservice/index.php?MessageType=EPGLogReq',
                     data: JSON.stringify(tmpObj),
-                    complete: function(data) {
-                    },
-                    error: function(err) {
-                    },
+                    complete: function(data) {},
+                    error: function(err) {},
                 });
             },
 
@@ -660,51 +673,6 @@ export default {
                 });
             },
 
-            //获得客信消息列表
-            getRoomMsg() {
-                var _this = this;
-                if (this.isRequestStatus) {
-                    return;
-                }
-                this.isRequestStatus = true;
-                const tmpObj = {
-                    "Message": {
-                        "MessageType": "GetRoomMsgReq",
-                        "MessageBody": {
-                            "UserID": sessionStorage.getItem("UserID"),
-                            "LangCode": this.currentLang,
-                            "Token": sessionStorage.getItem("Token"),
-                        }
-                    }
-                };
-
-                Http({
-                    type: 'POST',
-                    url: sessionStorage.getItem("relativePath") + '/epgservice/index.php?MessageType=GetRoomMsgReq',
-                    data: JSON.stringify(tmpObj),
-                    complete: function(data) {
-                        if (data.status === 200) {
-                            const _data = JSON.parse(data.response);
-                            const _msgBody = _data.Message.MessageBody;
-                            console.log(_msgBody);
-                            if (_msgBody.ResultCode == 200) {
-                               console.log("客信消息"+_msgBody);
-                            } else {
-                                console.log("请求数据失败");
-                            }
-                        } else {
-                            console.log("网络请求失败");
-                        }
-
-                        _this.isRequestStatus = false;
-                        _this.showLoading = false;
-                    },
-                    error: function(err) {
-                        console.log(err);
-                    },
-                });
-            },
-
         },
 
         components: {
@@ -719,7 +687,6 @@ export default {
             this.getUiWord('eng', ['wifi_where_tip']);
             this.getHereWeatherInfo();
             this.getRoomInfoReq();
-            this.getRoomMsg();
             setTimeout(() => {
                 this.tabIndex = 0;
             }, 100);

@@ -8,31 +8,69 @@
 
 .scrolls {
     width: 100%;
-    opacity: 0.8;
     z-index: 50;
     position: fixed;
-    top: 5px;
+    background-image: url('../../assets/images/bg_path1.png');
+    background-size: cover;
+    height:50px;
+    color:white;
 }
 
 .marquee {
     text-align: center;
     line-height: 50px;
-    font-size: 300%;
     font-weight: bold;
+}
+
+.kexin {
+    position: fixed;
+    background-color: red;
+    z-index: 3;
+    background-color: #ccc;
+    margin-top: 10px;
+    /* background-image: url('../../assets/images/message_bg.png');
+    background-size: cover;*/
+}
+
+.info {
+    position: relative;
+    font-size: 24px;
+    font-weight: bold;
+    text-align: center;
+    color: black;
+    padding: 20px 0;
+}
+
+.hint {
+    position: relative;
+    display: block;
+    text-decoration: none;
+    text-align: center;
+    border-top: 1px solid black;
+    width: 100%;
+    font-size: 24px;
+    height: 50px;
+    line-height: 50px;
+    color: black;
 }
 </style>
 <template>
     <div>
         <div class="rootDiv">
-            <div class="scrolls">
-                <marquee class="marquee" behavior="scroll" scrollamount="2" scrolldelay="0" loop="-1" height="50">
-                    {{MsgText}}
+            <div class="kexin" :style="{'height':MsgHeight + 'px','left':MsgLeft + 'px', 'top':MsgTop + 'px','width': MsgWidth + 'px'}">
+                <div class="info" :style="{'height':MsgHeight-100 + 'px', 'marginLeft':0+ 'px','marinTop':RoomMsg.TextTop + 'px','width':MsgWidth + 'px'}"> {{{RoomMsg.MsgText}}}
+                </div>
+                <a href="javascript:;" class="hint" @click="hideNotice">{{RoomMsg.OkButtonText}}</a>
+            </div>
+            <div class="scrolls" v-if='!!TvmsMsg.MsgText'>
+                <marquee class="marquee" behavior="scroll" scrollamount="3" scrolldelay="0" height="50" v-bind:style="{fontSize: TvmsMsg.FontSize + 'px', loop:TvmsMsg.ScrollTimes}">
+                    {{TvmsMsg.MsgText}}
                 </marquee>
             </div>
             <div class="bgimg" :style='{"background-image": "url(" + bgimg +  ")"}' v-if='!hasVideo'></div>
             <div class="menuTab">
                 <div class="advertisement">
-                    <img class="advertisement" v-bind:src='adPic[0].AdUrl'>
+                    <img class="advertisement" v-bind:src='adPic'>
                 </div>
                 <ul id="firstTabItem">
                     <li v-for="item in categoryList">
@@ -73,11 +111,9 @@ export default {
                 isRequestStatus: false,
                 firstEnter: true,
                 exitTime: 0,
-                bgimg: '',
                 hasVideo: false,
-                adPic: [{
-                    AdUrl: ''
-                }],
+                bgimg: '',
+                adPic: '',
                 showLoading: true,
                 categoryList: [{
                     PictureList: {
@@ -95,19 +131,36 @@ export default {
                     }
                 }],
                 isFoucs: false,
-
-                MsgList: {
-                    TvmsMsg: [{
-                        PolicyID: "",
-                        MsgSeq: "",
-                        MsgText: "",
-                        ScrollTimes: "",
-                        Top: "",
-                        Left: "",
-                        Width: "",
-                        FontSize: "",
-                    }]
+                TvmsMsg: {
+                    PolicyID: "",
+                    MsgSeq: "",
+                    MsgText: "",
+                    ScrollTimes: "",
+                    Top: "",
+                    Left: "",
+                    Width: "",
+                    FontSize: "",
                 },
+
+                MsgHeight: '',
+                MsgLeft: '',
+                MsgWidth: '',
+                MsgTop: '',
+                RoomMsg: {
+                    BgImageSize: '',
+                    BgImageUrl: '',
+                    MsgText: '',
+                    OkButtonText: '',
+                    PolicyID: '',
+                    RelatedAction: '',
+                    RelatedInfo: '',
+                    SubscriptText: '',
+                    TextHeight: '',
+                    TextLeft: '',
+                    TextTop: '',
+                    TextWidth: '',
+                },
+
             };
         },
         methods: {
@@ -181,12 +234,18 @@ export default {
                             if (_msgBody.ResultCode == 200) {
                                 _this.adPic = _msgBody.AdList.Ad;
 
-                                const tmpAdImgs = _this.adPic.filter(item => {
+                                const tmpFullScreenImgs = _this.adPic.filter(item => {
                                     return item.AdPosNo === "pos00";
                                 });
+                                const tmpLeftBottomImgs = _this.adPic.filter(item => {
+                                    return item.AdPosNo === "pos03";
+                                });
                                 // 暂时只取了第一张
-                                if (tmpAdImgs.length > 0) {
-                                    _this.bgimg = tmpAdImgs[0].AdUrl;
+                                if (tmpFullScreenImgs.length > 0) {
+                                    _this.bgimg = tmpFullScreenImgs[0].AdUrl;
+                                }
+                                if (tmpLeftBottomImgs.length > 0) {
+                                    _this.adPic = tmpLeftBottomImgs[0].AdUrl;
                                 }
 
                                 _this.categoryList = _msgBody.ChildrenObjectList.Object;
@@ -400,11 +459,12 @@ export default {
 
             //获得TVMS消息列表
             getTvmsMsg() {
+                console.log("getTvmsMsg");
                 var _this = this;
-                if (this.isRequestStatus) {
-                    return;
-                }
-                this.isRequestStatus = true;
+                // if (this.isRequestStatus) {
+                //     return;
+                // }
+                // this.isRequestStatus = true;
                 const tmpObj = {
                     "Message": {
                         "MessageType": "GetTvmsMsgReq",
@@ -421,22 +481,16 @@ export default {
                     data: JSON.stringify(tmpObj),
                     complete: function(data) {
                         if (data.status === 200) {
+                            console.log("complete 200");
                             const _data = JSON.parse(data.response);
                             const _msgBody = _data.Message.MessageBody;
-                            console.log(_msgBody);
+                            console.log("msgBody" + _msgBody);
                             if (_msgBody.ResultCode == 200) {
-                                if (_msgBody.MsgList == "") {
-                                    document.querySelector(".scrolls").style.visibility = "hidden";
-                                } else {
-                                    var TvmsMsg = _msgBody.MsgList.TvmsMsg;
-                                    console.log("MsgList:" + TvmsMsg);
-                                    for (var i = 0; i < TvmsMsg.length; i++) {
-                                        _this.MsgText = TvmsMsg[0].MsgText;
-                                        console.log("滚动消息"+_this.MsgText);
-                                    }
-
+                                console.log("请求成功");
+                                //暂时取第一个
+                                if (!!_msgBody.MsgList && !!_msgBody.MsgList.TvmsMsg && _msgBody.MsgList.TvmsMsg.length > 0) {
+                                    _this.TvmsMsg = _msgBody.MsgList.TvmsMsg[0];
                                 }
-
                             } else {
                                 console.log("请求数据失败");
                             }
@@ -452,6 +506,66 @@ export default {
                     },
                 });
             },
+
+            //获得客信消息列表
+            getRoomMsg() {
+                console.log("getRoomMsg.......");
+                var _this = this;
+                if (this.isRequestStatus) {
+                    return;
+                }
+                this.isRequestStatus = true;
+                const tmpObj = {
+                    "Message": {
+                        "MessageType": "GetRoomMsgReq",
+                        "MessageBody": {
+                            "UserID": sessionStorage.getItem("UserID"),
+                            "LangCode": this.currentLang,
+                            "Token": sessionStorage.getItem("Token"),
+                        }
+                    }
+                };
+
+                Http({
+                    type: 'POST',
+                    url: sessionStorage.getItem("relativePath") + '/epgservice/index.php?MessageType=GetRoomMsgReq',
+                    data: JSON.stringify(tmpObj),
+                    complete: function(data) {
+                        if (data.status === 200) {
+                            const _data = JSON.parse(data.response);
+                            const _msgBody = _data.Message.MessageBody;
+                            console.log(_msgBody);
+                            if (_msgBody.ResultCode == 200) {
+                                if (!!_msgBody.MsgList && !!_msgBody.MsgList.RoomMsg && _msgBody.MsgList.RoomMsg.length > 0) {
+                                    console.log("sunccess.......");
+                                    _this.MsgHeight = _msgBody.Height;
+                                    console.log(_this.MsgHeight);
+                                    _this.MsgLeft = _msgBody.Left;
+                                    _this.MsgTop = _msgBody.Top;
+                                    _this.MsgWidth = _msgBody.Width;
+                                    _this.RoomMsg = _msgBody.MsgList.RoomMsg[0];
+                                    console.log(_this.RoomMsg);
+                                }
+                            } else {
+                                console.log("请求数据失败");
+                            }
+                        } else {
+                            console.log("网络请求失败");
+                        }
+
+                        _this.isRequestStatus = false;
+                        _this.showLoading = false;
+                    },
+                    error: function(err) {
+                        console.log(err);
+                    },
+                });
+            },
+
+            hideNotice() {
+                document.querySelector(".kexin").style.visibility = "hidden";
+            },
+
 
         },
 
@@ -475,6 +589,7 @@ export default {
             Loading,
         },
         ready() {
+            var _this = this;
             // 兼容UT盒子从main_outer.html进入时取不到currLangCode的问题
             if (/main_outer.html/.test(window.parent.location.pathname)) {
                 this.getCurrLangCodeFromParentWindow();
@@ -483,16 +598,19 @@ export default {
             categary.children[0].children[0].focus();
             this.listenBackKey();
             this.getRootCategoryData(sessionStorage.getItem("RootCategoryID"));
+            //this.getTvmsMsg();
             this.updateIsMainLayout(true);
             this.updateLastStore(0);
-            this.getTvmsMsg();
+            // setTimeout(() => {
+            //     _this.getRoomMsg();
+            // }, 5000);
             this.$nextTick(() => {
                 if (!!sessionStorage.getItem('bg_media_url')) {
                     this.hasVideo = false;
                     // this.hasVideo = true;
                     if (this.firstVideoPlay) {
                         this.updateFirstVideoPlay(false);
-                        this.getProgramInfo();
+                        // this.getProgramInfo();
                     } else {
                         this.$dispatch("resumeVideo");
                     }

@@ -6,7 +6,7 @@
             <div class="bgimg" :style='{"background-image": "url(" + bgimg +  ")"}' v-if='!hasVideo'></div>
             <div class="menuTab">
                 <div class="advertisement">
-                    <img class="advertisement" v-bind:src='adPic[0].AdUrl'>
+                    <img class="advertisement" v-bind:src='adPic'>
                 </div>
                 <ul id="secondTabItem">
                     <li v-for="item in categoryList">
@@ -41,11 +41,9 @@ export default {
     data() {
             return {
                 isRequestStatus: false,
-                bgimg: '',
                 hasVideo: false,
-                adPic: [{
-                    AdUrl: ''
-                }],
+                bgimg: '',
+                adPic: '',
                 showLoading: true,
                 categoryList: [{
                     PictureList: {
@@ -180,12 +178,18 @@ export default {
                             if (_msgBody.ResultCode == 200) {
                                 _this.adPic = _msgBody.AdList.Ad;
 
-                                const tmpAdImgs = _this.adPic.filter(item => {
+                                const tmpFullScreenImgs = _this.adPic.filter(item => {
                                     return item.AdPosNo === "pos00";
                                 });
+                                const tmpLeftBottomImgs = _this.adPic.filter(item => {
+                                    return item.AdPosNo === "pos03";
+                                });
                                 // 暂时只取了第一张
-                                if (tmpAdImgs.length > 0) {
-                                    _this.bgimg = tmpAdImgs[0].AdUrl;
+                                if (tmpFullScreenImgs.length > 0) {
+                                    _this.bgimg = tmpFullScreenImgs[0].AdUrl;
+                                }
+                                if (tmpLeftBottomImgs.length > 0) {
+                                    _this.adPic = tmpLeftBottomImgs[0].AdUrl;
                                 }
 
                                 _this.categoryList = _msgBody.ChildrenObjectList.Object;

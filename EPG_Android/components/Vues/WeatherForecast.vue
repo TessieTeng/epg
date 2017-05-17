@@ -299,12 +299,13 @@ export default {
                 });
             },
             listenBackKey() {
-                window.onkeydown = function(event) {
-                    var e = event || window.event;
-                    if (e.keyCode == 8) {
+                document.addEventListener('keydown', (keyEvent) => {
+                    keyEvent = keyEvent ? keyEvent : window.event;
+                    var keyvalue = keyEvent.which ? keyEvent.which : keyEvent.keyCode;
+                    if (keyvalue == 8) {
                         history.back();
                     }
-                };
+                });
             },
             getImgFromUrl(url) {
                 if (!url) {
