@@ -218,7 +218,7 @@ a:focus .breatheFrame {
                     <span id="wifiaccount"><img class='wifiicon' src='../../assets/images/wifi.png' /><span>{{wifiTip}}</span> </span>
                 </div>
                 <div class="top time">
-                    <span class='weather'>
+                    <span class='weather' v-if='!!weather'>
                         <img class='weathericon' :src='weather.SmallImageUrl' />
                         {{weather.LowTemperature + '℃-' + weather.HighTemperature + '℃'}}
                     </span>
@@ -575,9 +575,12 @@ export default {
                             if (_msgBody.ResultCode === 200) {
                                 _this.isRequestStatus = false;
                                 // 第一天天气
-                                _this.weather = _msgBody.WeatherList.Weather[0];
-                                _this.weather.SmallImageUrl = `${_this.weatherRoot}${_this.weather.SmallImageUrl.match(/\/(\w*\.(?:gif|png|jpg))$/)[1]}`;
-
+                                if (!!_msgBody.WeatherList.Weather && _msgBody.WeatherList.Weather.length > 0) {
+                                    _this.weather = _msgBody.WeatherList.Weather[0];
+                                    _this.weather.SmallImageUrl = `${_this.weatherRoot}${_this.weather.SmallImageUrl.match(/\/(\w*\.(?:gif|png|jpg))$/)[1]}`;
+                                } else {
+                                    _this.weather = null;
+                                }
                                 if (sessionStorage.getItem('WelcomePageGroupPath') === 'test') {
                                     _this.EPGLog({
                                         OperationCode: 'getHereWeatherInfo',
