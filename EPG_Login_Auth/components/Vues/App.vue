@@ -77,7 +77,6 @@ export default {
                 // sessionStorage.setItem("relativePath", Config.relativePath);
                 // sessionStorage.setItem("province", Config.province);
                 if (!!window.Authentication) {
-                    Authentication.CTCSetConfig("UserID", Authentication.CTCGetConfig("STBID"));
                     sessionStorage.setItem("EPGDomain", Authentication.CTCGetConfig('EPGDomain'));
                     sessionStorage.setItem("UrlOrigin", Authentication.CTCGetConfig('EPGDomain').match(/^(https?:\/\/.*:\d+)\//)[1]);
                     sessionStorage.setItem("UserToken", Authentication.CTCGetConfig('UserToken'));
