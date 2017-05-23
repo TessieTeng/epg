@@ -60,7 +60,18 @@ export default {
                     this.area_id = jsonObj.xml.area_id;
                     this.csm_id = jsonObj.xml.csm_id;
 
-                    console.log("helo>>>>", this.server_ip);
+                     sessionStorage.setItem("server_ip", this.server_ip);  //用户访问的EPG服务器IP地址
+                     sessionStorage.setItem("group_name", this.group_name); //EPG模板名称
+                     sessionStorage.setItem("group_path", this.group_path); //用户分组所对应得Epg路径名
+                     sessionStorage.setItem("oss_user_id", this.oss_user_id); //IPTV账号
+                     sessionStorage.setItem("page_url", this.page_url); //在第三方页面视频播放URL
+                     sessionStorage.setItem("partner", this.partner); //厂商平台参数，以ZTE、HUAWEI打头
+                     sessionStorage.setItem("group_id", this.group_id); //用户分组ID
+                     sessionStorage.setItem("cdc_group_id", this.cdc_group_id);
+                     sessionStorage.setItem("area_id", this.area_id);
+                     sessionStorage.setItem("csm_id", this.csm_id);
+
+
 
                     // 后期如果从url参数拿到indexUrl，则要在这里set到sessionStorage里面
 
