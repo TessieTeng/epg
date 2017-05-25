@@ -12,8 +12,8 @@
     position: fixed;
     background-image: url('../../assets/images/bg_path1.png');
     background-size: cover;
-    height:50px;
-    color:white;
+    height: 50px;
+    color: white;
 }
 
 .marquee {
@@ -481,12 +481,10 @@ export default {
                     data: JSON.stringify(tmpObj),
                     complete: function(data) {
                         if (data.status === 200) {
-                            console.log("complete 200");
                             const _data = JSON.parse(data.response);
                             const _msgBody = _data.Message.MessageBody;
-                            console.log("msgBody" + _msgBody);
                             if (_msgBody.ResultCode == 200) {
-                                console.log("请求成功");
+                                console.log("请求消息列表成功");
                                 //暂时取第一个
                                 if (!!_msgBody.MsgList && !!_msgBody.MsgList.TvmsMsg && _msgBody.MsgList.TvmsMsg.length > 0) {
                                     _this.TvmsMsg = _msgBody.MsgList.TvmsMsg[0];
@@ -567,6 +565,28 @@ export default {
             },
 
 
+            getMediaUrl(urls) {
+                const _this = this;
+                console.log("获取湖北电信的视频url........");
+                Http({
+                    type: 'GET',
+                    url: urls,
+                    data: '',
+                    complete: function(data) {
+                        if (data.status === 200) {
+                            const res = JSON.parse(data.response);
+                            console.log(res);
+                        } else {
+                            console.log('zhaoyong: ' + data.status);
+                        }
+                    },
+                    error: function(err) {
+                        console.log('网络请求错误：' + err);
+                    },
+                });
+            },
+
+
         },
 
         store: store,
@@ -609,8 +629,35 @@ export default {
                     this.hasVideo = false;
                     // this.hasVideo = true;
                     if (this.firstVideoPlay) {
+                        var host = sessionStorage.getItem('host');
+                        var port = sessionStorage.getItem('port');
+                        console.log('host>>>>>>' + host);
+                        console.log('port>>>>>>' + port);
                         this.updateFirstVideoPlay(false);
-                        // this.getProgramInfo();
+                        //this.getProgramInfo();
+                        switch (sessionStorage.getItem('province')) {
+                            case '云南':
+                                this.getProgramInfo();
+                                break;
+                            case '湖北':
+                                var urls = '';
+                                if (sessionStorage.getItem("partner") === "HUAWEI") {
+                                    console.log("华为平台......");
+                                    urls = 'http://'+ port +'/EPG/MediaService/SmallScreen.jsp?ContentID=8 d2252247ccc45538582df341cc5e060&Left=0&Top=0&Width=0&Height=0&CycleFlag=0&GetCntFlag=1';
+                                    console.log(urls);
+                                    this.getMediaUrl(urls);
+                                } else {
+                                    console.log("中兴平台......");
+                                    urls = host + '/MediaService/mallScreen?ContentID=8d2252247ccc45538582df341cc5e060&Left=0&Top=0&Width= 0&Height=0&CycleFlag=0&GetCntFlag=1&Type=ad';
+                                    console.log(urls);
+                                    this.getMediaUrl(urls);
+                                }
+                                break;
+                            default:
+                                break;
+                        }
+
+                        this.$dispatch("playVideo");
                     } else {
                         this.$dispatch("resumeVideo");
                     }

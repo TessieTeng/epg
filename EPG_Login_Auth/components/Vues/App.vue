@@ -60,16 +60,16 @@ export default {
                     this.area_id = jsonObj.xml.area_id;
                     this.csm_id = jsonObj.xml.csm_id;
 
-                     sessionStorage.setItem("server_ip", this.server_ip);  //用户访问的EPG服务器IP地址
-                     sessionStorage.setItem("group_name", this.group_name); //EPG模板名称
-                     sessionStorage.setItem("group_path", this.group_path); //用户分组所对应得Epg路径名
-                     sessionStorage.setItem("oss_user_id", this.oss_user_id); //IPTV账号
-                     sessionStorage.setItem("page_url", this.page_url); //在第三方页面视频播放URL
-                     sessionStorage.setItem("partner", this.partner); //厂商平台参数，以ZTE、HUAWEI打头
-                     sessionStorage.setItem("group_id", this.group_id); //用户分组ID
-                     sessionStorage.setItem("cdc_group_id", this.cdc_group_id);
-                     sessionStorage.setItem("area_id", this.area_id);
-                     sessionStorage.setItem("csm_id", this.csm_id);
+                    sessionStorage.setItem("server_ip", this.server_ip); //用户访问的EPG服务器IP地址
+                    sessionStorage.setItem("group_name", this.group_name); //EPG模板名称
+                    sessionStorage.setItem("group_path", this.group_path); //用户分组所对应得Epg路径名
+                    sessionStorage.setItem("oss_user_id", this.oss_user_id); //IPTV账号
+                    sessionStorage.setItem("page_url", this.page_url); //在第三方页面视频播放URL
+                    sessionStorage.setItem("partner", this.partner); //厂商平台参数，以ZTE、HUAWEI打头
+                    sessionStorage.setItem("group_id", this.group_id); //用户分组ID
+                    sessionStorage.setItem("cdc_group_id", this.cdc_group_id);
+                    sessionStorage.setItem("area_id", this.area_id);
+                    sessionStorage.setItem("csm_id", this.csm_id);
 
 
 
@@ -87,7 +87,15 @@ export default {
                 }
                 // sessionStorage.setItem("relativePath", Config.relativePath);
                 // sessionStorage.setItem("province", Config.province);
+
                 if (!!window.Authentication) {
+                    var epgdomain = Authentication.CTCGetConfig('EPGDomain');
+                    var last = epgdomain.lastIndexOf("/");
+                    var host = epgdomain.substr(0, last);
+                    var str = epgdomain.split('/');
+                    var port = str[2];
+                    sessionStorage.setItem("port", port);
+                    sessionStorage.setItem("host", host);
                     sessionStorage.setItem("EPGDomain", Authentication.CTCGetConfig('EPGDomain'));
                     sessionStorage.setItem("UrlOrigin", Authentication.CTCGetConfig('EPGDomain').match(/^(https?:\/\/.*:\d+)\//)[1]);
                     sessionStorage.setItem("UserToken", Authentication.CTCGetConfig('UserToken'));
@@ -305,18 +313,23 @@ export default {
                     location.replace("./epggroup_welcomes/welcome_default/welcome.html");
                 }
             },
-            
+
             gotoMainLayout() {
                 let path = './epggroup_mains/main_default/';
                 let file = 'main.html';
-                const {vendor, appName, userAgent} = navigator;
+                const {
+                    vendor,
+                    appName,
+                    userAgent
+                } = navigator;
 
                 // 这里注释链接跳转，是因为这里为了处理IPTV按返回键做返回处理，忽略在后台配置的链接跳转
                 /*if (/^https?:\/\//.test(sessionStorage.getItem("MainPath"))) {
                     // 链接跳转
                     location.replace(sessionStorage.getItem("MainPath"));
                     return;
-                } else */if (sessionStorage.getItem("MainPath") == "test") {
+                } else */
+                if (sessionStorage.getItem("MainPath") == "test") {
                     // 测试路径
                     path = './epggroup_mains/main_test/';
                 } else {
