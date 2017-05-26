@@ -90,10 +90,13 @@ export default {
 
                 if (!!window.Authentication) {
                     var epgdomain = Authentication.CTCGetConfig('EPGDomain');
+                    //中兴平台
                     var last = epgdomain.lastIndexOf("/");
                     var host = epgdomain.substr(0, last);
-                    var str = epgdomain.split('/');
-                    var port = str[2];
+                    //华为平台
+                    var str = epgdomain.indexOf('/',10);
+                    var port = epgdomain.substr(0, str);
+
                     sessionStorage.setItem("port", port);
                     sessionStorage.setItem("host", host);
                     sessionStorage.setItem("EPGDomain", Authentication.CTCGetConfig('EPGDomain'));

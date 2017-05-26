@@ -57,7 +57,10 @@
 <template>
     <div>
         <div class="rootDiv">
-            <div class="kexin" :style="{'height':MsgHeight + 'px','left':MsgLeft + 'px', 'top':MsgTop + 'px','width': MsgWidth + 'px'}">
+        <!--     <div class="bgimg">
+                <iframe :src="mediaurl" style="border:1px solid red; width:500px; height:400px; position:fixed; left:150px;top:50px" ></iframe>
+            </div> -->
+                <div class="kexin" :style="{'height':MsgHeight + 'px','left':MsgLeft + 'px', 'top':MsgTop + 'px','width': MsgWidth + 'px'}">
                 <div class="info" :style="{'height':MsgHeight-100 + 'px', 'marginLeft':0+ 'px','marinTop':RoomMsg.TextTop + 'px','width':MsgWidth + 'px'}"> {{{RoomMsg.MsgText}}}
                 </div>
                 <a href="javascript:;" class="hint" @click="hideNotice">{{RoomMsg.OkButtonText}}</a>
@@ -92,6 +95,7 @@
 import Loading from '../Tools/Loading.vue';
 import store from '../../vuex/store.js';
 import Http from '../../assets/lib/Http';
+import xml2json from '../../assets/lib/xml2json.min.js';
 import {
     updateLastPicList,
     updateFirstClassTab,
@@ -160,6 +164,7 @@ export default {
                     TextTop: '',
                     TextWidth: '',
                 },
+                mediaurl: 'http://121.60.237.162:33200/EPG/MediaService/SmallScreen.jsp?ContentID=695496e7575f4b728f4056782cbaefdf&Left=0&Top=0&Width=0&Height=0&CycleFlag=1GetCntFlag=1',
 
             };
         },
@@ -564,20 +569,19 @@ export default {
                 document.querySelector(".kexin").style.visibility = "hidden";
             },
 
-
-            getMediaUrl(urls) {
-                const _this = this;
-                console.log("获取湖北电信的视频url........");
+            getMediaUrl(url) {
+                var _this = this;
+                console.log('获取湖北电信的视频url.......');
                 Http({
                     type: 'GET',
-                    url: urls,
+                    url: url,
                     data: '',
                     complete: function(data) {
                         if (data.status === 200) {
-                            const res = JSON.parse(data.response);
-                            console.log(res);
+                            console.log('请求视频url成功');
+                            console.log(data.response);
                         } else {
-                            console.log('zhaoyong: ' + data.status);
+                            console.log('error: ' + data.status);
                         }
                     },
                     error: function(err) {
@@ -585,8 +589,6 @@ export default {
                     },
                 });
             },
-
-
         },
 
         store: store,
@@ -626,8 +628,8 @@ export default {
             // }, 5000);
             this.$nextTick(() => {
                 if (!!sessionStorage.getItem('bg_media_url')) {
-                    this.hasVideo = false;
-                    // this.hasVideo = true;
+                    //this.hasVideo = false;
+                    this.hasVideo = true;
                     if (this.firstVideoPlay) {
                         var host = sessionStorage.getItem('host');
                         var port = sessionStorage.getItem('port');
@@ -635,21 +637,21 @@ export default {
                         console.log('port>>>>>>' + port);
                         this.updateFirstVideoPlay(false);
                         //this.getProgramInfo();
+                        var urls = '';
                         switch (sessionStorage.getItem('province')) {
                             case '云南':
                                 this.getProgramInfo();
                                 break;
                             case '湖北':
-                                var urls = '';
                                 if (sessionStorage.getItem("partner") === "HUAWEI") {
                                     console.log("华为平台......");
-                                    urls = 'http://'+ port +'/EPG/MediaService/SmallScreen.jsp?ContentID=8 d2252247ccc45538582df341cc5e060&Left=0&Top=0&Width=0&Height=0&CycleFlag=0&GetCntFlag=1';
-                                    console.log(urls);
+                                    urls = port + '/EPG/MediaService/SmallScreen.jsp?ContentID=695496e7575f4b728f4056782cbaefdf&Left=0&Top=0&Width=0&Height=0&CycleFlag=1GetCntFlag=1';
+                                    console.log('huaweiurls>>>>' + urls);
                                     this.getMediaUrl(urls);
                                 } else {
                                     console.log("中兴平台......");
-                                    urls = host + '/MediaService/mallScreen?ContentID=8d2252247ccc45538582df341cc5e060&Left=0&Top=0&Width= 0&Height=0&CycleFlag=0&GetCntFlag=1&Type=ad';
-                                    console.log(urls);
+                                    urls = host + '/MediaService/SmallScreen?Type=ad&ContentID=695496e7575f4b728f4056782cbaefdf&Left=0&Top=0&Width=0&Height=0&CycleFlag=0&GetCntFlag=1';
+                                    console.log('zteurls>>>>' + urls);
                                     this.getMediaUrl(urls);
                                 }
                                 break;
