@@ -53,14 +53,24 @@
     line-height: 50px;
     color: black;
 }
+
+.media {
+    width: 1790px;
+    height: 552.33px;
+    position: fixed;
+    line-height: 552.33px;
+    background-position: center;
+    background-size: cover;
+    border: 1px solid #ccc;
+}
 </style>
 <template>
     <div>
         <div class="rootDiv">
-        <!--     <div class="bgimg">
-                <iframe :src="mediaurl" style="border:1px solid red; width:500px; height:400px; position:fixed; left:150px;top:50px" ></iframe>
-            </div> -->
-                <div class="kexin" :style="{'height':MsgHeight + 'px','left':MsgLeft + 'px', 'top':MsgTop + 'px','width': MsgWidth + 'px'}">
+            <div class="bgimg">
+                <iframe name="if_smallscreen" :src="mediaurl" class="media"></iframe>
+            </div>
+            <!--     <div class="kexin" :style="{'height':MsgHeight + 'px','left':MsgLeft + 'px', 'top':MsgTop + 'px','width': MsgWidth + 'px'}">
                 <div class="info" :style="{'height':MsgHeight-100 + 'px', 'marginLeft':0+ 'px','marinTop':RoomMsg.TextTop + 'px','width':MsgWidth + 'px'}"> {{{RoomMsg.MsgText}}}
                 </div>
                 <a href="javascript:;" class="hint" @click="hideNotice">{{RoomMsg.OkButtonText}}</a>
@@ -69,7 +79,7 @@
                 <marquee class="marquee" behavior="scroll" scrollamount="3" scrolldelay="0" height="50" v-bind:style="{fontSize: TvmsMsg.FontSize + 'px', loop:TvmsMsg.ScrollTimes}">
                     {{TvmsMsg.MsgText}}
                 </marquee>
-            </div>
+            </div> -->
             <div class="bgimg" :style='{"background-image": "url(" + bgimg +  ")"}' v-if='!hasVideo'></div>
             <div class="menuTab">
                 <div class="advertisement">
@@ -95,7 +105,6 @@
 import Loading from '../Tools/Loading.vue';
 import store from '../../vuex/store.js';
 import Http from '../../assets/lib/Http';
-import xml2json from '../../assets/lib/xml2json.min.js';
 import {
     updateLastPicList,
     updateFirstClassTab,
@@ -164,7 +173,7 @@ export default {
                     TextTop: '',
                     TextWidth: '',
                 },
-                mediaurl: 'http://121.60.237.162:33200/EPG/MediaService/SmallScreen.jsp?ContentID=695496e7575f4b728f4056782cbaefdf&Left=0&Top=0&Width=0&Height=0&CycleFlag=1GetCntFlag=1',
+                mediaurl: '',
 
             };
         },
@@ -579,7 +588,10 @@ export default {
                     complete: function(data) {
                         if (data.status === 200) {
                             console.log('请求视频url成功');
-                            console.log(data.response);
+                            // _this.EPGLog({
+                            //     OperationCode: '华为平台数据',
+                            //     Detail: 'test' + data.response,
+                            // });
                         } else {
                             console.log('error: ' + data.status);
                         }
@@ -589,6 +601,27 @@ export default {
                     },
                 });
             },
+            //打印window.frames["if_smallscreen"] 属性
+            getparam() {
+                var obj = window.frames["if_smallscreen"];
+                var temp = "";
+                for (var i in obj) { //用javascript的for/in循环遍历对象的属性 
+                    temp += i + ":" + obj[i] + "\n";
+                }
+                obj.MediaPlayer = null
+                console.log(temp);
+                this.EPGLog({
+                    OperationCode: 'window',
+                    Detail: temp,
+                });
+
+            },
+
+            getMeidstr() {
+                var yong = window.frames["if_smallscreen"].getMediastr('695496e7575f4b728f4056782cbaefdf');
+                console.log(yong);
+            },
+
         },
 
         store: store,
@@ -626,6 +659,7 @@ export default {
             // setTimeout(() => {
             //     _this.getRoomMsg();
             // }, 5000);
+
             this.$nextTick(() => {
                 if (!!sessionStorage.getItem('bg_media_url')) {
                     //this.hasVideo = false;
@@ -645,14 +679,16 @@ export default {
                             case '湖北':
                                 if (sessionStorage.getItem("partner") === "HUAWEI") {
                                     console.log("华为平台......");
-                                    urls = port + '/EPG/MediaService/SmallScreen.jsp?ContentID=695496e7575f4b728f4056782cbaefdf&Left=0&Top=0&Width=0&Height=0&CycleFlag=1GetCntFlag=1';
-                                    console.log('huaweiurls>>>>' + urls);
-                                    this.getMediaUrl(urls);
+                                    urls = port + '/EPG/MediaService/SmallScreen.jsp?ContentID=695496e7575f4b728f4056782cbaefdf&Left=0&Top=0&Width=0&Height=0&CycleFlag=2&GetCntFlag=0';
+                                    this.mediaurl = urls;
+                                    console.log(this.mediaurl);
+                                    //this.getMediaUrl(urls);
                                 } else {
                                     console.log("中兴平台......");
                                     urls = host + '/MediaService/SmallScreen?Type=ad&ContentID=695496e7575f4b728f4056782cbaefdf&Left=0&Top=0&Width=0&Height=0&CycleFlag=0&GetCntFlag=1';
-                                    console.log('zteurls>>>>' + urls);
-                                    this.getMediaUrl(urls);
+                                    this.mediaurl = urls;
+                                    console.log(this.mediaurl);
+                                    // this.getMediaUrl(urls);
                                 }
                                 break;
                             default:
@@ -665,6 +701,9 @@ export default {
                     }
                 }
             });
+            console.log("0000000000000");
+            this.getMeidstr();
+            console.log("1111111111111111111");
 
             if (sessionStorage.getItem("MainPath") === 'test') {
                 this.EPGLog({
