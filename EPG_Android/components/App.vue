@@ -2,12 +2,12 @@
 html {
     /*font-size: 100px;*/
 }
+
 body {
     background-color: black;
 }
 
-
-.bgimg{
+.bgimg {
     position: fixed;
     top: 0;
     width: 1280px;
@@ -16,6 +16,7 @@ body {
     background-position: center;
     background-size: cover;
 }
+
 .menuTab {
     position: fixed;
     bottom: 0;
@@ -148,6 +149,18 @@ a {
     width: 666.67px;
     height: 333.34px;
 }
+
+.media {
+    width: 1280px;
+    height: 553.33px;
+    position: fixed;
+    left: 0;
+    top: 0;
+    line-height: 0px;
+    background-position: center;
+    background-size: cover;
+    border: 1px solid rgba(0,0,0,0);
+}
 </style>
 <template>
     <!-- 路由外链 -->
@@ -157,6 +170,7 @@ a {
             <div class="one" id="videoPlay">aaaaaaaaaaaaaaa</div>
             <div class="two" id="videoPlayTotal">ccccccccccccccccccc</div>
         </div> -->
+        <iframe name="if_smallscreen" @load="getMediastr" :src="mediaurl" class="media" v-if='showMediaIframe'></iframe>
         <div>
 </template>
 <script>
@@ -168,28 +182,25 @@ import {
 export default {
     data() {
             return {
-                mp: Object,
+                mp: null,
                 mediaStr: null,
                 z: 0,
                 curTime: -1,
                 allTime: -3,
                 strUtility: null,
-
+                mediaurl: '',
+                showMediaIframe: false,
             };
         },
         methods: {
             initMediaPlay() {
-                // var playUrl = "http://115.28.104.91:12080/vod/back_video_4M_out.mpg";
-                // var playUrl = "http://222.221.25.243:6166/iptv/ppthdplay/apps/index/SYHOTEL/assets/video/back_video_4M_out.mpg";
-                // var playUrl = "http://115.28.104.91:12080/vod/TV.ts";
-                // var playUrl = "http://115.28.104.91:12080/vod/503128";
-                // var playUrl = "http://192.168.89.116:8081/tv.ts";
                 // var playUrl = "http://vod.ovt.ctlcdn.com/iptv2017/LOVEIT/201704/20170428/90000001000000025374837816083896/90000001000000025374837816083896.m3u8";
 
                 // var playUrl = "http://222.221.25.243:6166/iptv/ppthdplay/hotelapps/index/SYHOTEL/assets/video/back_video_4M_out.mp4";
-                // alert(sessionStorage.getItem("bg_media_url"));
-                // console.log('bg_media_url: ' + sessionStorage.getItem("bg_media_url"))
                 var playUrl = sessionStorage.getItem("playUrl");
+                console.log('playUrl' + playUrl);
+
+                // var playUrl = 'rtsp://121.60.246.180:554/vod/00000050280005300791.mpg?userid=sxzxjdh6&stbip=10.225.103.232&clienttype=1&mediaid=&ifcharge=1&time=20170602162426+08&life=172800&usersessionid=184528&vcdnid=vcdn001&boid=001&srcboid=001&columnid=&backupagent=121.60.255.132:1556&ctype=50&playtype=0&Drm=0&EpgId=&programid=00000050280005300791&contname=&fathercont=&bp=0&authid=0&tscnt=0&tstm=0&tsflow=0&ifpricereqsnd=1&nodelevel=3&usercharge=33F6C69FF0F48168DB3A6A69D549BBA4';
 
                 this.mediaStr = '[{mediaUrl:"' + playUrl + '",';
                 this.mediaStr += 'mediaCode: "jsoncode1",';
@@ -236,69 +247,142 @@ export default {
                 this.mp.refreshVideoDisplay();
                 console.log('mediaUrl: ' + playUrl);
             },
-            //视频播放完毕后跳转
-            isEnd() {
-                this.curTime = this.mp.getCurrentPlayTime();
-                this.allTime = this.mp.getMediaDuration();
-                document.getElementById("videoPlay").innerHTML = this.curTime;
-                var nativePlayerInstanceId = this.mp.getNativePlayerInstanceID();
-                this.strUtility = Utility.getEvent() + "---" + this.curTime + "---" + this.allTime + "--ID是--" + nativePlayerInstanceId;
-
-                document.getElementById("videoPlayTotal").innerHTML = this.strUtility;
-
-                if ((this.strUtility.match(/EVENT_MEDIA_END/) && this.curTime == this.allTime) || (this.strUtility.match(/EVENT_MEDIA_END/) && this.curTime == 0)) {
-                    this.mp.releaseMediaPlayer(nativePlayerInstanceId);
-                    window.clearInterval(this.z);
-                    const _this = this;
-                    setTimeout(function() {
-                        _this.initMediaPlay(); //首先初始话mediaplayer对象
-                        _this.mp.playFromStart(); //从头开始播放
-                        _this.z = setInterval(_this.isEnd, 2000);
-                    }, 5000);
-
-                }
-            },
 
             listenBackKey() {
+                var _this = this;
                 window.addEventListener('keydown', (keyEvent) => {
                     keyEvent = keyEvent ? keyEvent : window.event;
-                    var keyvalue = keyEvent.which ? keyEvent.which : keyEvent.keyCode;
-                    if (keyvalue == 181) {
-                        window.parent.location.href = '../../portal.html';
+                    const keyvalue = keyEvent.which ? keyEvent.which : keyEvent.keyCode;
+                    let virtualKey = "";
+                    switch (sessionStorage.getItem('province')) {
+                        case '云南':
+                            virtualKey = 0x0300;
+                            break;
+                        case '湖北':
+                            virtualKey = 768;
+                            break;
+                        default:
+                            virtualKey = 0x0300;
+                            break;
+                    }
+                    if (keyvalue == 8 && !/\/firstcategory/.test(location.href)) {
+                        history.back();
+                    } else if (keyvalue == 181) {
+                       _this.$router.go("/firstcategory");
+                    } else if (keyvalue == virtualKey) {
+                        try {
+                            // 每次捕获事件只能获取一次Utility.getEvent()
+                            let mediaEvent = Utility.getEvent();
+                            if (!mediaEvent) {
+                                return;
+                            }
+                            console.log(mediaEvent)
+                            try {
+                                mediaEvent = JSON.parse(mediaEvent);
+                            } catch (e) {
+                                mediaEvent = mediaEvent.substring(1, mediaEvent.length - 1);
+                                const mediaEventParams = mediaEvent.split(",");
+                                mediaEvent = {};
+                                let tempParams = null;
+                                for (let i = 0; i < mediaEventParams.length; i++) {
+                                    tempParams = mediaEventParams[i].split(":");
+                                    if (tempParams.length == 2) {
+                                        mediaEvent[tempParams[0]] = tempParams[1];
+                                    }
+                                }
+                            }
+                            // 有些key带有双引号
+                            for (const key in mediaEvent) {
+                                if (mediaEvent.hasOwnProperty(key)) {
+                                    mediaEvent[key.replace(/\"/g, "")] = mediaEvent[key];
+                                }
+                            }
+                            const mediaEventType = mediaEvent.type.replace(/\"/g, "");
+                            switch (mediaEventType) {
+                                case "EVENT_MEDIA_BEGINING":
+                                    {
+                                        console.log("播放开始！");
+                                        return "EVENT_MEDIA_BEGINING";
+                                        break;
+                                    }
+                                case "EVENT_MEDIA_ERROR":
+                                    {
+                                        console.log("播放失败，请检查网络！\t错误代码：" + mediaEvent.error_code);
+                                        // this.updateToken();
+                                        return "EVENT_MEDIA_ERROR";
+                                        break;
+                                    }
+                                case "EVENT_MEDIA_END":
+                                    {
+                                        console.log("播放结束！");
+                                        this.mp.playFromStart();
+                                        return "EVENT_MEDIA_END";
+                                        break;
+                                    }
+                            }
+                        } catch (e) {
+                            console.log(e);
+                        }
+
                     }
                 });
             },
 
+            //获取mediastr JSON对象   
+            getMediastr() {
+                var contentID = sessionStorage.getItem('bg_media_url');
+                var mediaJson = window.frames["if_smallscreen"].getMediastr(contentID); //32位视频码
+                // console.log('data:' + mediaJson);
+                const data = eval(mediaJson);
+                for (var i = 0; i < data.length; i++) {
+                    console.log(data[i].mediaUrl);
+                    var playUrl = data[i].mediaUrl;
+                    sessionStorage.setItem('playUrl', playUrl);
+                }
+                // this.showMediaIframe = false;
+                this.$dispatch('playVideo');
+            },
+
+
+
         },
         events: {
             playVideo() {
-                return ;
+                // return ;
                 // alert("重新播放HAHHAA");
-                this.initMediaPlay();
+                if (!this.mp) {
+                    this.initMediaPlay();
+                }
                 this.mp.playFromStart(); //从头开始播放
 
-                // setTimeout(setInterval(this.isEnd, 2000), 5000);
-
-                this.z = setInterval(this.isEnd, 2000);
             },
             resumeVideo() {
-                return ;
+                //return ;
                 this.mp.setVideoDisplayArea(0, 0, window.innerWidth, window.innerHeight);
+                document.querySelector(".media").style.width = '1280px';
+                document.querySelector(".media").style.height = '553.33px';
                 this.mp.resume();
                 this.mp.refreshVideoDisplay();
             },
             pauseVideo() {
-                return ;
+                //return ;
                 this.mp.pause();
                 this.mp.setVideoDisplayArea(0, 0, 0, 0);
+                document.querySelector(".media").style.width = '0px';
+                document.querySelector(".media").style.height = '0px';
                 this.mp.refreshVideoDisplay();
             },
             stopVideo() {
-                return ;
+                //return ;
                 var nativePlayerInstanceId = this.mp.getNativePlayerInstanceID();
                 this.mp.releaseMediaPlayer(nativePlayerInstanceId);
                 // this.mp.stop();
                 // alert("关闭视频");
+            },
+            setMediaUrl(mediaUrl) {
+                console.log('setMediaUrl: ' + mediaUrl);
+                this.showMediaIframe = true;
+                this.mediaurl = mediaUrl;
             },
         },
         vuex: {

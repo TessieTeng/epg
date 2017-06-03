@@ -89,16 +89,16 @@ export default {
                 // sessionStorage.setItem("province", Config.province);
 
                 if (!!window.Authentication) {
-                    var epgdomain = Authentication.CTCGetConfig('EPGDomain');
+                    const epgdomain = Authentication.CTCGetConfig('EPGDomain');
                     //中兴平台
-                    var last = epgdomain.lastIndexOf("/");
-                    var host = epgdomain.substr(0, last);
+                    const last = epgdomain.lastIndexOf("/");
+                    const zhongxingMediaUrlOrigin = epgdomain.substr(0, last);
                     //华为平台
-                    var str = epgdomain.indexOf('/',10);
-                    var port = epgdomain.substr(0, str);
+                    const str = epgdomain.indexOf('/',10);
+                    const huaweiMediaUrlOrigin = epgdomain.substr(0, str);
 
-                    sessionStorage.setItem("port", port);
-                    sessionStorage.setItem("host", host);
+                    sessionStorage.setItem("huaweiMediaUrlOrigin", huaweiMediaUrlOrigin);
+                    sessionStorage.setItem("zhongxingMediaUrlOrigin", zhongxingMediaUrlOrigin);
                     sessionStorage.setItem("EPGDomain", Authentication.CTCGetConfig('EPGDomain'));
                     sessionStorage.setItem("UrlOrigin", Authentication.CTCGetConfig('EPGDomain').match(/^(https?:\/\/.*:\d+)\//)[1]);
                     sessionStorage.setItem("UserToken", Authentication.CTCGetConfig('UserToken'));

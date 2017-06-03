@@ -299,13 +299,6 @@ export default {
                 });
             },
             listenBackKey() {
-                document.addEventListener('keydown', (keyEvent) => {
-                    keyEvent = keyEvent ? keyEvent : window.event;
-                    var keyvalue = keyEvent.which ? keyEvent.which : keyEvent.keyCode;
-                    if (keyvalue == 8) {
-                        history.back();
-                    }
-                });
             },
             getImgFromUrl(url) {
                 if (!url) {

@@ -141,13 +141,6 @@ export default {
                 this.currentTime += 1000;
             },
             listenBackKey() {
-                document.addEventListener('keydown', (keyEvent) => {
-                    keyEvent = keyEvent ? keyEvent : window.event;
-                    var keyvalue = keyEvent.which ? keyEvent.which : keyEvent.keyCode;
-                    if (keyvalue == 8) {
-                        history.back();
-                    }
-                });
             },
             getObjStr(obj) {
                 let str = '';

@@ -5,7 +5,7 @@
     "main": "index.js",
     "scripts": {
         "dev": "webpack-dev-server -d --inline --port 8093",
-        "build": "rm ./dist/* && webpack -w",
+        "build": "rm ./dist/* && webpack",
         "test": "echo \"Error: no test specified\" && exit 1"
     },
     "author": "",

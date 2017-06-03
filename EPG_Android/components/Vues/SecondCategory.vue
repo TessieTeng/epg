@@ -225,13 +225,6 @@ export default {
             },
 
             listenBackKey() {
-                document.querySelector('#secondTabItem').addEventListener('keydown', (keyEvent) => {
-                    keyEvent = keyEvent ? keyEvent : window.event;
-                    var keyvalue = keyEvent.which ? keyEvent.which : keyEvent.keyCode;
-                    if (keyvalue == 8) {
-                        history.back();
-                    }
-                });
             },
 
 
@@ -257,11 +250,11 @@ export default {
             this.listenBackKey();
             this.updateIsMainLayout(false);
             this.getRootCategoryData(this.$route.params.id);
-            this.$dispatch("resumeVideo");
+            //this.$dispatch("resumeVideo");
             // 判断是否有视频
             if (!!sessionStorage.getItem('bg_media_url')) {
-                this.hasVideo = false;
-                // this.hasVideo = true;
+                //this.hasVideo = false;
+                this.hasVideo = true;
             }
 
             this.tempList == [];

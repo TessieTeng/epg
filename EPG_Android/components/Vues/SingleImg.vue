@@ -39,13 +39,6 @@ export default {
         },
         methods: {
             listenBackKey() {
-                document.addEventListener('keydown', (keyEvent) => {
-                    keyEvent = keyEvent ? keyEvent : window.event;
-                    var keyvalue = keyEvent.which ? keyEvent.which : keyEvent.keyCode;
-                    if (keyvalue == 8) {
-                        history.back();
-                    }
-                });
             },
             getQrCode(categoryid) {
                 var _this = this;
@@ -108,7 +101,7 @@ export default {
 
         ready() {
             this.listenBackKey();
-          //  this.$dispatch("pauseVideo");
+            this.$dispatch("pauseVideo");
             this.updateIsMainLayout(false);
             this.getQrCode(this.$route.params.id);
         }
