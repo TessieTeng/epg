@@ -28,43 +28,43 @@
     text-align: center;
     background-position: center;
     background-size: cover;
+    margin-top: 10px;
 }
 
 .info {
-    position: relative;
+    position: absolute;
     text-align: center;
-    height: 80%;
-    padding: 50px 0;
 }
 
 .hint {
-    position: relative;
-    display: block;
+    position: absolute;
     text-decoration: none;
-    height: 20%;
-    margin: 0 auto;
+    font-size: 24px;
     color: white;
-    width: 200px;
-    text-align: center;
-    border-radius: 2px;
+    border-radius: 8px;
+    letter-spacing:6px;
+     box-shadow: 0 1px 6px rgba(6, 127, 210, 1);
+    top: 80%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 160px;
+    height: 50px;
+    padding: 10px 6px;
 }
-
 </style>
 <template>
     <div>
         <div class="rootDiv">
-            <!--       <div class="kexin" :style="{'height':Height + 'px','left':Left + 'px', 'top':Top + 'px','width':Width + 'px','background-image': 'url(' + BgImageUrl +  ')'}">
-                <div class="info"> {{{RoomMsg.MsgText}}}</div>
+            <div class="kexin" :style="{'height':Height + 'px','left':Left + 'px', 'top':Top + 'px','width':Width + 'px','background-image': 'url(' + BgImageUrl +  ')'}">
+                <div class="info" :style="{'height':RoomMsg.TextHeight + 'px','left':RoomMsg.TextLeft + 'px', 'top':RoomMsg.TextTop + 'px','width':RoomMsg.TextWidth + 'px',}"> {{{RoomMsg.MsgText}}}</div>
                 <a href="javascript:;" class="hint" @click="hideNotice">{{RoomMsg.OkButtonText.chiword}}
-                        <div class="breatheFrame">
-                        </div>
-                    </a>
+                </a>
             </div>
             <div class="scrolls" v-if='!!TvmsMsg.MsgText'>
                 <marquee class="marquee" behavior="scroll" scrollamount="3" scrolldelay="0" height="50" v-bind:style="{fontSize: TvmsMsg.FontSize + 'px', loop:TvmsMsg.ScrollTimes}">
                     {{TvmsMsg.MsgText}}
                 </marquee>
-            </div> -->
+            </div>
             <div class="bgimg" :style='{"background-image": "url(" + bgimg +  ")"}' v-if='!hasVideo'></div>
             <div class="menuTab">
                 <div class="advertisement">
@@ -199,8 +199,7 @@ export default {
                 }
 
             },
-            listenBackKey() {
-            },
+            listenBackKey() {},
             getRootCategoryData(categoryId) {
                 var _this = this;
                 if (this.isRequestStatus) {
@@ -475,7 +474,7 @@ export default {
                             const _data = JSON.parse(data.response);
                             const _msgBody = _data.Message.MessageBody;
                             if (_msgBody.ResultCode == 200) {
-                                console.log("请求消息列表成功");
+                                console.log("请求滚动消息列表成功");
                                 //暂时取第一个
                                 if (!!_msgBody.MsgList && !!_msgBody.MsgList.TvmsMsg && _msgBody.MsgList.TvmsMsg.length > 0) {
                                     _this.TvmsMsg = _msgBody.MsgList.TvmsMsg[0];
@@ -500,10 +499,10 @@ export default {
             getRoomMsg() {
                 console.log("getRoomMsg.......");
                 var _this = this;
-                if (this.isRequestStatus) {
-                    return;
-                }
-                this.isRequestStatus = true;
+                /*   if (this.isRequestStatus) {
+                       return;
+                   }
+                   this.isRequestStatus = true;*/
                 const tmpObj = {
                     "Message": {
                         "MessageType": "GetRoomMsgReq",
@@ -521,8 +520,10 @@ export default {
                     data: JSON.stringify(tmpObj),
                     complete: function(data) {
                         if (data.status === 200) {
+                            console.log("请求客信列表成功");
                             const _data = JSON.parse(data.response);
                             const _msgBody = _data.Message.MessageBody;
+                            console.log(_msgBody);
                             if (_msgBody.ResultCode == 200) {
                                 if (!!_msgBody.MsgList && !!_msgBody.MsgList.RoomMsg && _msgBody.MsgList.RoomMsg.length > 0) {
                                     _this.Height = _msgBody.Height;
@@ -593,7 +594,7 @@ export default {
                     setTimeout(() => {
                         this.getRoomMsg();
                         document.querySelector(".hint").focus();
-                    }, 5000);
+                    }, 3000);
                     break;
                 default:
                     break;
