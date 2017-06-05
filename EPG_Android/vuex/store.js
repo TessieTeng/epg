@@ -11,7 +11,8 @@ const state = {
     lastPicList: [],
     isMainLayout: true,
     scaleImgUrl: null,
-    lastStore: 0
+    lastStore: 0,
+    isFirstEnterKeXin:true,
 }
 
 const mutations = {
@@ -39,6 +40,10 @@ const mutations = {
     updateLastStore(state, newVal) {
         state.lastStore = newVal;
     },
+    updateIsFirstEnterKeXin(state,newVal){
+        state.isFirstEnterKeXin = newVal;
+    },
+
 }
 
 export default new Vuex.Store({

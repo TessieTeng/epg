@@ -10,7 +10,7 @@
     width: 100%;
     z-index: 50;
     position: fixed;
-    background-image: url('../../assets/images/bg_path1.png');
+    background-image: url('../../assets/images/bg_path1.png') no-repeat;
     background-size: cover;
     height: 50px;
     color: white;
@@ -24,7 +24,7 @@
 
 .kexin {
     position: fixed;
-    z-index: 3;
+    z-index: 50;
     text-align: center;
     background-position: center;
     background-size: cover;
@@ -42,14 +42,14 @@
     font-size: 24px;
     color: white;
     border-radius: 8px;
-    letter-spacing:6px;
-     box-shadow: 0 1px 6px rgba(6, 127, 210, 1);
-    top: 80%;
+    letter-spacing: 4px;
+    box-shadow: 0 1px 6px rgba(6, 127, 210, 1);
+    top: 88%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 160px;
-    height: 50px;
-    padding: 10px 6px;
+    width: 140px;
+    height: 36px;
+    padding: 4px 2px;
 }
 </style>
 <template>
@@ -97,11 +97,14 @@ import {
     updateSecondClassTab,
     updateIsMainLayout,
     updateLastStore,
+    updateIsFirstEnterKeXin,
 } from '../../vuex/actions.js';
 import {
     getFirstClassTab,
     getFirstVideoPlay,
     getIsMainLayout,
+    getisFirstEnterKeXin,
+
 } from '../../vuex/getters.js';
 export default {
     data() {
@@ -554,6 +557,16 @@ export default {
                 document.querySelector(".kexin").style.visibility = "hidden";
                 document.getElementById("firstTabItem").children[0].children[0].focus();
             },
+            //拦截客信按键
+            preventKey() {
+                document.querySelector(".hint").addEventListener('keydown', (keyEvent) => {
+                    keyEvent = keyEvent ? keyEvent : window.event;
+                    const keyvalue = keyEvent.which ? keyEvent.which : keyEvent.keyCode;
+                    if ((keyvalue == 37)||(keyvalue == 39)||(keyvalue == 38)||(keyvalue == 40)) {
+                        keyEvent.returnValue = false;
+                    }
+                });
+            },
         },
 
         store: store,
@@ -565,11 +578,13 @@ export default {
                 updateSecondClassTab,
                 updateIsMainLayout,
                 updateLastStore,
+                updateIsFirstEnterKeXin,
             },
             getters: {
                 firstClassTab: getFirstClassTab,
                 firstVideoPlay: getFirstVideoPlay,
                 isMainLayout: getIsMainLayout,
+                isFirstEnterKeXin :getisFirstEnterKeXin,
             }
         },
         components: {
@@ -582,6 +597,7 @@ export default {
             }
             var categary = document.getElementById("firstTabItem");
             categary.children[0].children[0].focus();
+            document.querySelector("#firstTabItem").style.pointerEvents = 'none';
             this.listenBackKey();
             this.getRootCategoryData(sessionStorage.getItem("RootCategoryID"));
             this.updateIsMainLayout(true);
@@ -594,6 +610,8 @@ export default {
                     setTimeout(() => {
                         this.getRoomMsg();
                         document.querySelector(".hint").focus();
+                        this.preventKey();
+                        //this.updateIsFirstEnterKeXin(false);
                     }, 3000);
                     break;
                 default:

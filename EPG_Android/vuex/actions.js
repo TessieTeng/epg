@@ -22,4 +22,6 @@ export const updateScaleImgUrl = function({ dispatch }, newScaleImgUrl) {
 export const updateLastStore = function({ dispatch }, newLastStore) {
     dispatch("updateLastStore", newLastStore);
 }
-
+export const updateIsFirstEnterKeXin = function({ dispatch }, newLastStore) {
+    dispatch("updateIsFirstEnterKeXin", newLastStore);
+}
