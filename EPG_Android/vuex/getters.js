@@ -22,6 +22,6 @@ export function getScaleImgUrl(state) {
 export function getLastStore(state){
 	return state.lastStore
 }
-export function getisFirstEnterKeXin(state){
+export function getIsFirstEnterKeXin(state){
 	return state.isFirstEnterKeXin
 }

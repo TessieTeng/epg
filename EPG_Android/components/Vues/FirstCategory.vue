@@ -103,7 +103,7 @@ import {
     getFirstClassTab,
     getFirstVideoPlay,
     getIsMainLayout,
-    getisFirstEnterKeXin,
+    getIsFirstEnterKeXin,
 
 } from '../../vuex/getters.js';
 export default {
@@ -500,7 +500,6 @@ export default {
 
             //获得客信消息列表
             getRoomMsg() {
-                console.log("getRoomMsg.......");
                 var _this = this;
                 /*   if (this.isRequestStatus) {
                        return;
@@ -523,10 +522,8 @@ export default {
                     data: JSON.stringify(tmpObj),
                     complete: function(data) {
                         if (data.status === 200) {
-                            console.log("请求客信列表成功");
                             const _data = JSON.parse(data.response);
                             const _msgBody = _data.Message.MessageBody;
-                            console.log(_msgBody);
                             if (_msgBody.ResultCode == 200) {
                                 if (!!_msgBody.MsgList && !!_msgBody.MsgList.RoomMsg && _msgBody.MsgList.RoomMsg.length > 0) {
                                     _this.Height = _msgBody.Height;
@@ -562,7 +559,7 @@ export default {
                 document.querySelector(".hint").addEventListener('keydown', (keyEvent) => {
                     keyEvent = keyEvent ? keyEvent : window.event;
                     const keyvalue = keyEvent.which ? keyEvent.which : keyEvent.keyCode;
-                    if ((keyvalue == 37)||(keyvalue == 39)||(keyvalue == 38)||(keyvalue == 40)) {
+                    if ((keyvalue == 37) || (keyvalue == 39) || (keyvalue == 38) || (keyvalue == 40)) {
                         keyEvent.returnValue = false;
                     }
                 });
@@ -584,7 +581,7 @@ export default {
                 firstClassTab: getFirstClassTab,
                 firstVideoPlay: getFirstVideoPlay,
                 isMainLayout: getIsMainLayout,
-                isFirstEnterKeXin :getisFirstEnterKeXin,
+                isFirstEnterKeXin: getIsFirstEnterKeXin,
             }
         },
         components: {
@@ -608,10 +605,12 @@ export default {
                 case '湖北':
                     this.getTvmsMsg();
                     setTimeout(() => {
-                        this.getRoomMsg();
-                        document.querySelector(".hint").focus();
-                        this.preventKey();
-                        //this.updateIsFirstEnterKeXin(false);
+                        if (this.isFirstEnterKeXin) {
+                            this.getRoomMsg();
+                            document.querySelector(".hint").focus();
+                            this.preventKey();
+                            this.updateIsFirstEnterKeXin(false);
+                        }
                     }, 3000);
                     break;
                 default:
@@ -634,15 +633,11 @@ export default {
                                 break;
                             case '湖北':
                                 if (sessionStorage.getItem("partner") === "HUAWEI") {
-                                    console.log("华为平台......");
                                     urls = huaweiMediaUrlOrigin + '/EPG/MediaService/SmallScreen.jsp?ContentID=' + contentID + '&GetCntFlag=1';
                                     this.mediaurl = urls;
-                                    console.log(this.mediaurl);
                                 } else {
-                                    console.log("中兴平台......");
                                     urls = zhongxingMediaUrlOrigin + '/MediaService/SmallScreen?ContentID=' + contentID + '&GetCntFlag=1';
                                     this.mediaurl = urls;
-                                    console.log(this.mediaurl);
                                 }
                                 this.$dispatch('setMediaUrl', this.mediaurl);
                                 break;

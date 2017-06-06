@@ -380,7 +380,6 @@ export default {
                 // alert("关闭视频");
             },
             setMediaUrl(mediaUrl) {
-                console.log('setMediaUrl: ' + mediaUrl);
                 this.showMediaIframe = true;
                 this.mediaurl = mediaUrl;
             },
