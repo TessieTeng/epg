@@ -32,10 +32,12 @@ import Http from '../../assets/lib/Http';
 import {
     updateLastPicList,
     updateSecondClassTab,
-    updateIsMainLayout
+    updateIsMainLayout,
+    updateIsVideoPlay,
 } from '../../vuex/actions.js';
 import {
     getSecondClassTab,
+    getIsVideoPlay,
 } from '../../vuex/getters.js';
 export default {
     data() {
@@ -61,7 +63,6 @@ export default {
                 var tempPicList = item.PictureList.Picture;
                 for (var i = 0; i < tempPicList.length; i++) {
                     if (tempPicList[i].PictureType == 13) {
-                        // console.log(tempPicList[i].PictureUrl);
                         return tempPicList[i].PictureUrl;
                     }
                 }
@@ -71,7 +72,6 @@ export default {
                 var tempPicList = item.PictureList.Picture;
                 for (var i = 0; i < tempPicList.length; i++) {
                     if (tempPicList[i].PictureType == 14) {
-                        // console.log(tempPicList[i].PictureUrl);
                         return tempPicList[i].PictureUrl;
                     }
                 }
@@ -79,9 +79,6 @@ export default {
             },
             excuteAction(item) {
                 var _this = this;
-                // console.log(item);
-                // console.log(item.ObjectID);
-                // console.log(item.RelatedAction);
                 this.updateSecondClassTab(item.ObjectID);
 
                 switch (item.RelatedAction) {
@@ -133,7 +130,6 @@ export default {
 
                                 this.updateLastPicList(temArr);
                                 this.$router.go("/detail");
-                                // ImageLoader({ // data: temArr, // onFinish: function() { // _this.updateLastPicList(temArr); // _this.$router.go("/detail"); // }, // onProgress: function(precent) { // console.log("加载中" + precent); // } // });
                                 break;
                         }
                         break;
@@ -167,10 +163,8 @@ export default {
                 Http({
                     type: 'POST',
                     url: sessionStorage.getItem("relativePath") + '/epgservice/index.php?MessageType=GetObjectInfoReq',
-                    // url: '.' + sessionStorage.getItem('esaddr') + '?MessageType=GetObjectInfoReq',
                     data: JSON.stringify(tmpObj),
                     complete: function(data) {
-                        // console.log(data);
                         if (data.status === 200) {
                             console.log("请求成功");
                             const _data = JSON.parse(data.response);
@@ -195,9 +189,6 @@ export default {
                                 _this.categoryList = _msgBody.ChildrenObjectList.Object;
                                 _this.childObj = _data.Message.MessageBody;
 
-                                // console.log(_this.childObj);
-                                // console.log("KKK");
-                                // console.log(_this.categoryList);
                                 _this.$nextTick(() => {
                                     if (!_this.secondClassTab == 0) {
                                         document.getElementById("_" + _this.secondClassTab).focus();
@@ -224,20 +215,19 @@ export default {
                 });
             },
 
-            listenBackKey() {
-            },
-
-
         },
 
         vuex: {
             actions: {
                 updateLastPicList,
                 updateSecondClassTab,
-                updateIsMainLayout
+                updateIsMainLayout,
+                updateIsVideoPlay,
             },
             getters: {
-                secondClassTab: getSecondClassTab
+                secondClassTab: getSecondClassTab,
+                isVideoPlay: getIsVideoPlay,
+
             },
 
         },
@@ -247,14 +237,16 @@ export default {
 
 
         ready() {
-            this.listenBackKey();
             this.updateIsMainLayout(false);
             this.getRootCategoryData(this.$route.params.id);
-            //this.$dispatch("resumeVideo");
+
             // 判断是否有视频
             if (!!sessionStorage.getItem('bg_media_url')) {
-                //this.hasVideo = false;
                 this.hasVideo = true;
+                if (!this.isVideoPlay) {
+                    this.$dispatch("playVideo");
+                    this.updateIsVideoPlay(true);
+                }
             }
 
             this.tempList == [];

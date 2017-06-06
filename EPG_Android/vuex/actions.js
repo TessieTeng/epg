@@ -25,3 +25,6 @@ export const updateLastStore = function({ dispatch }, newLastStore) {
 export const updateIsFirstEnterKeXin = function({ dispatch }, newLastStore) {
     dispatch("updateIsFirstEnterKeXin", newLastStore);
 }
+export const updateIsVideoPlay = function({ dispatch }, newLastStore) {
+    dispatch("updateIsVideoPlay", newLastStore);
+}

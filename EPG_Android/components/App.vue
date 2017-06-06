@@ -332,14 +332,12 @@ export default {
             getMediastr() {
                 var contentID = sessionStorage.getItem('bg_media_url');
                 var mediaJson = window.frames["if_smallscreen"].getMediastr(contentID); //32位视频码
-                // console.log('data:' + mediaJson);
                 const data = eval(mediaJson);
                 for (var i = 0; i < data.length; i++) {
                     console.log(data[i].mediaUrl);
                     var playUrl = data[i].mediaUrl;
                     sessionStorage.setItem('playUrl', playUrl);
                 }
-                // this.showMediaIframe = false;
                 this.$dispatch('playVideo');
             },
 
@@ -348,8 +346,6 @@ export default {
         },
         events: {
             playVideo() {
-                // return ;
-                // alert("重新播放HAHHAA");
                 if (!this.mp) {
                     this.initMediaPlay();
                 }
@@ -357,7 +353,6 @@ export default {
 
             },
             resumeVideo() {
-                //return ;
                 this.mp.setVideoDisplayArea(0, 0, window.innerWidth, window.innerHeight);
                 document.querySelector(".media").style.width = '1280px';
                 document.querySelector(".media").style.height = '553.33px';
@@ -365,7 +360,6 @@ export default {
                 this.mp.refreshVideoDisplay();
             },
             pauseVideo() {
-                //return ;
                 this.mp.pause();
                 this.mp.setVideoDisplayArea(0, 0, 0, 0);
                 document.querySelector(".media").style.width = '0px';
@@ -373,11 +367,9 @@ export default {
                 this.mp.refreshVideoDisplay();
             },
             stopVideo() {
-                //return ;
-                var nativePlayerInstanceId = this.mp.getNativePlayerInstanceID();
-                this.mp.releaseMediaPlayer(nativePlayerInstanceId);
-                // this.mp.stop();
-                // alert("关闭视频");
+                // var nativePlayerInstanceId = this.mp.getNativePlayerInstanceID();
+                // this.mp.releaseMediaPlayer(nativePlayerInstanceId);
+                this.mp.stop();
             },
             setMediaUrl(mediaUrl) {
                 this.showMediaIframe = true;

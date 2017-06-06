@@ -11,6 +11,8 @@
     width: 1133.34px;
     height: 533.34px;
     margin-top: 93.34px;
+    z-index: 50;
+    position: relative;
 }
 </style>
 <template>
@@ -18,7 +20,6 @@
         <div class="singleRootDiv" id="singleRootDiv">
             <img class="qrcode" v-bind:src='qrCode'>
         </div>
-        <!-- <loading v-if="showLoading"></loading> -->
     </div>
 </template>
 <script>
@@ -26,10 +27,12 @@ import Loading from '../Tools/Loading.vue';
 import Http from '../../assets/lib/Http';
 import {
     updateIsMainLayout,
+    updateIsVideoPlay,
 } from '../../vuex/actions.js';
 
 import {
-    getScaleImgUrl
+    getScaleImgUrl,
+    getIsVideoPlay,
 } from '../../vuex/getters.js';
 
 export default {
@@ -40,27 +43,23 @@ export default {
                 showLoading: true,
             };
         },
-        methods: {
-            listenBackKey() {
-            },
-
-        },
-
+     
         vuex: {
             actions: {
                 updateIsMainLayout,
+                updateIsVideoPlay,
 
             },
             getters: {
                 getScaleImgUrl,
+                isVideoPlay: getIsVideoPlay,
             }
         },
 
         ready() {
-            this.listenBackKey();
             this.updateIsMainLayout(false);
             this.qrCode = this.getScaleImgUrl;
-           this.$dispatch("pauseVideo");
+
         }
 
 }

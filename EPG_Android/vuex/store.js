@@ -13,6 +13,7 @@ const state = {
     scaleImgUrl: null,
     lastStore: 0,
     isFirstEnterKeXin:true,
+    isVideoPlay: true,
 }
 
 const mutations = {
@@ -42,6 +43,9 @@ const mutations = {
     },
     updateIsFirstEnterKeXin(state,newVal){
         state.isFirstEnterKeXin = newVal;
+    },
+    updateIsVideoPlay(state,newVal){
+        state.isVideoPlay = newVal;
     },
 
 }

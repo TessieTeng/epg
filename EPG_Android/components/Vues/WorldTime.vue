@@ -79,18 +79,21 @@
                     </div>
                 </div>
                 <div class="footer">
-                    <!--   <img src="/assets/images/img_portal.png">
-                  <div class="hint">>世界时间</div> -->
                 </div>
             </div>
         </div>
-        <!-- <loading v-if="showLoading"></loading> -->
     </div>
 </template>
 <script>
 import moment from 'moment';
 import Loading from '../Tools/Loading.vue';
 import Http from '../../assets/lib/Http';
+import {
+    updateIsVideoPlay,
+} from '../../vuex/actions.js';
+import {
+    getIsVideoPlay,
+} from '../../vuex/getters.js';
 export default {
     data() {
             return {
@@ -140,8 +143,6 @@ export default {
             addSecond() {
                 this.currentTime += 1000;
             },
-            listenBackKey() {
-            },
             getObjStr(obj) {
                 let str = '';
                 for (const key in obj) {
@@ -172,7 +173,6 @@ export default {
                     url: sessionStorage.getItem("relativePath") + '/epgservice/index.php?MessageType=GetWorldTimeListReq',
                     data: JSON.stringify(tmpObj),
                     complete: function(data) {
-                        // console.log(data);
                         if (data.status === 200) {
                             console.log("请求成功");
                             const _data = JSON.parse(data.response);
@@ -184,7 +184,6 @@ export default {
                                 var arr = _this.TimeData.CurrentTime.split(" ");
                                 var arrDate = arr[0].split("-");
                                 var arrTime = arr[1].split(":");
-                                // console.log(arrDate[0] + ">>" + arrDate[1] + ">>" + arrDate[2] + ">>" + arrTime[0] + ">>" + arrTime[1] + ">>" + arrTime[2]);
                                 _this.currentTime = new Date(arrDate[0], arrDate[1] - 1, arrDate[2], arrTime[0], arrTime[1], arrTime[2]).getTime();
                                 /**
                                  * _this.TimeData.CityList.City[0].CityName字段格式
@@ -196,7 +195,7 @@ export default {
                                  *      jpnword: '北京時間',
                                  *      ... ...
                                  * }
-                                */
+                                 */
                                 var firstTimeZone = parseInt(_this.TimeData.CityList.City[0].TimeZone);
                                 _this.currentTime = _this.currentTime + firstTimeZone * 60 * 60 * 1000;
                                 _this.z = setInterval(() => {
@@ -218,40 +217,6 @@ export default {
                     },
                 });
 
-
-                // this.$http.post("/epgservice/index.php?MessageType=GetWorldTimeListReq", JSON.stringify(msgBody), {
-                //         headers: {
-                //             'Cache-Control': 'no-cache'
-                //         },
-                //     })
-                //     .then((data) => {
-                //         const _data = JSON.parse(data.body);
-                //         const _msgBody = _data.Message.MessageBody;
-
-                //         if (_msgBody.ResultCode == 200) {
-                //             // console.log("请求成功");
-                //             this.showLoading = false;
-                //             this.TimeData = _msgBody;
-                //             this.currentTime = new Date(this.TimeData.CurrentTime).getTime();
-                //             var firstTimeZone = this.TimeData.CityList.City[0].TimeZone;
-                //             this.currentTime = this.currentTime + firstTimeZone * 60 * 60 * 1000;
-
-                //             this.z = setInterval(() => {
-                //                 this.addSecond();
-                //             }, 1000);
-                //         } else {
-                //             console.log("请求失败");
-                //         }
-
-                //         this.isRequestStatus = false;
-                //         this.showLoading = false;
-                //         this.showWTimeLayout = true;
-                //     })
-                //     .catch((e) => {
-                //         // console.log('ajax error:', e);
-                //         this.isRequestStatus = false;
-                //     });
-
             },
 
         },
@@ -264,18 +229,27 @@ export default {
             Loading,
         },
 
+        vuex: {
+            actions: {
+                updateIsVideoPlay,
+            },
+            getters: {
+                isVideoPlay: getIsVideoPlay,
+            },
+        },
+
         ready() {
             var hint = sessionStorage.getItem("currLangCode");
             if (hint === "eng") {
                 this.hint = "Current  Time";
             } else {
                 this.hint = "当前时间";
-            }  
-            
-
-            this.listenBackKey();
+            }
             this.getTimeData();
-           this.$dispatch("pauseVideo");
+            if (this.isVideoPlay) {
+                this.$dispatch("stopVideo");
+                this.updateIsVideoPlay(false);
+            }
         },
 
 }

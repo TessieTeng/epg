@@ -27,6 +27,8 @@
     margin: auto;
     overflow: hidden;
 }
+
+
 /*
 .footer {
     width: 1146.67px;
@@ -66,9 +68,12 @@
 <script>
 import swiper from 'Tools/Swiper.vue';
 import store from '../../vuex/store.js';
-
 import {
-    getLastPicList
+    updateIsVideoPlay,
+} from '../../vuex/actions.js';
+import {
+    getLastPicList,
+    getIsVideoPlay,
 } from '../../vuex/getters.js';
 export default {
     data() {
@@ -87,33 +92,6 @@ export default {
             };
         },
 
-
-        methods: {
-
-
-
-            listenBackKey() {
-
-                // document.querySelector('#detailLayout').addEventListener('keypress', (keyEvent) => {
-                //     keyEvent = keyEvent ? keyEvent : window.event;
-                //     var keyvalue = keyEvent.which ? keyEvent.which : keyEvent.keyCode;
-                //     alert("Detail +++" + keyvalue);
-                //     if (keyvalue == 8) {
-                //         history.back();
-                //     }
-                // });
-
-
-                // this.$el.addEventListener('keypress', (keyEvent) => {
-                //     keyEvent = keyEvent ? keyEvent : window.event;
-                //     var keyvalue = keyEvent.which ? keyEvent.which : keyEvent.keyCode;
-                //     alert("detail +++" + keyvalue);
-                //     if (keyvalue == 8) {
-                //         history.go(-1);
-                //     }
-                // });
-            },
-        },
 
         events: {
             name: function(name) {
@@ -134,20 +112,24 @@ export default {
             'title',
         ],
 
-        destroyed: function() {
-
-        },
-
         vuex: {
+            actions: {
+                updateIsVideoPlay,
+            },
             getters: {
-                lastPicList: getLastPicList
+                lastPicList: getLastPicList,
+                isVideoPlay: getIsVideoPlay,
             }
         },
 
         ready() {
-            this.listenBackKey();
-            this.$dispatch("pauseVideo");
             this.pictureList = this.lastPicList;
+            console.log("详情页面..." + this.isVideoPlay);
+            if(this.isVideoPlay){
+                this.$dispatch("stopVideo");
+                this.updateIsVideoPlay(false);
+            }
+
         },
 }
 </script>

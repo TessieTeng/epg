@@ -101,7 +101,6 @@
     margin-left: 140px;
     font-size: 20px;
     color: white;
-   
 }
 
 .rights {
@@ -112,6 +111,7 @@
     font-size: 20px;
     color: white;
 }
+
 .page-container {
     position: absolute;
     right: 40px;
@@ -128,8 +128,7 @@
         <div class="middle">
             <ul id="goodslist">
                 <li v-for="item in curList">
-                    <a href="javascript:;" id='goodsImage_{{storePicList.indexOf(item)}}'
-                        @focus='imgFocus(item)' @click="scaleimg(item)" @keydown='switchFocus($event, $index)'>
+                    <a href="javascript:;" id='goodsImage_{{storePicList.indexOf(item)}}' @focus='imgFocus(item)' @click="scaleimg(item)" @keydown='switchFocus($event, $index)'>
                         <img v-bind:src='getPicItem(item)'>
                     </a>
                 </li>
@@ -142,17 +141,19 @@
             <span class="rights">{{righthint}}</span>
         </div>
     </div>
-</template> 
+</template>
 <script>
 import Http from '../../assets/lib/Http';
 import ImageLoader from '../../assets/lib/ImageLoader.js';
 import {
     updateScaleImgUrl,
     updateLastStore,
+    updateIsVideoPlay,
 } from '../../vuex/actions';
 
 import {
-    getLastStore
+    getLastStore,
+    getIsVideoPlay,
 } from '../../vuex/getters.js';
 
 export default {
@@ -165,7 +166,7 @@ export default {
                 curIndex: 0,
                 tophint: "",
                 lefthint: "",
-                righthint:"",
+                righthint: "",
             };
         },
 
@@ -245,7 +246,6 @@ export default {
                                         })
                                     },
                                     onProgress: function(precent) {
-                                        // console.log("加载中" + precent);
                                     }
                                 });
 
@@ -283,9 +283,11 @@ export default {
             actions: {
                 updateScaleImgUrl,
                 updateLastStore,
+                updateIsVideoPlay,
             },
             getters: {
-                getLastStore
+                getLastStore,
+                isVideoPlay: getIsVideoPlay,
             },
 
         },
@@ -303,8 +305,10 @@ export default {
             }
 
             this.getStoreData(this.$route.params.id);
-
-            this.$dispatch("pauseVideo");
+            if (this.isVideoPlay) {
+                this.$dispatch("stopVideo");
+                this.updateIsVideoPlay(false);
+            }
         }
 
 }

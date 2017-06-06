@@ -11,6 +11,8 @@
     width: 1133.34px;
     height: 533.34px;
     margin-top: 93.34px;
+    z-index: 50;
+    position: relative;
 }
 </style>
 <template>
@@ -25,9 +27,12 @@
 import Loading from '../Tools/Loading.vue';
 import Http from '../../assets/lib/Http';
 import {
-    updateIsMainLayout
+    updateIsMainLayout,
+    updateIsVideoPlay,
 } from '../../vuex/actions.js';
-
+import {
+    getIsVideoPlay,
+} from '../../vuex/getters.js';
 export default {
     data() {
             return {
@@ -38,8 +43,6 @@ export default {
 
         },
         methods: {
-            listenBackKey() {
-            },
             getQrCode(categoryid) {
                 var _this = this;
                 if (this.isRequestStatus) {
@@ -66,15 +69,11 @@ export default {
                     url: sessionStorage.getItem("relativePath") + '/epgservice/index.php?MessageType=GetObjectInfoReq',
                     data: JSON.stringify(tmpObj),
                     complete: function(data) {
-                        console.log(data);
                         if (data.status === 200) {
-                            console.log("请求成功");
                             const _data = JSON.parse(data.response);
                             const _msgBody = _data.Message.MessageBody;
                             if (_msgBody.ResultCode == 200) {
-                                console.log(_msgBody);
                                 _this.qrCode = _msgBody.ChildrenObjectList.Object[0].PictureList.Picture[0].PictureUrl;
-                                console.log(_this.qrCode);
                             } else {
                                 console.log("请求数据失败");
                             }
@@ -96,14 +95,20 @@ export default {
         vuex: {
             actions: {
                 updateIsMainLayout,
-            }
+                updateIsVideoPlay,
+            },
+            getters: {
+                isVideoPlay: getIsVideoPlay,
+            },
         },
 
         ready() {
-            this.listenBackKey();
-            this.$dispatch("pauseVideo");
             this.updateIsMainLayout(false);
             this.getQrCode(this.$route.params.id);
+            if(this.isVideoPlay){
+                this.$dispatch("stopVideo");
+                this.updateIsVideoPlay(false);
+            }
         }
 
 }

@@ -180,6 +180,12 @@
 import ImageLoader from '../../assets/lib/ImageLoader.js';
 import Loading from '../Tools/Loading.vue';
 import Http from '../../assets/lib/Http';
+import {
+    updateIsVideoPlay,
+} from '../../vuex/actions.js';
+import {
+    getIsVideoPlay,
+} from '../../vuex/getters.js';
 export default {
     data() {
             return {
@@ -197,9 +203,9 @@ export default {
                         }]
                     }
                 },
-                today:"",
-                tomorrow:"",
-                others:"",
+                today: "",
+                tomorrow: "",
+                others: "",
                 weatherRoot: '../../assets/images/weather/',
                 WeatherCityList: [],
                 curListPage: 1,
@@ -258,7 +264,6 @@ export default {
                     url: sessionStorage.getItem("relativePath") + '/epgservice/index.php?MessageType=GetWeatherInfoReq',
                     data: JSON.stringify(tmpObj),
                     complete: function(data) {
-                        // console.log(data);
                         if (data.status === 200) {
                             console.log("请求成功");
                             const _data = JSON.parse(data.response);
@@ -266,9 +271,6 @@ export default {
                             if (_msgBody.ResultCode == 200) {
                                 const tempPicList = [];
                                 tempPicList.push(_this.getImgFromUrl(_msgBody.CityList.City[0].WeatherList.Weather[0].BigImageUrl));
-                                // for (var i = 0; i < _msgBody.CityList.City.length; i++) {
-                                //     tempPicList.push(_msgBody.CityList.City[i].CityImageUrl);
-                                // }
                                 ImageLoader({
                                     data: tempPicList,
                                     onFinish: function() {
@@ -280,7 +282,6 @@ export default {
                                         });
                                     },
                                     onProgress: function(precent) {
-                                        // console.log("加载中" + precent);
                                     }
                                 });
                             } else {
@@ -297,8 +298,6 @@ export default {
                         console.log(err);
                     },
                 });
-            },
-            listenBackKey() {
             },
             getImgFromUrl(url) {
                 if (!url) {
@@ -324,24 +323,33 @@ export default {
 
         },
 
+        vuex: {
+            actions: {
+                updateIsVideoPlay,
+            },
+            getters: {
+                isVideoPlay: getIsVideoPlay,
+            },
+        },
         ready() {
-            var _this = this;
             var hint = sessionStorage.getItem("currLangCode");
             if (hint === "chi") {
-                _this.today = "今天";
-                _this.tomorrow = "明天";
-                _this.others = "后天";
+                this.today = "今天";
+                this.tomorrow = "明天";
+                this.others = "后天";
 
 
             } else if (hint === "eng") {
-                _this.today = "today";
-                _this.tomorrow = "tomorrow";
-                _this.others = "the day after tomorrow";
+                this.today = "today";
+                this.tomorrow = "tomorrow";
+                this.others = "the day after tomorrow";
             }
 
             this.getRootCategoryData();
-            this.listenBackKey();
-            this.$dispatch("pauseVideo");
+            if (this.isVideoPlay) {
+                this.$dispatch("stopVideo");
+                this.updateIsVideoPlay(false);
+            }
         },
 }
 </script>

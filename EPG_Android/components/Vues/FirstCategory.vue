@@ -98,12 +98,14 @@ import {
     updateIsMainLayout,
     updateLastStore,
     updateIsFirstEnterKeXin,
+    updateIsVideoPlay,
 } from '../../vuex/actions.js';
 import {
     getFirstClassTab,
     getFirstVideoPlay,
     getIsMainLayout,
     getIsFirstEnterKeXin,
+    getIsVideoPlay,
 
 } from '../../vuex/getters.js';
 export default {
@@ -307,13 +309,6 @@ export default {
                         });
                         break;
                     case "hotel_mall":
-                        // this.$router.go({
-                        //     name: "singleimg",
-                        //     params: {
-                        //         id: item.ObjectID
-                        //     }
-                        // });
-
                         //改版的特别推荐列表
                         this.$router.go({
                             name: "store",
@@ -477,7 +472,6 @@ export default {
                             const _data = JSON.parse(data.response);
                             const _msgBody = _data.Message.MessageBody;
                             if (_msgBody.ResultCode == 200) {
-                                console.log("请求滚动消息列表成功");
                                 //暂时取第一个
                                 if (!!_msgBody.MsgList && !!_msgBody.MsgList.TvmsMsg && _msgBody.MsgList.TvmsMsg.length > 0) {
                                     _this.TvmsMsg = _msgBody.MsgList.TvmsMsg[0];
@@ -576,12 +570,14 @@ export default {
                 updateIsMainLayout,
                 updateLastStore,
                 updateIsFirstEnterKeXin,
+                updateIsVideoPlay,
             },
             getters: {
                 firstClassTab: getFirstClassTab,
                 firstVideoPlay: getFirstVideoPlay,
                 isMainLayout: getIsMainLayout,
                 isFirstEnterKeXin: getIsFirstEnterKeXin,
+                isVideoPlay: getIsVideoPlay,
             }
         },
         components: {
@@ -622,8 +618,6 @@ export default {
                     if (this.firstVideoPlay) {
                         var zhongxingMediaUrlOrigin = sessionStorage.getItem('zhongxingMediaUrlOrigin');
                         var huaweiMediaUrlOrigin = sessionStorage.getItem('huaweiMediaUrlOrigin');
-                        console.log(zhongxingMediaUrlOrigin);
-                        console.log(huaweiMediaUrlOrigin);
                         var contentID = sessionStorage.getItem('bg_media_url');
                         this.updateFirstVideoPlay(false);
                         var urls = '';
@@ -645,7 +639,10 @@ export default {
                                 break;
                         }
                     } else {
-                        this.$dispatch("resumeVideo");
+                        if (!this.isVideoPlay) {
+                            this.$dispatch("playVideo");
+                            this.updateIsVideoPlay(true);
+                        }
                     }
                 }
             });

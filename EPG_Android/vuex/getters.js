@@ -25,3 +25,6 @@ export function getLastStore(state){
 export function getIsFirstEnterKeXin(state){
 	return state.isFirstEnterKeXin
 }
+export function getIsVideoPlay(state){
+	return state.isVideoPlay
+}
