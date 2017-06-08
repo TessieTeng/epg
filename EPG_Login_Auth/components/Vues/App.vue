@@ -50,6 +50,7 @@ export default {
                     // }
 
                     /* -------- 陕西参数获取 ----------- */
+                    /*
                     if (sessionStorage.getItem('province') === '陕西') {
 
                         this.userid = jsonObj.xml.userid;
@@ -70,7 +71,7 @@ export default {
                         this.doLogin();
 
                         return;
-                    } // END shanxi get params
+                    }*/ // END shanxi get params
 
 
 
@@ -388,7 +389,8 @@ export default {
                     break;
                 case '陕西':
                     // sessionStorage.setItem("indexUrl", "http://116.210.255.120:8080/HBEpg/epg/broadBandTV.jsp");
-                    this.getUrlParams();
+                    // this.getUrlParams();
+                    this.doLogin();
                     break;
                 default:
                     break;
