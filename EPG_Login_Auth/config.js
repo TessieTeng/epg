@@ -6,7 +6,7 @@
 
 (function(window) {
   // 当前省份
-  var province = 'hubei';
+  var province = 'shanxi';
   
   // 所有省份
   var ConfigObj = {
@@ -17,6 +17,10 @@
     },
     'hubei': {
       province: '湖北',
+      relativePath: '',
+    },
+    'shanxi': {
+      province: '陕西',
       relativePath: '',
     },
 
