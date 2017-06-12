@@ -5,25 +5,28 @@
  */
 
 (function(window) {
-  // 当前省份
-  var province = 'shanxi';
-  
-  // 所有省份
-  var ConfigObj = {
+    // 当前省份
+    var province = 'henan';
 
-    'yunnan': {
-      province: '云南',
-      relativePath: '/iptv/ppthdplay/SYHOTEL/service',
-    },
-    'hubei': {
-      province: '湖北',
-      relativePath: '',
-    },
-    'shanxi': {
-      province: '陕西',
-      relativePath: '',
-    },
+    // 所有省份
+    var ConfigObj = {
+        'yunnan': {
+            province: '云南',
+            relativePath: '/iptv/ppthdplay/SYHOTEL/service',
+        },
+        'hubei': {
+            province: '湖北',
+            relativePath: '',
+        },
+        'shanxi': {
+            province: '陕西',
+            relativePath: '',
+        },
+        'henan': {
+            province: '河南',
+            relativePath: '',
+        },
 
-  }
-  window.Config = ConfigObj[province];
+    }
+    window.Config = ConfigObj[province];
 })(window)

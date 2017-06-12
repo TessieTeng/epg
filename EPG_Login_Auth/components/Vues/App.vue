@@ -151,6 +151,13 @@ export default {
                         tmpBody.HotelGroupName = this.group_name;
                         tmpBody.HotelGroupID = this.cdc_group_id;
                         break;
+                    case '河南':
+                        if (sessionStorage.getItem('from') === 'huawei') {
+                            tmpBody.USERID = sessionStorage.getItem('userid');
+                        } else {
+                            tmpBody.USERID = window.Authentication ? Authentication.CTCGetConfig("UserID") : '';
+                        }
+                        break;
                     default:
                         break;
                 }
@@ -390,6 +397,15 @@ export default {
                 case '陕西':
                     // sessionStorage.setItem("indexUrl", "http://116.210.255.120:8080/HBEpg/epg/broadBandTV.jsp");
                     // this.getUrlParams();
+                    this.doLogin();
+                    break;
+                case '河南':
+                    //TODO 区分中兴和华为
+                    if (!sessionStorage.getItem("from") && !!this.GetQueryString("from")) {
+                        sessionStorage.setItem("from", this.GetQueryString("from"));
+                    } else if (!sessionStorage.getItem("userid") && !!this.GetQueryString("userid")) {
+                        sessionStorage.setItem("userid", this.GetQueryString("userid"));
+                    }
                     this.doLogin();
                     break;
                 default:
