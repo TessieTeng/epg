@@ -22,6 +22,14 @@ export default {
                 cdc_group_id: '',
                 area_id: '',
                 csm_id: '',
+
+                // 陕西参数
+                userid: '',
+                userGroup: '',
+                areaID: '',
+                servername: '',
+                serverport: '',
+                remoteaddr: '',
             };
         },
         methods: {
@@ -150,6 +158,9 @@ export default {
                         tmpBody.USERID = this.oss_user_id;
                         tmpBody.HotelGroupName = this.group_name;
                         tmpBody.HotelGroupID = this.cdc_group_id;
+                        break;
+                    case '陕西':
+                        tmpBOdy.USERID = this.userid;
                         break;
                     case '河南':
                         if (sessionStorage.getItem('from') === 'huawei') {
@@ -379,9 +390,78 @@ export default {
                 location.replace(path + file);
             },
 
+            configShanxiParams() {
+                // var domain = Authentication.CTCGetConfig('EPGDomain');
+                /* 
+                    这里可以直接使用 location.href，因为ready里面做了判断，只有第一次开机
+                    才会到这个配置函数，即不会重复配置
+                */
+                const domain = window.location.href;
+                console.log('domain: ' + domain);
+                let paramObj = null;
+                let params = domain.split('?')[1].split('&');
+                let param = null;
+
+                console.log('params: ' + JSON.stringify(params));
+                if (!params || params.length <= 0) {
+                    this.goToIptv('获取不了url参数');
+                    return;
+                } else {
+                    paramObj = {};
+                }
+
+                for (let i = 0; i < params.length; i++) {
+                    param = params[i].split('=');
+                    paramObj[param[0]] = param[1];
+                }
+
+                this.userid = paramObj.userid;
+                this.userGroup = paramObj.userGroup;
+                this.areaID = paramObj.areaID;
+                this.servername = paramObj.servername;
+                this.serverport = paramObj.serverport;
+                this.remoteaddr = paramObj.remoteaddr;
+
+                sessionStorage.setItem('userid', this.userid);
+                sessionStorage.setItem('userGroup', this.userGroup);
+                sessionStorage.setItem('areaID', this.areaID);
+                sessionStorage.setItem('servername', this.servername);
+                sessionStorage.setItem('serverport', this.serverport);
+                sessionStorage.setItem('remoteaddr', this.remoteaddr);
+
+                /* IPTV 首页地址，ywbz是测试分组，后面根据需求会发生改变 */
+                const serverip = this.servername || '113.136.96.196';
+                const serverport = this.serverport || '8282';
+                sessionStorage.setItem("indexUrl", "http://" + serverip + ':' + serverport + "/EPG/jsp/ywbz/en/Category.jsp");
+
+                const currUrl = window.location.href;
+
+                // 将当前 url 保存为首页地址，113.136.46.37是模板中的服务器地址
+                console.log('location: ' + currUrl + ', iptv: ' + sessionStorage.getItem('indexUrl'));
+
+                // 这里固定写死，只要不包含查找的字符串，就直接重新设置
+                // 这里也可以不用添加该判断，因为只会在开机的时候执行一次
+                if (currUrl.indexOf('113.136.46.37/iptv/portal.html') === -1) {
+                    sessionStorage.setItem('EPGDomain', currUrl);
+
+                    // 保障起见，将首页地址和272热键地址都修改成我们的portal地址
+                    Authentication.CTCSetConfig('EPGDomain', currUrl);
+                    Authentication.CTCSetConfig(
+                        'ServiceEntry',
+                        'URL=' + currUrl + ',HotKey="272",Desc="酒店EPG首页"'
+                    );
+                }
+
+                this.doLogin();
+            },
+
         },
 
         ready() {
+
+            this.getConfig();
+
+            const province = sessionStorage.getItem('province');
 
             // 标识是不是第一次开机进入欢迎页，后面走portal就不用再认证登录，直接进入主页
             var isFirstStart = sessionStorage.getItem('ISFIRSTSTART');
@@ -393,7 +473,6 @@ export default {
                 return;
             }
 
-            this.getConfig();
             switch (sessionStorage.getItem('province')) {
                 case '云南':
                     if (!sessionStorage.getItem("indexUrl") && !!this.GetQueryString("indexUrl")) {
@@ -406,9 +485,7 @@ export default {
                     this.getUrlParams();
                     break;
                 case '陕西':
-                    // sessionStorage.setItem("indexUrl", "http://116.210.255.120:8080/HBEpg/epg/broadBandTV.jsp");
-                    // this.getUrlParams();
-                    this.doLogin();
+                    this.configShanxiParams();
                     break;
                 case '河南':
                     //TODO 区分中兴和华为
