@@ -473,6 +473,12 @@ export default {
                 return;
             }
 
+            // 茁壮中间件默认焦点框问题
+            console.log('ipanel: ' + iPanel);
+            if (!!window.iPanel) {
+                iPanel.focusWidth = 0;
+            }
+
             switch (sessionStorage.getItem('province')) {
                 case '云南':
                     if (!sessionStorage.getItem("indexUrl") && !!this.GetQueryString("indexUrl")) {
