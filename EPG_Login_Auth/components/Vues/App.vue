@@ -382,6 +382,17 @@ export default {
         },
 
         ready() {
+
+            // 标识是不是第一次开机进入欢迎页，后面走portal就不用再认证登录，直接进入主页
+            var isFirstStart = sessionStorage.getItem('ISFIRSTSTART');
+            console.log('isFirstStart: ' + isFirstStart);
+            if (isFirstStart !== '1') {
+                sessionStorage.setItem('ISFIRSTSTART', '1');
+            } else { // 直接进入主页面
+                this.gotoMainLayout();
+                return;
+            }
+
             this.getConfig();
             switch (sessionStorage.getItem('province')) {
                 case '云南':
