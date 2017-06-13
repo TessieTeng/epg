@@ -384,6 +384,13 @@ export default {
             },
         },
         ready() {
+
+            // 茁壮中间件默认焦点框问题
+            console.log('ipanel: ' + iPanel);
+            if (!!window.iPanel) {
+                iPanel.focusWidth = 0;
+            }
+
             this.listenBackKey();
             this.updateFirstClassTab(0);
             this.updateSecondClassTab(0);
