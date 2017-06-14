@@ -57,32 +57,6 @@ export default {
                     //     }
                     // }
 
-                    /* -------- 陕西参数获取 ----------- */
-                    /*
-                    if (sessionStorage.getItem('province') === '陕西') {
-
-                        this.userid = jsonObj.xml.userid;
-                        this.userGroup = jsonObj.xml.userGroup;
-                        this.areaID = jsonObj.xml.areaID;
-                        this.servername = jsonObj.xml.servername;
-                        this.serverport = jsonObj.xml.serverport;
-                        this.remoteaddr = jsonObj.xml.remoteaddr;
-
-
-                        sessionStorage.setItem('userid', this.userid);
-                        sessionStorage.setItem('userGroup', this.userGroup);
-                        sessionStorage.setItem('areaID', this.areaID);
-                        sessionStorage.setItem('servername', this.servername);
-                        sessionStorage.setItem('serverport', this.serverport);
-                        sessionStorage.setItem('remoteaddr', this.remoteaddr);
-
-                        this.doLogin();
-
-                        return;
-                    }*/ // END shanxi get params
-
-
-
                     this.server_ip = jsonObj.xml.server_ip;
                     this.group_name = jsonObj.xml.group_name;
                     this.group_path = jsonObj.xml.group_path;
@@ -454,10 +428,11 @@ export default {
 
                 this.doLogin();
             },
-
         },
 
         ready() {
+
+            var _this = this;
 
             this.getConfig();
 
