@@ -6,7 +6,7 @@
 
 (function(window) {
     // 当前省份
-    var province = 'henan';
+    var province = 'hubei';
 
     // 所有省份
     var ConfigObj = {

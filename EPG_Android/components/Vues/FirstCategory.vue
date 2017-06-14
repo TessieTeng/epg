@@ -43,7 +43,8 @@
     color: white;
     border-radius: 8px;
     letter-spacing: 4px;
-    box-shadow: 0 1px 6px rgba(6, 127, 210, 1);
+    box-shadow: 0 0 10px 4px #0CC;
+    background-color: #222930;
     top: 88%;
     left: 50%;
     transform: translate(-50%, -50%);
@@ -546,6 +547,7 @@ export default {
             //隐藏客信
             hideNotice() {
                 document.querySelector(".kexin").style.visibility = "hidden";
+                document.querySelector(".hint").style.visibility = "hidden";
                 document.getElementById("firstTabItem").children[0].children[0].focus();
             },
             //拦截客信按键
@@ -595,6 +597,8 @@ export default {
             this.getRootCategoryData(sessionStorage.getItem("RootCategoryID"));
             this.updateIsMainLayout(true);
             this.updateLastStore(0);
+            //先隐藏客信，过几秒后显示
+            document.querySelector(".hint").style.visibility = 'hidden';
             switch (sessionStorage.getItem('province')) {
                 case '云南':
                     break;
@@ -603,6 +607,7 @@ export default {
                     setTimeout(() => {
                         if (this.isFirstEnterKeXin) {
                             this.getRoomMsg();
+                            document.querySelector(".hint").style.visibility = 'visible';
                             document.querySelector(".hint").focus();
                             this.preventKey();
                             this.updateIsFirstEnterKeXin(false);
