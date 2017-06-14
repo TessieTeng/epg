@@ -290,6 +290,11 @@ export default {
                     case "iptv":
                         this.$dispatch("stopVideo");
                         this.$nextTick(() => {
+                            if (sessionStorage.getItem('province') === '河南') {
+                                sessionStorage.setItem('Main2ChannelURL', window.location.href);
+                                window.parent.location.href = '../../clist/index2.html';
+                                return;
+                            }
                             var address = sessionStorage.getItem("indexUrl");
                             window.parent.location.href = sessionStorage.getItem("indexUrl");
                         });
@@ -602,6 +607,8 @@ export default {
             switch (sessionStorage.getItem('province')) {
                 case '云南':
                     break;
+                case '河南':
+                case '陕西':
                 case '湖北':
                     this.getTvmsMsg();
                     setTimeout(() => {
