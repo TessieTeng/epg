@@ -14,7 +14,7 @@ import TemplateOne from 'Vues/TemplateOne'
 export default {
     data() {
             return {
-
+                
             };
         },
         methods: {
