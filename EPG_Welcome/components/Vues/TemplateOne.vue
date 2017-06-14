@@ -673,6 +673,109 @@ export default {
                 });
             },
 
+
+            getChannelList() {
+
+                var _this = this;
+                if (this.isRequestStatus) {
+                    return;
+                }
+                const userID = sessionStorage.getItem("userid") || Authentication.CUGetConfig("UserID");
+                this.isRequestStatus == true;
+                const lang = sessionStorage.getItem("currLangCode") || 'chi';
+                const tmpObj = {
+                    "Message": {
+                        "MessageType": "GetChannelListReq",
+                        "MessageBody": {
+                            "UserID": userID,
+                            "EpgGroupID": sessionStorage.getItem("EpgGroupID"),
+                            "LangCode": lang,
+                            "Token": sessionStorage.getItem("Token"),
+                        }
+                    }
+                };
+
+                // 下发频道信息
+                function setChannels(channels) {
+                    
+                    var len = channels.length;
+                    Authentication.CUSetConfig('ChannelCount', len);
+
+                    console.log('channel count: ' + len);
+
+                    var obj = null, channel = null, listChannels = [];
+                    for (let i = 0; i < len; i++) {
+                        channel = channels[i];
+
+                        let value = ''
+                            + 'ChannelID="' + (i + 1)
+                            + '",ChannelName="' + channel.ChannelName
+                            + '",UserChannelID="' + channel.ChannelNumber
+                            + '",ChannelURL="' + channel.LiveUrl
+                            + ',TimeShift="0",TimeShiftLength="10800"'
+                            + ',ChannelSDP="' + channel.LiveUrl
+                            + '",TimeShiftURL="",ChannelType="1",IsHDChannel="2",PreviewEnable="0"'
+                            + ',ChannelPurchased="1",ChannelLocked="0"'
+                            + ',ChannelLogURL="' + channel.LogoUrl
+                            + '",PositionX="null",PositionY="null",BeginTime="null",Interval="null"'
+                            + ',Lasting="null",ActionType="1",FCCEnable="0",ChannelFECPort="0"';
+
+                        listChannels.push({
+                            ChannelID: i + 1,
+                            ChannelName: channel.ChannelName,
+                            UserChannelID: channel.ChannelNumber,
+                            ChannelURL: channel.LiveUrl
+                        });
+
+                        Authentication.CUSetConfig('Channel', value);
+                        value = '';
+                    }
+
+                    console.log('first channel: ' + JSON.stringify(listChannels[0]));
+
+                    // 将第一个频道保存到session
+                    sessionStorage.setItem('FirstChannel', JSON.stringify(listChannels[0]));
+                    sessionStorage.setItem('AllChannels', JSON.stringify(listChannels));
+
+                    console.log('all channels: ' + JSON.stringify(listChannels));
+                }
+
+                Http({
+                    type: 'POST',
+                    url: sessionStorage.getItem("relativePath") + '/epgservice/index.php?MessageType=GetChannelListReq',
+                    data: JSON.stringify(tmpObj),
+                    complete: function(data) {
+                        if (data.status === 200) {
+                            const _data = JSON.parse(data.response);
+                            const _msgBody = _data.Message.MessageBody;
+                            if (_msgBody.ResultCode == 200) {
+                                let channel = _msgBody.ChannelList.Channel;
+                                console.log('post channel list: ' + channel.length);
+                                if (channel && channel.length > 0) {
+                                    setChannels(channel);
+                                } else {
+                                    console.log('频道列表为空');
+                                    _this.goToIptv('频道列表为空');
+                                }
+
+                            } else {
+                                console.log("频道数据获取失败");
+                                _this.goToIptv("频道数据获取失败");
+                            }
+                        } else {
+                            console.log("频道网络请求失败");
+                            _this.goToIptv("频道网络请求失败");
+                        }
+
+                        _this.isRequestStatus = false;
+                        _this.showLoading = false;
+                    },
+                    error: function(err) {
+                        console.log(err);
+                        _this.goToIptv(err);
+                    },
+                });
+            },
         },
 
         components: {
@@ -690,6 +793,14 @@ export default {
             setTimeout(() => {
                 this.tabIndex = 0;
             }, 100);
+
+            const province = sessionStorage.getItem('province');
+            console.log('welcome province: ' + province);
+
+            // 河南的需要频道列表
+            if (province === '河南') {
+                this.getChannelList();
+            }
         },
         directives: {
             focus(val) {
