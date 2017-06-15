@@ -4,7 +4,7 @@ html {
 }
 
 body {
-    background-color: black;
+    background-color: transparent;
 }
 
 .bgimg {
@@ -24,6 +24,7 @@ body {
     height: 166.67px;
     background: url(../assets/images/bg_portal_bottom.png);
     line-height: 166.67px;
+    background-color: black;
 }
 
 .advertisement {
@@ -159,7 +160,7 @@ a {
     line-height: 0px;
     background-position: center;
     background-size: cover;
-    border: 1px solid rgba(0,0,0,0);
+    border: 1px solid rgba(0, 0, 0, 0);
 }
 </style>
 <template>
@@ -198,7 +199,7 @@ export default {
 
                 // var playUrl = "http://222.221.25.243:6166/iptv/ppthdplay/hotelapps/index/SYHOTEL/assets/video/back_video_4M_out.mp4";
                 var playUrl = sessionStorage.getItem("playUrl");
-                console.log('playUrl' + playUrl);
+                //console.log('playUrl' + playUrl);
 
                 // var playUrl = 'rtsp://121.60.246.180:554/vod/00000050280005300791.mpg?userid=sxzxjdh6&stbip=10.225.103.232&clienttype=1&mediaid=&ifcharge=1&time=20170602162426+08&life=172800&usersessionid=184528&vcdnid=vcdn001&boid=001&srcboid=001&columnid=&backupagent=121.60.255.132:1556&ctype=50&playtype=0&Drm=0&EpgId=&programid=00000050280005300791&contname=&fathercont=&bp=0&authid=0&tscnt=0&tstm=0&tsflow=0&ifpricereqsnd=1&nodelevel=3&usercharge=33F6C69FF0F48168DB3A6A69D549BBA4';
 
@@ -245,7 +246,7 @@ export default {
                 this.mp.setMuteUIFlag(1);
                 this.mp.setAudioVolumeUIFlag(1);
                 this.mp.refreshVideoDisplay();
-                console.log('mediaUrl: ' + playUrl);
+                //console.log('mediaUrl: ' + playUrl);
             },
 
             listenBackKey() {
@@ -268,7 +269,7 @@ export default {
                     if (keyvalue == 8 && !/\/firstcategory/.test(location.href)) {
                         history.back();
                     } else if (keyvalue == 181) {
-                       _this.$router.go("/firstcategory");
+                        _this.$router.go("/firstcategory");
                     } else if (keyvalue == virtualKey) {
                         try {
                             // 每次捕获事件只能获取一次Utility.getEvent()
@@ -276,7 +277,7 @@ export default {
                             if (!mediaEvent) {
                                 return;
                             }
-                            console.log(mediaEvent)
+                            //console.log(mediaEvent)
                             try {
                                 mediaEvent = JSON.parse(mediaEvent);
                             } catch (e) {
@@ -334,7 +335,7 @@ export default {
                 var mediaJson = window.frames["if_smallscreen"].getMediastr(contentID); //32位视频码
                 const data = eval(mediaJson);
                 for (var i = 0; i < data.length; i++) {
-                    console.log(data[i].mediaUrl);
+                    //console.log(data[i].mediaUrl);
                     var playUrl = data[i].mediaUrl;
                     sessionStorage.setItem('playUrl', playUrl);
                 }
