@@ -50,15 +50,17 @@
     transform: translate(-50%, -50%);
     width: 140px;
     height: 36px;
+    line-height: 36px;
     padding: 4px 2px;
 }
+
 </style>
 <template>
     <div>
         <div class="rootDiv">
             <div class="kexin" :style="{'height':Height + 'px','left':Left + 'px', 'top':Top + 'px','width':Width + 'px','background-image': 'url(' + BgImageUrl +  ')'}">
-                <div class="info" :style="{'height':RoomMsg.TextHeight + 'px','left':RoomMsg.TextLeft + 'px', 'top':RoomMsg.TextTop + 'px','width':RoomMsg.TextWidth + 'px',}"> {{{RoomMsg.MsgText}}}</div>
-                <a href="javascript:;" class="hint" @click="hideNotice">{{RoomMsg.OkButtonText.chiword}}
+                <div class="info" :style="{'height':RoomMsg.TextHeight + 'px','left':RoomMsg.TextLeft + 'px', 'top':RoomMsg.TextTop + 'px','width':RoomMsg.TextWidth + 'px',}" v-if="RoomMsg.MsgText"> {{{RoomMsg.MsgText}}}</div>
+                <a href="javascript:;" class="hint" @click="hideNotice" v-if="RoomMsg.OkButtonText">{{RoomMsg.OkButtonText.chiword}}
                 </a>
             </div>
             <div class="scrolls" v-if='!!TvmsMsg.MsgText'>
@@ -252,6 +254,8 @@ export default {
                                     _this.adPic = tmpLeftBottomImgs[0].AdUrl;
                                 }
 
+                                console.log('_this.bgimg: ' + _this.bgimg);
+
                                 _this.categoryList = _msgBody.ChildrenObjectList.Object;
 
                                 _this.$nextTick(() => {
@@ -332,6 +336,23 @@ export default {
                             }
                         });
 
+                        break;
+                    case "vod_list":
+
+                        this.$dispatch("stopVideo");
+                        this.$nextTick(() => {
+                            let userId = sessionStorage.getItem('UserID') || Authentication.CUGetConfig('UserID');
+                            if (sessionStorage.getItem('province') === '河南') {
+                                let ip = sessionStorage.getItem('EPGIP') || "10.253.255.4:8080";
+                                window.parent.location.href = ''
+                                    + 'http://202.99.114.71:40001/hnlthotel/homePage.html?'
+                                    + 'userId=' + userId
+                                    + '&carrierId=204&industry=hotel&state=1&categoryid=dc00005223&'
+                                    + 'returnurl=http%3A%2F%2F'
+                                    + ip + '%2Fiptv%2Fportal.html'
+                                return;
+                            }
+                        });
                         break;
                     case 'show_category':
                     case '':
@@ -625,7 +646,9 @@ export default {
                     break;
             }
             this.$nextTick(() => {
-                if (!!sessionStorage.getItem('bg_media_url')) {
+                const bgMediaUrl = sessionStorage.getItem('bg_media_url');
+                console.log('bg_media_url: ' + bgMediaUrl);
+                if (!!bgMediaUrl && bgMediaUrl !== '0' ) {
                     this.hasVideo = true;
                     if (this.firstVideoPlay) {
                         var zhongxingMediaUrlOrigin = sessionStorage.getItem('zhongxingMediaUrlOrigin');
@@ -659,6 +682,7 @@ export default {
                 }
             });
 
+            console.log('bgimg: ' + this.bgimg);
             if (sessionStorage.getItem("MainPath") === 'test') {
                 this.EPGLog({
                     OperationCode: '盒子信息: ',
