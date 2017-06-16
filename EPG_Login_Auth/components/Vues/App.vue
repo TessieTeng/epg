@@ -138,7 +138,7 @@ export default {
                         break;
                     case '河南':
                         if (sessionStorage.getItem('from') === 'huawei') {
-                            tmpBody.USERID = sessionStorage.getItem('userid');
+                            tmpBody.USERID = sessionStorage.getItem('userid') || Authentication.CUGetConfig("UserID");
                         } else {
                             tmpBody.USERID = window.Authentication ? Authentication.CTCGetConfig("UserID") : '';
                         }
@@ -453,6 +453,13 @@ export default {
             if (!!window.iPanel) {
                 iPanel.focusWidth = 0;
             }
+
+            // 保存当前地址的 IP + Port
+            let epgIp = window.location.href.replace(/http:\/\/|https:\/\//, '');
+            if (epgIp.indexOf('/') > -1) {
+                epgIp = epgIp.substring(0, ip.indexOf('/'));
+            }
+            sessionStorage.setItem('EPGIP', ip);
 
             switch (sessionStorage.getItem('province')) {
                 case '云南':
