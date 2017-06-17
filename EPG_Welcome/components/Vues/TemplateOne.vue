@@ -21,6 +21,7 @@
     z-index: 2;
     height: 121px;
     bottom: 0;
+    background-color: black;
 }
 
 .wifi {
@@ -184,31 +185,12 @@
         box-shadow: 0 0 0 rgba(6, 127, 210, 1);
     }
 }
-
-
-/*
-a:focus .breatheFrame {
-    box-shadow: 0 0.01rem 0.1rem rgba(6, 127, 210, 1);
-    border-radius: 0.5rem;
-    -webkit-animation-timing-function: ease-in-out;
-    -webkit-animation-name: breathe;
-    -webkit-animation-duration: 2000ms;
-    -webkit-animation-iteration-count: infinite;
-    -webkit-animation-direction: alternate;
-}
-
-@-webkit-keyframes breathe {
-    100% {
-        opacity: 35;
-        box-shadow: 0 0.01rem 0.3rem rgba(6, 127, 210, 1);
-    }
-}*/
 </style>
 <template>
     <div class="rootView" id="welcomeLayout">
         <div class="rootView swiperLevel">
             <div style="width: 19.2rem; height: 10.8rem; position: relative;">
-                <img style="transition: all 1s; position: absolute;" :style="{ opacity: $index === picIndex ? 1 : 0 }" v-for="item in pictureList" :src="item.ImageUrl">
+                <img style="transition: all 1s; position: absolute;" :style="{ opacity: $index === picIndex ? 1 : 0 }" v-for="item in pictureList" :src="item.ImageUrl" v-show='!hasVideo'>
             </div>
         </div>
         <div class="rootView contentLevel">
@@ -286,7 +268,9 @@ export default {
                 },
                 currentTime: '',
                 picIndex: 0,
-
+                hasVideo: false,
+                VideoType: '',
+                contentID: '',
             };
 
         },
@@ -401,7 +385,8 @@ export default {
                 OperationTips,
                 WelcomeWords,
                 SubscriberName,
-                PictureList
+                PictureList,
+                VideoArea
             }) {
                 // 操作提示
                 if ((typeof(OperationTips) == undefined) || null == OperationTips) {
@@ -439,11 +424,21 @@ export default {
                 //轮播图片
                 if ((typeof(PictureList) == "undefined") || null == PictureList) {
                     console.log("图片列表是空");
+                    this.hasVideo = true;
                 } else {
+                    this.hasVideo = false;
                     this.pictureList = PictureList.ImageList;
                     setInterval(() => {
                         this.picIndex = ++this.picIndex % this.pictureList.length;
                     }, 3000)
+                }
+
+                //视频区域
+                if ((typeof(VideoArea) == "undefined") || null == VideoArea) {
+                    console.log("视频内容是空");
+                } else {
+                    this.contentID = VideoArea.IdList;
+                    this.getWelcomeMediaUrl();
                 }
             },
             listenBackKey() {
@@ -539,7 +534,6 @@ export default {
                                 _this.isRequestStatus = false;
                                 _this.handleData(Object.freeze(_msgBody));
                                 _this.changeTime(new Date(data.getResponseHeader('Date')));
-
                                 if (sessionStorage.getItem('WelcomePageGroupPath') === 'test') {
                                     _this.EPGLog({
                                         OperationCode: 'getWelcomeData',
@@ -697,28 +691,19 @@ export default {
 
                 // 下发频道信息
                 function setChannels(channels) {
-                    
+
                     var len = channels.length;
                     Authentication.CUSetConfig('ChannelCount', len);
 
                     console.log('channel count: ' + len);
 
-                    var obj = null, channel = null, listChannels = [];
+                    var obj = null,
+                        channel = null,
+                        listChannels = [];
                     for (let i = 0; i < len; i++) {
                         channel = channels[i];
 
-                        let value = ''
-                            + 'ChannelID="' + (i + 1)
-                            + '",ChannelName="' + channel.ChannelName
-                            + '",UserChannelID="' + channel.ChannelNumber
-                            + '",ChannelURL="' + channel.LiveUrl
-                            + ',TimeShift="0",TimeShiftLength="10800"'
-                            + ',ChannelSDP="' + channel.LiveUrl
-                            + '",TimeShiftURL="",ChannelType="1",IsHDChannel="2",PreviewEnable="0"'
-                            + ',ChannelPurchased="1",ChannelLocked="0"'
-                            + ',ChannelLogURL="' + channel.LogoUrl
-                            + '",PositionX="null",PositionY="null",BeginTime="null",Interval="null"'
-                            + ',Lasting="null",ActionType="1",FCCEnable="0",ChannelFECPort="0"';
+                        let value = '' + 'ChannelID="' + (i + 1) + '",ChannelName="' + channel.ChannelName + '",UserChannelID="' + channel.ChannelNumber + '",ChannelURL="' + channel.LiveUrl + ',TimeShift="0",TimeShiftLength="10800"' + ',ChannelSDP="' + channel.LiveUrl + '",TimeShiftURL="",ChannelType="1",IsHDChannel="2",PreviewEnable="0"' + ',ChannelPurchased="1",ChannelLocked="0"' + ',ChannelLogURL="' + channel.LogoUrl + '",PositionX="null",PositionY="null",BeginTime="null",Interval="null"' + ',Lasting="null",ActionType="1",FCCEnable="0",ChannelFECPort="0"';
 
                         listChannels.push({
                             ChannelID: i + 1,
@@ -776,6 +761,34 @@ export default {
                     },
                 });
             },
+
+            getWelcomeMediaUrl() {
+                if (!!this.contentID && this.contentID !== '0') {
+                    this.hasVideo = true;
+                    var zhongxingMediaUrlOrigin = sessionStorage.getItem('zhongxingMediaUrlOrigin');
+                    var huaweiMediaUrlOrigin = sessionStorage.getItem('huaweiMediaUrlOrigin');
+                    var urls = '';
+                    switch (sessionStorage.getItem('province')) {
+                        case '云南':
+                            //云南的视频暂时还不完善，所以先注释掉
+                            // this.getProgramInfo();
+                            break;
+                        case '湖北':
+                            if (sessionStorage.getItem("partner") === "HUAWEI") {
+                                urls = huaweiMediaUrlOrigin + '/EPG/MediaService/SmallScreen.jsp?ContentID=' + this.contentID + '&GetCntFlag=1';
+                                this.mediaurl = urls;
+                            } else {
+                                urls = zhongxingMediaUrlOrigin + '/MediaService/SmallScreen?ContentID=' + this.contentID + '&GetCntFlag=1';
+                                this.mediaurl = urls;
+                            }
+                            this.$dispatch('setMediaUrl', this.mediaurl);
+                            break;
+                        default:
+                            break;
+                    }
+                }
+
+            }
         },
 
         components: {
@@ -801,6 +814,7 @@ export default {
             if (province === '河南') {
                 this.getChannelList();
             }
+            this.getWelcomeMediaUrl();
         },
         directives: {
             focus(val) {
