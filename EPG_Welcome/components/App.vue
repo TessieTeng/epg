@@ -6,7 +6,7 @@
 <template>
     <div id="app">
         <template-one></template-one>
-        <iframe name="if_smallscreen" @load="getMediastr" :src="mediaurl"  v-if='showMediaIframe'></iframe>
+        <iframe name="if_smallscreen" @load="getMediastr" :src="mediaurl" v-if='showMediaIframe'></iframe>
     </div>
 </template>
 <script>
@@ -68,10 +68,21 @@ export default {
                 this.mp.setMuteUIFlag(1);
                 this.mp.setAudioVolumeUIFlag(1);
                 this.mp.refreshVideoDisplay();
-                console.log('mediaUrl: ' + playUrl);
             },
 
-            listenVideoAction() {
+            //获取mediastr JSON对象   
+            getMediastr() {
+                var contentID = sessionStorage.getItem('welcomeMediaUrl');
+                var mediaJson = window.frames["if_smallscreen"].getMediastr(contentID); //32位视频码
+                const data = eval(mediaJson);
+                for (var i = 0; i < data.length; i++) {
+                    var playUrl = data[i].mediaUrl;
+                    sessionStorage.setItem('playUrl', playUrl);
+                }
+                this.$dispatch('playVideo');
+            },
+
+            listenVideoKey() {
                 var _this = this;
                 window.addEventListener('keydown', (keyEvent) => {
                     keyEvent = keyEvent ? keyEvent : window.event;
@@ -95,7 +106,6 @@ export default {
                             if (!mediaEvent) {
                                 return;
                             }
-                            //console.log(mediaEvent)
                             try {
                                 mediaEvent = JSON.parse(mediaEvent);
                             } catch (e) {
@@ -146,17 +156,7 @@ export default {
                     }
                 });
             },
-            //获取mediastr JSON对象   
-            getMediastr() {
-                var contentID = sessionStorage.getItem('bg_media_url');
-                var mediaJson = window.frames["if_smallscreen"].getMediastr(contentID); //32位视频码
-                const data = eval(mediaJson);
-                for (var i = 0; i < data.length; i++) {
-                    var playUrl = data[i].mediaUrl;
-                    sessionStorage.setItem('playUrl', playUrl);
-                }
-                this.$dispatch('playVideo');
-            },
+
 
         },
         components: {
@@ -181,19 +181,17 @@ export default {
             setMediaUrl(mediaUrl) {
                 this.showMediaIframe = true;
                 this.mediaurl = mediaUrl;
-                console.log('各平台的mediaurl' + this.mediaurl);
             },
 
         },
         store: store,
         ready() {
             // 茁壮中间件默认焦点框问题
-            console.log('ipanel: ' + iPanel);
             if (!!window.iPanel) {
                 iPanel.focusWidth = 0;
             }
             //监控视频动作触发的虚拟按键
-            this.listenVideoAction();
+            this.listenVideoKey();
 
         },
 }

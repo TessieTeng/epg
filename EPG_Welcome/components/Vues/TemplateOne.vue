@@ -190,7 +190,7 @@
     <div class="rootView" id="welcomeLayout">
         <div class="rootView swiperLevel">
             <div style="width: 19.2rem; height: 10.8rem; position: relative;">
-                <img style="transition: all 1s; position: absolute;" :style="{ opacity: $index === picIndex ? 1 : 0 }" v-for="item in pictureList" :src="item.ImageUrl" v-show='!hasVideo'>
+                <img style="transition: all 1s; position: absolute;" :style="{ opacity: $index === picIndex ? 1 : 0 }" v-for="item in pictureList" :src="item.ImageUrl" v-show='hasVideo'>
             </div>
         </div>
         <div class="rootView contentLevel">
@@ -438,6 +438,7 @@ export default {
                     console.log("视频内容是空");
                 } else {
                     this.contentID = VideoArea.IdList;
+                    sessionStorage.setItem("welcomeMediaUrl",this.contentID);
                     this.getWelcomeMediaUrl();
                 }
             },
@@ -808,8 +809,6 @@ export default {
             }, 100);
 
             const province = sessionStorage.getItem('province');
-            console.log('welcome province: ' + province);
-
             // 河南的需要频道列表
             if (province === '河南') {
                 this.getChannelList();
