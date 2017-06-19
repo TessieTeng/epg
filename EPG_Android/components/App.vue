@@ -228,24 +228,30 @@ export default {
                 // var playUrl = "http://vod.ovt.ctlcdn.com/iptv2017/LOVEIT/201704/20170428/90000001000000025374837816083896/90000001000000025374837816083896.m3u8";
 
                 // var playUrl = "http://222.221.25.243:6166/iptv/ppthdplay/hotelapps/index/SYHOTEL/assets/video/back_video_4M_out.mp4";
-                // var playUrl = sessionStorage.getItem("playUrl");
                 //console.log('playUrl' + playUrl);
 
                 // var playUrl = 'rtsp://121.60.246.180:554/vod/00000050280005300791.mpg?userid=sxzxjdh6&stbip=10.225.103.232&clienttype=1&mediaid=&ifcharge=1&time=20170602162426+08&life=172800&usersessionid=184528&vcdnid=vcdn001&boid=001&srcboid=001&columnid=&backupagent=121.60.255.132:1556&ctype=50&playtype=0&Drm=0&EpgId=&programid=00000050280005300791&contname=&fathercont=&bp=0&authid=0&tscnt=0&tstm=0&tsflow=0&ifpricereqsnd=1&nodelevel=3&usercharge=33F6C69FF0F48168DB3A6A69D549BBA4';
 
-                // this.mediaStr = '[{mediaUrl:"' + playUrl + '",';
-                // this.mediaStr += 'mediaCode: "jsoncode1",';
-                // this.mediaStr += 'mediaType:2,';
-                // this.mediaStr += 'audioType:1,';
-                // this.mediaStr += 'videoType:1,';
-                // this.mediaStr += 'streamType:1,';
-                // this.mediaStr += 'drmType:1,';
-                // this.mediaStr += 'fingerPrint:0,';
-                // this.mediaStr += 'copyProtection:1,';
-                // this.mediaStr += 'allowTrickmode:1,';
-                // this.mediaStr += 'startTime:0,';
-                // this.mediaStr += 'endTime:20000,';
-                // this.mediaStr += 'entryID:"jsonentry1"}]';
+                // 云南播放，设置mediaStr和setSingleMedia放到play一起去
+                // 因为云南的播放地址可能会发生变化
+                var province = sessionStorage.getItem('province');
+                if (province !== '云南') {
+
+                    var playUrl = sessionStorage.getItem("playUrl");
+                    this.mediaStr = '[{mediaUrl:"' + playUrl + '",';
+                    this.mediaStr += 'mediaCode: "jsoncode1",';
+                    this.mediaStr += 'mediaType:2,';
+                    this.mediaStr += 'audioType:1,';
+                    this.mediaStr += 'videoType:1,';
+                    this.mediaStr += 'streamType:1,';
+                    this.mediaStr += 'drmType:1,';
+                    this.mediaStr += 'fingerPrint:0,';
+                    this.mediaStr += 'copyProtection:1,';
+                    this.mediaStr += 'allowTrickmode:1,';
+                    this.mediaStr += 'startTime:0,';
+                    this.mediaStr += 'endTime:20000,';
+                    this.mediaStr += 'entryID:"jsonentry1"}]';
+                }
                 this.mp = new MediaPlayer(); //新建一个mediaplayer对象
                 var instanceId = this.mp.getNativePlayerInstanceID(); //读取本地的媒体播放实例的标识
 
@@ -267,7 +273,9 @@ export default {
                 // alert("开始播放$$$");
                 this.mp.initMediaPlayer(instanceId, playListFlag, videoDisplayMode,
                     height, width, left, top, muteFlag, useNativeUIFlag, subtitleFlag, videoAlpha, cycleFlag, randomFlag, autoDelFlag);
-                // this.mp.setSingleMedia(this.mediaStr); //设置媒体播放器播放媒体内容
+                if (province !== '云南') { // 同上
+                    this.mp.setSingleMedia(this.mediaStr); //设置媒体播放器播放媒体内容
+                }
                 this.mp.setAllowTrickmodeFlag(0); //设置是否允许trick操作。 0:允许 1：不允许
                 this.mp.setVideoDisplayMode(0);
                 this.mp.setVideoDisplayArea(left, top, width, height);
@@ -347,8 +355,12 @@ export default {
                                 case "EVENT_MEDIA_END":
                                     {
                                         console.log("播放结束！");
-                                        _this.$broadcast("replay");
-                                        // this.mp.playFromStart();
+                                        // 云南特殊处理，通过广播通知子组件去发起播放请求
+                                        if (sessionStorage.getItem('province') === '云南') {
+                                            _this.$broadcast("replay");
+                                        } else {
+                                            this.mp.playFromStart();
+                                        }
                                         return "EVENT_MEDIA_END";
                                         break;
                                     }
@@ -382,8 +394,11 @@ export default {
                 if (!this.mp) {
                     this.initMediaPlay();
                 }
-                // this.mp.playFromStart(); //从头开始播放
-                this.play();
+                if (sessionStorage.getItem('province') === '云南') {
+                    this.play();
+                } else {
+                    this.mp.playFromStart(); //从头开始播放
+                }
 
             },
             resumeVideo() {
