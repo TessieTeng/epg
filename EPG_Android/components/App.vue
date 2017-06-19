@@ -347,7 +347,6 @@ export default {
                                 case "EVENT_MEDIA_END":
                                     {
                                         console.log("播放结束！");
-                                        _this.mp.stop(1);
                                         _this.$broadcast("replay");
                                         // this.mp.playFromStart();
                                         return "EVENT_MEDIA_END";
