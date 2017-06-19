@@ -466,6 +466,7 @@ export default {
                                     Detail: res.playUrl,
                                 });
                             }
+
                             _this.$dispatch("playVideo");
                         } else {
                             console.log('error: ' + data.status);
@@ -588,6 +589,13 @@ export default {
             },
         },
 
+        events: {
+            replay() {
+                console.log('-------- replay');
+                this.getProgramInfo();
+            }
+        },
+
         store: store,
         vuex: {
             actions: {
@@ -656,6 +664,7 @@ export default {
                         var contentID = sessionStorage.getItem('bg_media_url');
                         this.updateFirstVideoPlay(false);
                         var urls = '';
+                        console.log('----------- province: ' + sessionStorage.getItem('province'));
                         switch (sessionStorage.getItem('province')) {
                             case '云南':
                                 this.getProgramInfo();
