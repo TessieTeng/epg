@@ -591,7 +591,6 @@ export default {
 
         events: {
             replay() {
-                console.log('-------- replay');
                 this.getProgramInfo();
             }
         },
