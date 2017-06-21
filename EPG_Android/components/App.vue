@@ -289,7 +289,7 @@ export default {
 
             listenBackKey() {
                 var _this = this;
-                window.addEventListener('keydown', (keyEvent) => {
+                document.addEventListener('keydown', (keyEvent) => {
                     keyEvent = keyEvent ? keyEvent : window.event;
                     const keyvalue = keyEvent.which ? keyEvent.which : keyEvent.keyCode;
                     let virtualKey = "";
