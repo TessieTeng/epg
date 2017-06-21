@@ -424,13 +424,24 @@ export default {
                 //轮播图片
                 if ((typeof(PictureList) == "undefined") || null == PictureList) {
                     console.log("图片列表是空");
-                    this.hasVideo = true;
+                    if (this.contentID != null) {
+                        this.hasVideo = true;
+                    } else {
+                        this.hasVideo = false;
+                    }
+
                 } else {
-                    this.hasVideo = false;
-                    this.pictureList = PictureList.ImageList;
-                    setInterval(() => {
-                        this.picIndex = ++this.picIndex % this.pictureList.length;
-                    }, 3000)
+                    if (this.contentID != null) {
+                        this.hasVideo = true;
+                        this.pictureList = PictureList.ImageList;
+                        setInterval(() => {
+                            this.picIndex = ++this.picIndex % this.pictureList.length;
+                        }, 3000)
+
+                    } else {
+                        this.hasVideo = false;
+                    }
+
                 }
 
                 //视频区域
@@ -438,7 +449,7 @@ export default {
                     console.log("视频内容是空");
                 } else {
                     this.contentID = VideoArea.IdList;
-                    sessionStorage.setItem("welcomeMediaUrl",this.contentID);
+                    sessionStorage.setItem("welcomeMediaUrl", this.contentID);
                     this.getWelcomeMediaUrl();
                 }
             },
