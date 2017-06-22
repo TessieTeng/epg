@@ -124,6 +124,7 @@ export default {
 
         ready() {
             this.pictureList = this.lastPicList;
+            console.log('detail pic list: ' + this.pictureList);
             console.log("详情页面..." + this.isVideoPlay);
             if(this.isVideoPlay){
                 this.$dispatch("stopVideo");

@@ -127,6 +127,7 @@ export default {
                             virtualKey = 0x0300;
                             break;
                     }
+
                     if (keyvalue == virtualKey) {
                         try {
                             // 每次捕获事件只能获取一次Utility.getEvent()
@@ -155,6 +156,8 @@ export default {
                                 }
                             }
                             const mediaEventType = mediaEvent.type.replace(/\"/g, "");
+
+                            _this.debugInfo += '[K:' + mediaEventType + ']';
                             switch (mediaEventType) {
                                 case "EVENT_MEDIA_BEGINING":
                                     {
@@ -204,8 +207,6 @@ export default {
                 };
                 document.addEventListener('keydown', handler);
             },
-
-
         },
         components: {
             TemplateOne,
@@ -260,7 +261,6 @@ export default {
 
             //监控视频动作触发的虚拟按键
             this.listenVideoKey();
-
         },
 }
 </script>

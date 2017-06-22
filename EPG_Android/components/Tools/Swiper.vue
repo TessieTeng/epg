@@ -85,6 +85,7 @@ export default {
             'pictureList': function(newVal, val) {
                 const container = document.querySelector(".swiper-container");
                 const wrapper = document.querySelector(".swiper-wrapper");
+                console.log('this.pictureList.length: ' + this.pictureList.length);
                 wrapper.style.width = container.clientWidth * (this.pictureList.length + 2) + 'px';
                 this.mySwiper = swiper('.swiper-container', this.options);
                 this.mySwiper.enableKeyboardControl();
