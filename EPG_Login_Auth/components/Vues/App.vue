@@ -91,7 +91,13 @@ export default {
 
             getConfig() {
                 for (const key in Config) {
-                    sessionStorage.setItem(key, Config[key]);
+
+                    // 如果是对象转成 json 存储，用的时候请使用 JSON.parse 解析后使用
+                    if (typeof(Config[key]) === 'object') {
+                        sessionStorage.setItem(key, JSON.stringify(Config[key]));
+                    } else {
+                        sessionStorage.setItem(key, Config[key]);
+                    }
                 }
                 // sessionStorage.setItem("relativePath", Config.relativePath);
                 // sessionStorage.setItem("province", Config.province);
