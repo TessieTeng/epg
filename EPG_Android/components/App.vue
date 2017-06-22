@@ -1,4 +1,5 @@
 <style>
+
 html {
     /*font-size: 100px;*/
 }
@@ -171,6 +172,7 @@ a {
             <div class="one" id="videoPlay">aaaaaaaaaaaaaaa</div>
             <div class="two" id="videoPlayTotal">ccccccccccccccccccc</div>
         </div> -->
+        <version-info v-show="isVersionInfoShow"></version-info>
         <iframe name="if_smallscreen" @load="getMediastr" :src="mediaurl" class="media" v-if='showMediaIframe'></iframe>
         <div>
 </template>
@@ -180,6 +182,7 @@ import {
     updateFirstClassTab,
     updateSecondClassTab
 } from '../vuex/actions.js';
+import VersionInfo from 'Vues/VersionInfo';
 export default {
     data() {
             return {
@@ -191,6 +194,10 @@ export default {
                 strUtility: null,
                 mediaurl: '',
                 showMediaIframe: false,
+
+                // 组合键处理器
+                showEPGVersionInfo: null,
+                isVersionInfoShow: false,
             };
         },
         methods: {
@@ -236,21 +243,7 @@ export default {
                 // 因为云南的播放地址可能会发生变化
                 var province = sessionStorage.getItem('province');
                 if (province !== '云南') {
-
-                    var playUrl = sessionStorage.getItem("playUrl");
-                    this.mediaStr = '[{mediaUrl:"' + playUrl + '",';
-                    this.mediaStr += 'mediaCode: "jsoncode1",';
-                    this.mediaStr += 'mediaType:2,';
-                    this.mediaStr += 'audioType:1,';
-                    this.mediaStr += 'videoType:1,';
-                    this.mediaStr += 'streamType:1,';
-                    this.mediaStr += 'drmType:1,';
-                    this.mediaStr += 'fingerPrint:0,';
-                    this.mediaStr += 'copyProtection:1,';
-                    this.mediaStr += 'allowTrickmode:1,';
-                    this.mediaStr += 'startTime:0,';
-                    this.mediaStr += 'endTime:20000,';
-                    this.mediaStr += 'entryID:"jsonentry1"}]';
+                    this.setMediaStr();
                 }
                 this.mp = new MediaPlayer(); //新建一个mediaplayer对象
                 var instanceId = this.mp.getNativePlayerInstanceID(); //读取本地的媒体播放实例的标识
@@ -289,9 +282,13 @@ export default {
 
             listenBackKey() {
                 var _this = this;
-                window.addEventListener('keydown', (keyEvent) => {
+                document.addEventListener('keydown', (keyEvent) => {
                     keyEvent = keyEvent ? keyEvent : window.event;
                     const keyvalue = keyEvent.which ? keyEvent.which : keyEvent.keyCode;
+
+                    // // 9988 组合键触发
+                    _this.showEPGVersionInfo(keyvalue);
+
                     let virtualKey = "";
                     switch (sessionStorage.getItem('province')) {
                         case '云南':
@@ -304,10 +301,21 @@ export default {
                             virtualKey = 0x0300;
                             break;
                     }
-                    if (keyvalue == 8 && !/\/firstcategory/.test(location.href)) {
-                        history.back();
+                    if (keyvalue == 8) {
+
+                        if (!/\/firstcategory/.test(location.href)) {
+                            history.back();
+                        } else if (_this.isVersionInfoShow) {
+                            _this.isVersionInfoShow = false;
+                            _this.mp.resume();
+                        }
                     } else if (keyvalue == 181) {
-                        _this.$router.go("/firstcategory");
+                        if (_this.isVersionInfoShow) {
+                            _this.isVersionInfoShow = false;
+                            _this.mp.resume();
+                        } else {
+                            _this.$router.go("/firstcategory");
+                        }
                     } else if (keyvalue == virtualKey) {
                         try {
                             // 每次捕获事件只能获取一次Utility.getEvent()
@@ -386,7 +394,127 @@ export default {
                 this.$dispatch('playVideo');
             },
 
+            // 组合键处理
+            combineKeyFunction(callback, compoKeys, enable) {
+                // 只接受 enable === false 关闭组合键功能
+                if (typeof(enable) === 'boolean' && !enable) {
+                    return function () {};
+                }
 
+                var targetKeyArr = [57, 57, 56, 56];    // 组合键数组，默认：9988
+                var currKeyArr = [];        // 当前按下的键值组
+                var currKeyArrLen = 0;      // 键值组长度
+                var combiKeySwitch = true;  // 组合键开关
+                var lastKeyTime = "";       // 记录上一次按键时间点
+                var currKeyTime = "";       // 记录当前按下的按键时时间点
+                var seconds = 2;            // 组合键时间
+                var isTimeout = false;      // 两次按键是否超时过
+                var isSupportTimeout = false;   // 是否支持超时
+
+                if (arguments.length > 1
+                    && Object.prototype.toString.call(arguments[1]) === '[object Array]') {
+                    const tmpArr = compoKeys;
+                    let tmpValue = -1;
+                    for (let i = 0; i < tmpArr.length; i++) {
+                        tmpValue = tmpArr[i];
+                        // 如果是普通 0-9 数字，转换成键值
+                        if (tmpValue >= 0 && tmpValue <= 9) {
+                            tmpArr[i] = tmpValue + 48;
+                        }
+                    }
+
+                    targetKeyArr = [].slice.call(tmpArr, 0);
+                }
+
+                var debug = function (str) {
+                    // return;
+                    console.log(str);
+                };
+
+                // 重置数据
+                var reset = function () {
+                    currKeyArr = [];
+                    currKeyTime = "";
+                    lastKeyTime = "";
+                };
+
+                // 缓存在允许时间内（seconds）按下的按键
+                var buffer = function (__code) {
+
+                    if (!combiKeySwitch) { return; }
+
+                    if (currKeyArr.length < targetKeyArr.length) {
+
+                        // 缓存当前按键
+                        currKeyArr.push(__code);
+                        debug('current keys: ' + currKeyArr.toString());
+
+                        // 判断按下的按键键值是否和组件键值匹配
+                        for (var j = 0; j < currKeyArr.length; j++) {
+                            if (currKeyArr[j] !== targetKeyArr[j]) {
+                                reset();
+                                return;
+                            }
+                        }
+
+                        // 按键数达到组合键数了
+                        if (currKeyArr.length === targetKeyArr.length) {
+
+                            // 这个 if 可省略
+                            if (currKeyArr.toString() === targetKeyArr.toString()) {
+                                // TODO 组合键成功，执行业务行为
+                                debug('Got It ! > ' + currKeyArr.toString());
+
+                                if (callback) { callback(); }
+                            }
+
+                            // 组合成功或者按键数达到组合键键数量，都需要重置
+                            reset();
+                        }
+                    }
+                };
+
+                var checkWithTimeout = function () {
+                    // 下面是支持超时机制情况
+                    var delta = currKeyTime - lastKeyTime;
+                    debug('check ------ delta = ' + delta);
+
+                    if (delta < seconds * 1000) {
+                        isTimeout = false;
+                        buffer(__keycode);
+                    } else { // 两次按键超过允许值，重新开始
+                        isTimeout = true;
+                        reset();
+                    }
+                };
+
+                // 校验按键是否超时，超时标识组合键失败
+                var check = function (__keycode) {
+
+                    // 不支持两个键的间隔超时机制情况
+                    if (!isSupportTimeout) {
+                        isTimeout = false;
+                        buffer(__keycode);
+                    } else { // 支持超时机制
+                        checkWithTimeout();
+                    }
+
+                };
+
+                return function (__keycode) {
+
+                    //记下此次按键的时间
+                    lastKeyTime = currKeyTime;
+
+                    currKeyTime = new Date().getTime();
+
+                    if (!lastKeyTime || lastKeyTime == "") {
+                        lastKeyTime = currKeyTime;
+                    }
+
+                    check(__keycode);
+                };
+            },
 
         },
         events: {
@@ -432,13 +560,33 @@ export default {
 
             },
         },
+        components: {
+            VersionInfo,
+        },
         ready() {
+
+            var _this = this;
 
             // 茁壮中间件默认焦点框问题
             console.log('ipanel: ' + iPanel);
             if (!!window.iPanel) {
                 iPanel.focusWidth = 0;
             }
+
+            // 9988 组合键弹出版本信息
+            this.showEPGVersionInfo = this.combineKeyFunction(
+                function () {
+                    // [1]
+                    _this.isVersionInfoShow = true;
+                    _this.mp.pause();
+
+                    // [2]
+                    // _this.$router.go('/versioninfo');
+                    // _this.mp.pause();
+                    // _this.isVersionInfoShow
+                },
+                [9, 9, 8, 8]
+            );
 
             this.listenBackKey();
             this.updateFirstClassTab(0);
