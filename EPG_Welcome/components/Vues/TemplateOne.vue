@@ -774,6 +774,77 @@ export default {
                 });
             },
 
+            getProgramInfo() {
+                const _this = this;
+                const UrlOrigin = sessionStorage.getItem('UrlOrigin');
+                const USERID = sessionStorage.getItem('USERID');
+                const UserToken = sessionStorage.getItem('UserToken');
+                const contentID = sessionStorage.getItem('welcomeMediaUrl');
+
+                // 没有视频ID
+                if (!contentID || contentID == '0') {
+                    this.$dispatch('showWelcome');
+                    return;
+                }
+
+                /**
+                 * 详情请参考文档《电信 EPG 与 BO 接口规范说明》
+                 * programId、productIDs 可以为空
+                 * userFlag 为 Authentication.CTCGetConfig('UserID')
+                 * userToken 为 Authentication.CTCGetConfig('UserToken')
+                 * contentID 为 视频32位的id，如：90000001000000015984724636843325、90000001000000015985026379023502
+                 */
+                Http({
+                    type: 'GET',
+                    url: UrlOrigin + '/GetProgramInfo?programId=78&userFlag=' + USERID + '&userToken=' + UserToken + '&contentID=' + contentID + '&productIDs=',
+                    data: '',
+                    complete: function(data) {
+                        if (data.status === 200) {
+                            const res = JSON.parse(data.response);
+                            _this.selectionStart(res.assetId, UrlOrigin, UserToken);
+                        } else {
+                            console.log('error: ' + data.status);
+                        }
+                    },
+                    error: function(err) {
+                        console.log('网络请求错误：' + err);
+                    },
+                });
+            },
+            selectionStart(assetId, UrlOrigin, UserToken) {
+                const _this = this;
+                Http({
+                    type: 'GET',
+                    url: UrlOrigin + '/SelectionStart?assetId=' + assetId + '&userToken=' + UserToken,
+                    data: '',
+                    complete: function(data) {
+                        if (data.status === 200) {
+                            const res = JSON.parse(data.response);
+                            sessionStorage.setItem('playUrl', res.playUrl);
+                            if (sessionStorage.getItem("MainPath") === 'test') {
+                                this.EPGLog({
+                                    OperationCode: '获取视频url: ',
+                                    Detail: res.playUrl,
+                                });
+                            }
+
+                            if (res.playUrl && res.playUrl !== '0') {
+                                _this.$dispatch("playVideo");
+                            } else { // 地址为空，直接显示欢迎页
+                                _this.$dispatch('showWelcome');
+                            }
+                        } else {
+                            // 请求失败显示欢迎页
+                            _this.$dispatch('showWelcome');
+                            console.log('error: ' + data.status);
+                        }
+                    },
+                    error: function(err) {
+                        console.log(err);
+                    },
+                });
+            },
+
             getWelcomeMediaUrl() {
                 if (!!this.contentID && this.contentID !== '0') {
                     this.hasVideo = true;
@@ -783,7 +854,7 @@ export default {
                     switch (sessionStorage.getItem('province')) {
                         case '云南':
                             //云南的视频暂时还不完善，所以先注释掉
-                            // this.getProgramInfo();
+                            this.getProgramInfo();
                             break;
                         case '湖北':
                             if (sessionStorage.getItem("partner") === "HUAWEI") {
@@ -798,8 +869,11 @@ export default {
                         default:
                             break;
                     }
+                } else {
+                    if (sessionStorage.getItem('province') === '云南') {
+                        this.$dispatch('showWelcome');
+                    }
                 }
-
             }
         },
 
@@ -807,10 +881,57 @@ export default {
 
         },
 
+        events: {
+            oneEventHandler(event) { 
+                var _this = this;
+                var keyvalue = event.which ? event.which : event.keyCode;
+                if (sessionStorage.getItem('WelcomePageGroupPath') === 'test') {
+                    this.EPGLog({
+                        OperationCode: 'welcome_' + event.type,
+                        Detail: 'keyvalue: ' + keyvalue,
+                    });
+                }
+
+                _this.debugInfo += '[K:' + keyvalue + ']';
+
+                const province = sessionStorage.getItem('province');
+                if (province === '云南') {
+                    // 云南由于添加了开机广告视频，导致确定键无法触发 a 标签的click事件
+                    // 因此在这里使用确定键手动触发跳转
+                    if (keyvalue === 13) {
+                        _this.gotoMainLayout();
+                    }
+                }
+
+                switch (keyvalue) {
+                    // 返回
+                    case 8:
+                        if (this.canNotGoBack) {
+                            event.preventDefault();
+                            event.keyCode = 0;
+                            event.returnValue = false;
+                        } else {
+                            event.returnValue = true;
+                        }
+                        break;
+                        // left
+                    case 37:
+                        this.tabIndex = 0;
+                        this.changeChinese();
+                        break;
+                        // right
+                    case 39:
+                        this.tabIndex = 1;
+                        this.changeEnglish();
+                        break;
+                }
+            }
+        },
+
         ready() {
+            const province = sessionStorage.getItem('province');
             document.querySelector("#defaultLang").focus();
             this.canNotGoBack = true;
-            this.listenBackKey();
             this.getUiWord('chi', ['wifi_where_tip']);
             this.getUiWord('eng', ['wifi_where_tip']);
             this.getHereWeatherInfo();
@@ -819,12 +940,16 @@ export default {
                 this.tabIndex = 0;
             }, 100);
 
-            const province = sessionStorage.getItem('province');
             // 河南的需要频道列表
             if (province === '河南') {
                 this.getChannelList();
             }
-            this.getWelcomeMediaUrl();
+
+            if (province !== '云南') {
+                // 云南使用手动触发确定键，并将按键处理合并到 App.vue，统一处理
+                this.listenBackKey();
+                this.getWelcomeMediaUrl();
+            }
         },
         directives: {
             focus(val) {
