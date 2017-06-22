@@ -15,6 +15,7 @@ import RecommendList from "Vues/RecommendList";
 import SingleImg from "Vues/SingleImg";
 import Store from "Vues/Store";
 import ScaleImg from "Vues/ScaleImg";
+import VersionInfo from "Vues/VersionInfo";
 
 Vue.use(VueRouter);
 
@@ -62,7 +63,10 @@ router.map({
     },
     "/scaleimg": {
         component: ScaleImg,
-    }
+    },
+    "/versioninfo": {
+        component: VersionInfo,
+    },
 });
 
 router.redirect({ '/': '/firstcategory' });
