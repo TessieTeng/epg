@@ -59,8 +59,8 @@
     <div>
         <div class="rootDiv">
             <div class="kexin" :style="{'height':Height + 'px','left':Left + 'px', 'top':Top + 'px','width':Width + 'px','background-image': 'url(' + BgImageUrl +  ')'}">
-                <div class="info" :style="{'height':RoomMsg.TextHeight + 'px','left':RoomMsg.TextLeft + 'px', 'top':RoomMsg.TextTop + 'px','width':RoomMsg.TextWidth + 'px',}" v-if="RoomMsg.MsgText"> {{{RoomMsg.MsgText}}}</div>
-                <a href="javascript:;" class="hint" @click="hideNotice" v-if="RoomMsg.OkButtonText">{{RoomMsg.OkButtonText.chiword}}
+                <div class="info" :style="{'height':RoomMsg.TextHeight + 'px','left':RoomMsg.TextLeft + 'px', 'top':RoomMsg.TextTop + 'px','width':RoomMsg.TextWidth + 'px',}"> {{{RoomMsg.MsgText}}}</div>
+                <a href="javascript:;" class="hint" @click="hideNotice">{{RoomMsg.OkButtonText.chiword}}
                 </a>
             </div>
             <div class="scrolls" v-if='!!TvmsMsg.MsgText'>
