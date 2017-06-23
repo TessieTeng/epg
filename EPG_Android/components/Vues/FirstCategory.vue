@@ -254,8 +254,6 @@ export default {
                                     _this.adPic = tmpLeftBottomImgs[0].AdUrl;
                                 }
 
-                                console.log('_this.bgimg: ' + _this.bgimg);
-
                                 _this.categoryList = _msgBody.ChildrenObjectList.Object;
 
                                 _this.$nextTick(() => {
@@ -420,63 +418,6 @@ export default {
                 var currLangCode = window.parent.location.search.substr(1).split('=')[1];
                 sessionStorage.setItem('currLangCode', currLangCode);
             },
-            getProgramInfo() {
-                const _this = this;
-                const UrlOrigin = sessionStorage.getItem('UrlOrigin');
-                const USERID = sessionStorage.getItem('USERID');
-                const UserToken = sessionStorage.getItem('UserToken');
-                const contentID = sessionStorage.getItem('bg_media_url');
-                /**
-                 * 详情请参考文档《电信 EPG 与 BO 接口规范说明》
-                 * programId、productIDs 可以为空
-                 * userFlag 为 Authentication.CTCGetConfig('UserID')
-                 * userToken 为 Authentication.CTCGetConfig('UserToken')
-                 * contentID 为 视频32位的id，如：90000001000000015984724636843325、90000001000000015985026379023502
-                 */
-                Http({
-                    type: 'GET',
-                    url: UrlOrigin + '/GetProgramInfo?programId=78&userFlag=' + USERID + '&userToken=' + UserToken + '&contentID=' + contentID + '&productIDs=',
-                    data: '',
-                    complete: function(data) {
-                        if (data.status === 200) {
-                            const res = JSON.parse(data.response);
-                            _this.selectionStart(res.assetId, UrlOrigin, UserToken);
-                        } else {
-                            console.log('error: ' + data.status);
-                        }
-                    },
-                    error: function(err) {
-                        console.log('网络请求错误：' + err);
-                    },
-                });
-            },
-            selectionStart(assetId, UrlOrigin, UserToken) {
-                const _this = this;
-                Http({
-                    type: 'GET',
-                    url: UrlOrigin + '/SelectionStart?assetId=' + assetId + '&userToken=' + UserToken,
-                    data: '',
-                    complete: function(data) {
-                        if (data.status === 200) {
-                            const res = JSON.parse(data.response);
-                            sessionStorage.setItem('playUrl', res.playUrl);
-                            if (sessionStorage.getItem("MainPath") === 'test') {
-                                this.EPGLog({
-                                    OperationCode: '获取视频url: ',
-                                    Detail: res.playUrl,
-                                });
-                            }
-
-                            _this.$dispatch("playVideo");
-                        } else {
-                            console.log('error: ' + data.status);
-                        }
-                    },
-                    error: function(err) {
-                        console.log(err);
-                    },
-                });
-            },
 
             //获得TVMS消息列表
             getTvmsMsg() {
@@ -589,12 +530,6 @@ export default {
             },
         },
 
-        events: {
-            replay() {
-                this.getProgramInfo();
-            }
-        },
-
         store: store,
         vuex: {
             actions: {
@@ -663,10 +598,9 @@ export default {
                         var contentID = sessionStorage.getItem('bg_media_url');
                         this.updateFirstVideoPlay(false);
                         var urls = '';
-                        console.log('----------- province: ' + sessionStorage.getItem('province'));
                         switch (sessionStorage.getItem('province')) {
                             case '云南':
-                                this.getProgramInfo();
+                                this.$dispatch('replay');
                                 break;
                             case '湖北':
                                 if (sessionStorage.getItem("partner") === "HUAWEI") {
@@ -690,7 +624,6 @@ export default {
                 }
             });
 
-            console.log('bgimg: ' + this.bgimg);
             if (sessionStorage.getItem("MainPath") === 'test') {
                 this.EPGLog({
                     OperationCode: '盒子信息: ',
