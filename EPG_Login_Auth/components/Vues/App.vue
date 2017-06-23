@@ -33,15 +33,14 @@ export default {
             };
         },
         methods: {
+
             //获取湖北链接参数
             getUrlParams() {
                 var x2js = new xml2json();
+                var _this = this;
                 this.totalUrl = decodeURIComponent(location.href);
-                // this.totalUrl = decodeURIComponent("http://218.17.162.117:10003/iptv/portal.html?epg_info=%3Cserver_ip%3E27.31.32.37%3C%2Fserver_ip%3E%3Cgroup_name%3Ehbgd%3C%2Fgroup_name%3E%3Cgroup_path%3Ehttp%3A%2F%2F27.31.32.37%3A33200%2FEPG%2Fjsp%2Fhbgd%3C%2Fgroup_path%3E%3Coss_user_id%3Ehwxf150423204%3C%2Foss_user_id%3E%3Cpage_url%3Ehttp%3A%2F%2F27.31.32.37%3A33200%2FEPG%2Fjsp%2Fhbgd%2Fen%2Fau_PlayFilm.jsp%3C%2Fpage_url%3E%3Cpartner%3EHUAWEI%3C%2Fpartner%3E%3Cgroup_id%3E323%3C%2Fgroup_id%3E%3Carea_id%3E10004%3C%2Farea_id%3E%3Ccsm_id%3EHBGD%3C%2Fcsm_id%3E%3Ccdc_group_id%3E639893a00e18451eb6a69110da086401%3C%2Fcdc_group_id%3E#!/app?epg_info=%253Cserver_ip%253E27.31.32.37%253C%252Fserver_ip%253E%253Cgroup_name%253Ehbgd%253C%252Fgroup_name%253E%253Cgroup_path%253Ehttp%253A%252F%252F27.31.32.37%253A33200%252FEPG%252Fjsp%252Fhbgd%253C%252Fgroup_path%253E%253Coss_user_id%253Ehwxf150423204%253C%252Foss_user_id%253E%253Cpage_url%253Ehttp%253A%252F%252F27.31.32.37%253A33200%252FEPG%252Fjsp%252Fhbgd%252Fen%252Fau_PlayFilm.jsp%253C%252Fpage_url%253E%253Cpartner%253EHUAWEI%253C%252Fpartner%253E%253Cgroup_id%253E323%253C%252Fgroup_id%253E%253Carea_id%253E10004%253C%252Farea_id%253E%253Ccsm_id%253EHBGD%253C%252Fcsm_id%253E%253Ccdc_group_id%253E639893a00e18451eb6a69110da086401%253C%252Fcdc_group_id%253E");
-                console.log("this.totalUrl:", this.totalUrl);
-                // var param = decodeURIComponent(this.totalUrl.split("#!/app?")[1]);
+
                 var param = this.totalUrl;
-                console.log("param是：", param);
                 if (param) {
                     var xmlSource = param.split("=")[1];
                     console.log("获取到的参数：", xmlSource);
@@ -79,8 +78,6 @@ export default {
                     sessionStorage.setItem("area_id", this.area_id);
                     sessionStorage.setItem("csm_id", this.csm_id);
 
-
-
                     // 后期如果从url参数拿到indexUrl，则要在这里set到sessionStorage里面
 
                     this.doLogin();
@@ -99,8 +96,6 @@ export default {
                         sessionStorage.setItem(key, Config[key]);
                     }
                 }
-                // sessionStorage.setItem("relativePath", Config.relativePath);
-                // sessionStorage.setItem("province", Config.province);
 
                 if (!!window.Authentication) {
                     const epgdomain = Authentication.CTCGetConfig('EPGDomain');
@@ -238,7 +233,6 @@ export default {
                         _this.showLoading = false;
                     },
                     error: function(err) {
-                        console.log(err);
                         _this.goToIptv(err);
                     },
                 });
@@ -279,7 +273,13 @@ export default {
                                 if (_this.GetQueryString("cKey") === 'back') {
                                     _this.gotoMainLayout();
                                 } else {
-                                    _this.goToWelcome();
+
+                                    // 云南先走开机广告
+                                    if (sessionStorage.getItem('province') === '云南') {
+                                        _this.gotoAd();
+                                    } else {
+                                        _this.goToWelcome();
+                                    }
                                 }
                             } else {
                                 console.log("视频数据获取失败");
@@ -318,14 +318,33 @@ export default {
             },
 
             goToIptv(err) {
+
                 let str = '';
                 if ((typeof err).toLowerCase() === 'string') {
                     str = err;
                 } else {
                     str = this.getObjStr(err);
                 }
+
                 // alert(str);
                 location.href = sessionStorage.getItem("indexUrl");
+            },
+
+            gotoAd() {
+                // location.replace("./epggroup_ads/ad_test/ad.html");
+                this.goToWelcome();
+
+                /*
+                if (/^https?:\/\//.test(sessionStorage.getItem("AdPageGroupPath"))) {
+                    // 链接跳转
+                    location.replace(sessionStorage.getItem("AdPageGroupPath"));
+                } else if (sessionStorage.getItem("AdPageGroupPath") == "test") {
+                    // 测试路径
+                    location.replace("./epggroup_ads/ad_test/ad.html");
+                } else {
+                    // 正式路径
+                    location.replace("./epggroup_ads/ad_default/ad.html");
+                }*/
             },
 
             goToWelcome() {
@@ -356,6 +375,7 @@ export default {
                     location.replace(sessionStorage.getItem("MainPath"));
                     return;
                 } else */
+
                 if (sessionStorage.getItem("MainPath") == "test") {
                     // 测试路径
                     path = './epggroup_mains/main_test/';
@@ -367,7 +387,10 @@ export default {
                     const lang = sessionStorage.getItem("currLangCode") || 'chi';
                     file = `main_outer.html?currLangCode=${lang}`;
                 }
-                location.replace(path + file);
+
+                let targetUrl = path + file;
+
+                location.replace(targetUrl);
             },
 
             configShanxiParams() {
@@ -412,12 +435,10 @@ export default {
                 /* IPTV 首页地址，ywbz是测试分组，后面根据需求会发生改变 */
                 const serverip = this.servername || '113.136.96.196';
                 const serverport = this.serverport || '8282';
-                sessionStorage.setItem("indexUrl", "http://" + serverip + ':' + serverport + "/EPG/jsp/ywbz/en/Category.jsp");
+                let indexUrl = "http://" + serverip + ':' + serverport + "/EPG/jsp/ywbz/en/Category.jsp";
+                sessionStorage.setItem("indexUrl", indexUrl);
 
                 const currUrl = window.location.href;
-
-                // 将当前 url 保存为首页地址，113.136.46.37是模板中的服务器地址
-                console.log('location: ' + currUrl + ', iptv: ' + sessionStorage.getItem('indexUrl'));
 
                 // 这里固定写死，只要不包含查找的字符串，就直接重新设置
                 // 这里也可以不用添加该判断，因为只会在开机的时候执行一次
@@ -446,7 +467,7 @@ export default {
 
             // 标识是不是第一次开机进入欢迎页，后面走portal就不用再认证登录，直接进入主页
             var isFirstStart = sessionStorage.getItem('ISFIRSTSTART');
-            console.log('isFirstStart: ' + isFirstStart);
+
             if (isFirstStart !== '1') {
                 sessionStorage.setItem('ISFIRSTSTART', '1');
             } else { // 直接进入主页面
@@ -467,15 +488,18 @@ export default {
             }
             sessionStorage.setItem('EPGIP', ip);
 
+            let indexUrl = '';
             switch (sessionStorage.getItem('province')) {
                 case '云南':
                     if (!sessionStorage.getItem("indexUrl") && !!this.GetQueryString("indexUrl")) {
-                        sessionStorage.setItem("indexUrl", this.GetQueryString("indexUrl"));
+                        indexUrl = this.GetQueryString("indexUrl");
+                        sessionStorage.setItem("indexUrl", indexUrl);
                     }
                     this.doLogin();
                     break;
                 case '湖北':
-                    sessionStorage.setItem("indexUrl", "http://116.210.255.120:8080/HBEpg/epg/broadBandTV.jsp");
+                    indexUrl = "http://116.210.255.120:8080/HBEpg/epg/broadBandTV.jsp";
+                    sessionStorage.setItem("indexUrl", indexUrl);
                     this.getUrlParams();
                     break;
                 case '陕西':
