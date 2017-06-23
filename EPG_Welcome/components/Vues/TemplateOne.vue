@@ -438,6 +438,8 @@ export default {
                             this.picIndex = ++this.picIndex % this.pictureList.length;
                         }, 3000)
 
+                        // 如果有图片，在后面播放
+                        sessionStorage.setItem('HasPicList', '1');
                     } else {
                         this.hasVideo = false;
                     }
@@ -489,6 +491,7 @@ export default {
                 };
 
             },
+
             gotoMainLayout() {
                 sessionStorage.setItem("currLangCode", this.currentLang);
                 clearInterval(this.timeInterval);
@@ -781,12 +784,6 @@ export default {
                 const UserToken = sessionStorage.getItem('UserToken');
                 const contentID = sessionStorage.getItem('welcomeMediaUrl');
 
-                // 没有视频ID
-                if (!contentID || contentID == '0') {
-                    this.$dispatch('showWelcome');
-                    return;
-                }
-
                 /**
                  * 详情请参考文档《电信 EPG 与 BO 接口规范说明》
                  * programId、productIDs 可以为空
@@ -830,12 +827,8 @@ export default {
 
                             if (res.playUrl && res.playUrl !== '0') {
                                 _this.$dispatch("playVideo");
-                            } else { // 地址为空，直接显示欢迎页
-                                _this.$dispatch('showWelcome');
                             }
                         } else {
-                            // 请求失败显示欢迎页
-                            _this.$dispatch('showWelcome');
                             console.log('error: ' + data.status);
                         }
                     },
@@ -869,10 +862,6 @@ export default {
                         default:
                             break;
                     }
-                } else {
-                    if (sessionStorage.getItem('province') === '云南') {
-                        this.$dispatch('showWelcome');
-                    }
                 }
             }
         },
@@ -882,49 +871,22 @@ export default {
         },
 
         events: {
-            oneEventHandler(event) { 
-                var _this = this;
-                var keyvalue = event.which ? event.which : event.keyCode;
-                if (sessionStorage.getItem('WelcomePageGroupPath') === 'test') {
-                    this.EPGLog({
-                        OperationCode: 'welcome_' + event.type,
-                        Detail: 'keyvalue: ' + keyvalue,
-                    });
-                }
+            replay() {
+                this.getProgramInfo();
+            },
 
-                _this.debugInfo += '[K:' + keyvalue + ']';
+            toChinese() {
+                this.tabIndex = 0;
+                this.changeChinese();
+            },
 
-                const province = sessionStorage.getItem('province');
-                if (province === '云南') {
-                    // 云南由于添加了开机广告视频，导致确定键无法触发 a 标签的click事件
-                    // 因此在这里使用确定键手动触发跳转
-                    if (keyvalue === 13) {
-                        _this.gotoMainLayout();
-                    }
-                }
+            toEnglish() {
+                this.tabIndex = 1;
+                this.changeEnglish();
+            },
 
-                switch (keyvalue) {
-                    // 返回
-                    case 8:
-                        if (this.canNotGoBack) {
-                            event.preventDefault();
-                            event.keyCode = 0;
-                            event.returnValue = false;
-                        } else {
-                            event.returnValue = true;
-                        }
-                        break;
-                        // left
-                    case 37:
-                        this.tabIndex = 0;
-                        this.changeChinese();
-                        break;
-                        // right
-                    case 39:
-                        this.tabIndex = 1;
-                        this.changeEnglish();
-                        break;
-                }
+            gotoMain() {
+                this.gotoMainLayout();
             }
         },
 
