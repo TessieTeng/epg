@@ -6,7 +6,7 @@
 
 (function(window) {
     // 当前省份
-    var province = 'hubei';
+    var province = 'yunnan';
 
     // 所有省份
     var ConfigObj = {
@@ -45,18 +45,26 @@
         使用前请务必阅读tag命令使用方式（若熟悉请无视）：https://git-scm.com/book/zh/v1/Git-%E5%9F%BA%E7%A1%80-%E6%89%93%E6%A0%87%E7%AD%BE
      */
     var SYEpgVersion = {
-        no: 'v1.0.2',
-        desc: '这里是版本描述',
-
-        // 这里可以根据需要添加更多内容
-        // 比如：
-        // 1 修复的buglist
-        // buglist: [ '解决焦点黄框问题', '解决视频卡顿问题', '等等'],
-        // 2 新增功能列表
-        // features: ['直播', '开机广告', '等等'],
-        // 3 ......等等更多扩展内容
+        no: 'H5EPG30_1.1.0_170623',
+        desc: '发布SIT测试版本',
+        buglist: [
+            '修复视频不能循环播放问题（包括欢迎页和主页视频）', 
+            '修复焦点会显示一个5像素左右宽的黄框问题', 
+            '修复在详情页返回到二级页面不能恢复播放问题',
+            '修复单张大图不能返回问题',
+        ],
+        features: [
+            '9988数字组合键显示版本信息', 
+            '支持欢迎页轮播图片和视频',
+            '开机第一次才进入欢迎页，后面操作只会进入主页',
+            '右上角当前城市天气信息显示',
+            '欢迎页滚动消息',
+            '右下角客人姓名显示',
+            '欢迎页添加wifi提示',
+        ],
     };
 
     window.Config = ConfigObj[province];
     window.Config.SYEpgVersion = SYEpgVersion;
+    window.Config.isDebug = 1;
 })(window)
