@@ -214,7 +214,6 @@ export default {
                     },
                 });
             },
-
         },
 
         vuex: {
@@ -235,7 +234,6 @@ export default {
             Loading,
         },
 
-
         ready() {
             this.updateIsMainLayout(false);
             this.getRootCategoryData(this.$route.params.id);
@@ -244,7 +242,7 @@ export default {
             if (!!sessionStorage.getItem('bg_media_url')) {
                 this.hasVideo = true;
                 if (!this.isVideoPlay) {
-                    this.$dispatch("playVideo");
+                    this.$dispatch("replay");
                     this.updateIsVideoPlay(true);
                 }
             }
