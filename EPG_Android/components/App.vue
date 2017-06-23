@@ -163,6 +163,18 @@ a {
     background-size: cover;
     border: 1px solid rgba(0, 0, 0, 0);
 }
+
+#debug {
+    position: fixed;
+    right: 0;
+    top: 0;
+    width: 20%;
+    height: 100%;
+    opacity: 0.2;
+    color: #fff;
+    z-index: 10000000;
+}
+
 </style>
 <template>
     <!-- 路由外链 -->
@@ -172,12 +184,14 @@ a {
             <div class="one" id="videoPlay">aaaaaaaaaaaaaaa</div>
             <div class="two" id="videoPlayTotal">ccccccccccccccccccc</div>
         </div> -->
+        <div id="debug" v-if="isDebug"></div>
         <version-info v-show="isVersionInfoShow"></version-info>
         <iframe name="if_smallscreen" @load="getMediastr" :src="mediaurl" class="media" v-if='showMediaIframe'></iframe>
         <div>
 </template>
 <script>
 import store from '../vuex/store.js';
+import Http from '../assets/lib/Http.js';
 import {
     updateFirstClassTab,
     updateSecondClassTab
@@ -198,9 +212,59 @@ export default {
                 // 组合键处理器
                 showEPGVersionInfo: null,
                 isVersionInfoShow: false,
+                isDebug: false,
             };
         },
         methods: {
+
+            EPGLog(params = {
+                OperationCode: '',
+                Detail: '',
+                condition: '',
+            }) {
+
+                // 条件不满足不打印
+                if (!params.condition) { return; }
+
+                const tmpObj = {
+                    "Message": {
+                        "MessageType": "EPGLogReq",
+                        "MessageBody": {
+                            "USERID": sessionStorage.getItem("STBID"),
+                            "HostID": sessionStorage.getItem("HostID"),
+                            "OperationCode": params.OperationCode,
+                            "Detail": params.Detail,
+                        },
+                    }
+                };
+                Http({
+                    type: 'POST',
+                    url: sessionStorage.getItem("relativePath") + '/epgservice/index.php?MessageType=EPGLogReq',
+                    data: JSON.stringify(tmpObj),
+                    complete: function(data) {},
+                    error: function(err) {},
+                });
+            },
+
+            debug(obj) {
+
+                let isDebug = parseInt(sessionStorage.getItem('isDebug'), 10);
+
+                // config.js 中配置
+                if (!this.isDebug && isDebug !== 1) { return; }
+
+                const debug = document.getElementById('.debug');
+
+                let str = '';
+
+                if (typeof(obj) === 'object') {
+                    str = JSON.stringify(obj);
+                } else {
+                    str = '' + obj;
+                }
+
+                debug.innerHTML += '[' + str + ']';
+            },
 
             setMediaStr() {
 
@@ -222,10 +286,6 @@ export default {
             },
 
             play() {
-
-                // this.mp.mediaPlayType = 'joinChannel';
-                // this.mp.stop();
-
                 this.setMediaStr();
                 this.mp.setSingleMedia(this.mediaStr);
                 this.mp.playFromStart();
@@ -280,8 +340,113 @@ export default {
                 //console.log('mediaUrl: ' + playUrl);
             },
 
+            homepage() { // 首页键处理
+
+                // 如果当前就是首页
+                if (/\/firstcategory/.test(location.href)) { return; }
+
+                const province = sessionStorage.getItem('province');
+                if (this.isVersionInfoShow) {
+                    this.isVersionInfoShow = false;
+                    this.mp.resume();
+                } else {
+                    this.$router.go("/firstcategory");
+
+                    // 云南要重新发起播放请求
+                    if (province === '云南') {
+                        this.$dispatch('replay');
+                    }
+                }
+            },
+
+            back() {
+                const province = sessionStorage.getItem('province');
+                this.EPGLog({
+                    OperationCode: '主页返回键',
+                    Detail: JSON.stringify({
+                        location: location.href,
+                        province: province,
+                    }),
+                    condition: (sessionStorage.getItem('MainPath') === 'test')
+                });
+
+                if (!/\/firstcategory/.test(location.href)) {
+                    history.back();
+                    // 云南要重新发起播放请求
+                    if (province === '云南') {
+                        this.$dispatch('replay');
+                    }
+                } else if (this.isVersionInfoShow) {
+                    this.isVersionInfoShow = false;
+                    this.mp.resume();
+                }
+            },
+
+            virtualKey() {
+                try {
+                    // 每次捕获事件只能获取一次Utility.getEvent()
+                    let mediaEvent = Utility.getEvent();
+                    if (!mediaEvent) {
+                        return;
+                    }
+
+                    try {
+                        mediaEvent = JSON.parse(mediaEvent);
+                    } catch (e) {
+                        mediaEvent = mediaEvent.substring(1, mediaEvent.length - 1);
+                        const mediaEventParams = mediaEvent.split(",");
+                        mediaEvent = {};
+                        let tempParams = null;
+                        for (let i = 0; i < mediaEventParams.length; i++) {
+                            tempParams = mediaEventParams[i].split(":");
+                            if (tempParams.length == 2) {
+                                mediaEvent[tempParams[0]] = tempParams[1];
+                            }
+                        }
+                    }
+                    // 有些key带有双引号
+                    for (const key in mediaEvent) {
+                        if (mediaEvent.hasOwnProperty(key)) {
+                            mediaEvent[key.replace(/\"/g, "")] = mediaEvent[key];
+                        }
+                    }
+
+                    const mediaEventType = mediaEvent.type.replace(/\"/g, "");
+                    switch (mediaEventType) {
+                        case "EVENT_MEDIA_BEGINING":
+                            {
+                                console.log("播放开始！");
+                                return "EVENT_MEDIA_BEGINING";
+                                break;
+                            }
+                        case "EVENT_MEDIA_ERROR":
+                            {
+                                console.log("播放失败，请检查网络！\t错误代码：" + mediaEvent.error_code);
+                                // this.updateToken();
+                                return "EVENT_MEDIA_ERROR";
+                                break;
+                            }
+                        case "EVENT_MEDIA_END":
+                            {
+                                console.log("播放结束！");
+                                // 云南特殊处理，通过广播通知子组件去发起播放请求
+                                if (sessionStorage.getItem('province') === '云南') {
+                                    this.$dispatch("replay");
+                                } else {
+                                    this.mp.playFromStart();
+                                }
+                                return "EVENT_MEDIA_END";
+                                break;
+                            }
+                    }
+                } catch (e) {
+                    console.log(e);
+                }
+            },
+
             listenBackKey() {
                 var _this = this;
+                var province = sessionStorage.getItem('province');
                 document.addEventListener('keydown', (keyEvent) => {
                     keyEvent = keyEvent ? keyEvent : window.event;
                     const keyvalue = keyEvent.which ? keyEvent.which : keyEvent.keyCode;
@@ -301,82 +466,13 @@ export default {
                             virtualKey = 0x0300;
                             break;
                     }
-                    if (keyvalue == 8) {
 
-                        if (!/\/firstcategory/.test(location.href)) {
-                            history.back();
-                        } else if (_this.isVersionInfoShow) {
-                            _this.isVersionInfoShow = false;
-                            _this.mp.resume();
-                        }
-                    } else if (keyvalue == 181) {
-                        if (_this.isVersionInfoShow) {
-                            _this.isVersionInfoShow = false;
-                            _this.mp.resume();
-                        } else {
-                            _this.$router.go("/firstcategory");
-                        }
-                    } else if (keyvalue == virtualKey) {
-                        try {
-                            // 每次捕获事件只能获取一次Utility.getEvent()
-                            let mediaEvent = Utility.getEvent();
-                            if (!mediaEvent) {
-                                return;
-                            }
-                            //console.log(mediaEvent)
-                            
-                            try {
-                                mediaEvent = JSON.parse(mediaEvent);
-                            } catch (e) {
-                                mediaEvent = mediaEvent.substring(1, mediaEvent.length - 1);
-                                const mediaEventParams = mediaEvent.split(",");
-                                mediaEvent = {};
-                                let tempParams = null;
-                                for (let i = 0; i < mediaEventParams.length; i++) {
-                                    tempParams = mediaEventParams[i].split(":");
-                                    if (tempParams.length == 2) {
-                                        mediaEvent[tempParams[0]] = tempParams[1];
-                                    }
-                                }
-                            }
-                            // 有些key带有双引号
-                            for (const key in mediaEvent) {
-                                if (mediaEvent.hasOwnProperty(key)) {
-                                    mediaEvent[key.replace(/\"/g, "")] = mediaEvent[key];
-                                }
-                            }
-                            const mediaEventType = mediaEvent.type.replace(/\"/g, "");
-                            switch (mediaEventType) {
-                                case "EVENT_MEDIA_BEGINING":
-                                    {
-                                        console.log("播放开始！");
-                                        return "EVENT_MEDIA_BEGINING";
-                                        break;
-                                    }
-                                case "EVENT_MEDIA_ERROR":
-                                    {
-                                        console.log("播放失败，请检查网络！\t错误代码：" + mediaEvent.error_code);
-                                        // this.updateToken();
-                                        return "EVENT_MEDIA_ERROR";
-                                        break;
-                                    }
-                                case "EVENT_MEDIA_END":
-                                    {
-                                        console.log("播放结束！");
-                                        // 云南特殊处理，通过广播通知子组件去发起播放请求
-                                        if (sessionStorage.getItem('province') === '云南') {
-                                            _this.$broadcast("replay");
-                                        } else {
-                                            this.mp.playFromStart();
-                                        }
-                                        return "EVENT_MEDIA_END";
-                                        break;
-                                    }
-                            }
-                        } catch (e) {
-                            console.log(e);
-                        }
-
+                    switch (keyvalue) {
+                        case 8: _this.back(); break;
+                        case 181: _this.homepage(); break;
+                        case 0x0300:
+                        case 768: _this.virtualKey();
+                        default: return false; break;
                     }
                 });
             },
@@ -427,7 +523,7 @@ export default {
                 }
 
                 var debug = function (str) {
-                    // return;
+                    return;
                     console.log(str);
                 };
 
@@ -516,18 +612,85 @@ export default {
                 };
             },
 
+            getProgramInfo() {
+                const _this = this;
+                const UrlOrigin = sessionStorage.getItem('UrlOrigin');
+                const USERID = sessionStorage.getItem('USERID');
+                const UserToken = sessionStorage.getItem('UserToken');
+                const contentID = sessionStorage.getItem('bg_media_url');
+                /**
+                 * 详情请参考文档《电信 EPG 与 BO 接口规范说明》
+                 * programId、productIDs 可以为空
+                 * userFlag 为 Authentication.CTCGetConfig('UserID')
+                 * userToken 为 Authentication.CTCGetConfig('UserToken')
+                 * contentID 为 视频32位的id，如：90000001000000015984724636843325、90000001000000015985026379023502
+                 */
+
+                Http({
+                    type: 'GET',
+                    url: UrlOrigin + '/GetProgramInfo?programId=78&userFlag=' + USERID + '&userToken=' + UserToken + '&contentID=' + contentID + '&productIDs=',
+                    data: '',
+                    complete: function(data) {
+                        if (data.status === 200) {
+                            const res = JSON.parse(data.response);
+                            _this.selectionStart(res.assetId, UrlOrigin, UserToken);
+                        } else {
+                            console.log('error: ' + data.status);
+                        }
+                    },
+                    error: function(err) {
+                        console.log('网络请求错误：' + err);
+                    },
+                });
+            },
+            selectionStart(assetId, UrlOrigin, UserToken) {
+                const _this = this;
+                Http({
+                    type: 'GET',
+                    url: UrlOrigin + '/SelectionStart?assetId=' + assetId + '&userToken=' + UserToken,
+                    data: '',
+                    complete: function(data) {
+                        if (data.status === 200) {
+                            const res = JSON.parse(data.response);
+                            sessionStorage.setItem('playUrl', res.playUrl);
+                            if (sessionStorage.getItem("MainPath") === 'test') {
+                                this.EPGLog({
+                                    OperationCode: '获取视频url: ',
+                                    Detail: res.playUrl,
+                                });
+                            }
+
+                            _this.$dispatch("playVideo");
+                        } else {
+                            console.log('error: ' + data.status);
+                        }
+                    },
+                    error: function(err) {
+                        console.log(err);
+                    },
+                });
+            },
+
         },
         events: {
+
+            replay() {
+                this.getProgramInfo();
+            },
+
             playVideo() {
                 if (!this.mp) {
                     this.initMediaPlay();
                 }
+
                 if (sessionStorage.getItem('province') === '云南') {
                     this.play();
+                    // this.playByWidnow(0, 0, 1280, 720);
                 } else {
                     this.mp.playFromStart(); //从头开始播放
                 }
 
+                this.updateIsVideoPlay(true);
             },
             resumeVideo() {
                 this.mp.setVideoDisplayArea(0, 0, window.innerWidth, window.innerHeight);
@@ -579,11 +742,6 @@ export default {
                     // [1]
                     _this.isVersionInfoShow = true;
                     _this.mp.pause();
-
-                    // [2]
-                    // _this.$router.go('/versioninfo');
-                    // _this.mp.pause();
-                    // _this.isVersionInfoShow
                 },
                 [9, 9, 8, 8]
             );
@@ -591,6 +749,9 @@ export default {
             this.listenBackKey();
             this.updateFirstClassTab(0);
             this.updateSecondClassTab(0);
+
+            // debug 开关
+            this.isDebug = (sessionStorage.getItem('MainPath') === 'test');
         },
         store: store,
 }
