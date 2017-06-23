@@ -5,7 +5,7 @@
 </style>
 <template>
     <div id="app">
-        <template-one v-show="!isVideoPlaying"></template-one>
+        <template-one></template-one>
         <iframe name="if_smallscreen" @load="getMediastr" :src="mediaurl" v-if='showMediaIframe'></iframe>
     </div>
 </template>
@@ -19,9 +19,6 @@ export default {
                 mediaStr: null,
                 mediaurl: '',
                 showMediaIframe: false,
-
-                isVideoPlaying: true,
-                debugInfo: '',
             };
         },
         methods: {
@@ -52,7 +49,12 @@ export default {
 
                 this.setMediaStr();
                 this.mp.setSingleMedia(this.mediaStr);
+                // 有图片列表，则轮播列表，视频后台播放
+                // if (sessionStorage.getItem('HasPicList') == '1') {
+                    // this.mp.setVideoDisplayArea(0, 0, 1, 1);
+                // }
                 this.mp.playFromStart();
+                // this.mp.refreshVideoDisplay();
             },
             initMediaPlay() {
                 var playUrl = sessionStorage.getItem("playUrl");
@@ -112,7 +114,7 @@ export default {
 
             listenVideoKey() {
                 var _this = this;
-                var handler = (keyEvent) => {
+                document.addEventListener('keydown', (keyEvent) => {
                     keyEvent = keyEvent ? keyEvent : window.event;
                     const keyvalue = keyEvent.which ? keyEvent.which : keyEvent.keyCode;
                     let virtualKey = "";
@@ -127,6 +129,7 @@ export default {
                             virtualKey = 0x0300;
                             break;
                     }
+
                     if (keyvalue == virtualKey) {
                         try {
                             // 每次捕获事件只能获取一次Utility.getEvent()
@@ -169,7 +172,7 @@ export default {
 
                                         // 播放失败了，显示欢迎页
                                         if (sessionStorage.getItem('province') === '云南') {
-                                            _this.$dispatch('showWelcome');
+                                            _this.$broadcast('replay');
                                         }
                                         return "EVENT_MEDIA_ERROR";
                                         break;
@@ -179,7 +182,7 @@ export default {
                                         console.log("播放结束！");
                                         // 播放结束显示欢迎页
                                         if (sessionStorage.getItem('province') === '云南') {
-                                            _this.$dispatch('showWelcome');
+                                            _this.$broadcast('replay');
                                         } else {
                                             this.mp.playFromStart();
                                         }
@@ -192,17 +195,17 @@ export default {
                         }
                     }
 
-                    // 取消云南子组件的事件监听
                     if (sessionStorage.getItem('province') === '云南') {
-                        var keyArray = [8, 37, 39];
-
-                        if (keyArray.indexOf(keyvalue)) {
-                            _this.$broadcast('oneEventHandler', keyEvent);
-
+                        if (keyvalue == 37) { // left
+                            _this.$broadcast('toChinese');
+                        } else if (keyvalue == 39) { // right
+                            _this.$broadcast('toEnglish');
+                        } else if (keyvalue == 13) {
+                            _this.$dispatch('stopVideo');
+                            _this.$broadcast('gotoMain');
                         }
                     }
-                };
-                document.addEventListener('keydown', handler);
+                });
             },
 
 
@@ -235,27 +238,12 @@ export default {
                 this.showMediaIframe = true;
                 this.mediaurl = mediaUrl;
             },
-
-            showWelcome() {
-                this.isVideoPlaying = false;
-            },
-
-            hideWelcome() {
-                this.isVideoPlaying = true;
-            },
-
         },
         store: store,
         ready() {
             // 茁壮中间件默认焦点框问题
             if (!!window.iPanel) {
                 iPanel.focusWidth = 0;
-            }
-
-            // 云南需要开机广告视频
-            const province = sessionStorage.getItem('province');
-            if (province !== '云南') {
-                this.isVideoPlaying = false;
             }
 
             //监控视频动作触发的虚拟按键
