@@ -214,7 +214,7 @@ export default {
                 showEPGVersionInfo: null,
                 isVersionInfoShow: false,
                 showVersionInfoTimer: null,
-                isDebug: true,
+                isDebug: false,
             };
         },
         methods: {
