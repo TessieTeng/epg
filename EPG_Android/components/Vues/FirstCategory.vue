@@ -637,6 +637,8 @@ export default {
                         RootCategoryID: sessionStorage.getItem("RootCategoryID"),
                         bg_media_url: sessionStorage.getItem("bg_media_url"),
                         EPGDomain: sessionStorage.getItem("EPGDomain"),
+                        IndexUrl: sessionStorage.getItem("indexUrl"),
+                        EPGIP: sessionStorage.getItem("EPGIP"),
                         UserToken: sessionStorage.getItem("UserToken"),
                         Token: sessionStorage.getItem("Token"),
                     }),
