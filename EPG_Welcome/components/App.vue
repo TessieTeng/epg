@@ -195,16 +195,14 @@ export default {
                         }
                     }
 
+                    /*
                     if (sessionStorage.getItem('province') === '云南') {
                         if (keyvalue == 37) { // left
                             _this.$broadcast('toChinese');
                         } else if (keyvalue == 39) { // right
                             _this.$broadcast('toEnglish');
-                        } else if (keyvalue == 13) {
-                            _this.$dispatch('stopVideo');
-                            _this.$broadcast('gotoMain');
                         }
-                    }
+                    }*/
                 });
             },
 
