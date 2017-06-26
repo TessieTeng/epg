@@ -209,10 +209,12 @@
             <div class="bottom">
                 <div class="choice">
                     <div class="topBtn">
-                        <a id="defaultLang" href="javascript:;" tabindex="-1" v-focus="tabIndex===0" @click="gotoMainLayout" @focus="changeChinese">
+                    <!--  @focus="changeChinese" -->
+                        <a id="defaultLang" href="javascript:;" tabindex="-1" v-focus="tabIndex===0" @click="gotoMainLayout">
                             <div>简体中文</div>
                         </a>
-                        <a href="javascript:;" tabindex="-1" v-focus="tabIndex===1" @click="gotoMainLayout" @focus="changeEnglish">
+                        <!--  @focus="changeEnglish" -->
+                        <a href="javascript:;" tabindex="-1" v-focus="tabIndex===1" @click="gotoMainLayout">
                             <div>ENGLISH</div>
                         </a>
                     </div>
@@ -503,6 +505,9 @@ export default {
                     appName,
                     userAgent
                 } = navigator;
+
+                // 跳转之前关闭视频播放
+                this.$dispatch('stopVideo');
 
                 if (/^https?:\/\//.test(sessionStorage.getItem("MainPath"))) {
                     // 链接跳转
@@ -880,7 +885,7 @@ export default {
                 this.changeChinese();
             },
 
-            toEnglish() {
+            toEnglish() { 
                 this.tabIndex = 1;
                 this.changeEnglish();
             },
@@ -907,9 +912,9 @@ export default {
                 this.getChannelList();
             }
 
+            this.listenBackKey();
             if (province !== '云南') {
                 // 云南使用手动触发确定键，并将按键处理合并到 App.vue，统一处理
-                this.listenBackKey();
                 this.getWelcomeMediaUrl();
             }
         },
