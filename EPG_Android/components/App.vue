@@ -168,11 +168,12 @@ a {
     position: fixed;
     right: 0;
     top: 0;
-    width: 20%;
+    width: 50%;
     height: 100%;
-    opacity: 0.2;
-    color: #fff;
+    opacity: 0.5;
+    color: red;
     z-index: 10000000;
+    word-wrap: break-word;
 }
 
 </style>
@@ -212,6 +213,7 @@ export default {
                 // 组合键处理器
                 showEPGVersionInfo: null,
                 isVersionInfoShow: false,
+                showVersionInfoTimer: null,
                 isDebug: false,
             };
         },
@@ -248,12 +250,11 @@ export default {
 
             debug(obj) {
 
-                let isDebug = parseInt(sessionStorage.getItem('isDebug'), 10);
-
                 // config.js 中配置
-                if (!this.isDebug && isDebug !== 1) { return; }
+                //  && isDebug !== 1
+                if (!this.isDebug) { return; }
 
-                const debug = document.getElementById('.debug');
+                const debug = document.getElementById('debug');
 
                 let str = '';
 
@@ -340,6 +341,22 @@ export default {
                 //console.log('mediaUrl: ' + playUrl);
             },
 
+            showVersionInfo() {
+                this.isVersionInfoShow = true;
+                this.mp.pause();
+
+                clearTimeout(this.showVersionInfoTimer);
+                this.showVersionInfoTimer = setTimeout(() => {
+                    this.hideVersionInfo();
+                }, 60 * 1000);
+            },
+
+            hideVersionInfo() {
+                clearTimeout(this.showVersionInfoTimer);
+                this.isVersionInfoShow = false;
+                this.mp.resume();
+            },
+
             homepage() { // 首页键处理
 
                 // 如果当前就是首页
@@ -347,8 +364,7 @@ export default {
 
                 const province = sessionStorage.getItem('province');
                 if (this.isVersionInfoShow) {
-                    this.isVersionInfoShow = false;
-                    this.mp.resume();
+                    this.hideVersionInfo();
                 } else {
                     this.$router.go("/firstcategory");
 
@@ -373,12 +389,12 @@ export default {
                 if (!/\/firstcategory/.test(location.href)) {
                     history.back();
                     // 云南要重新发起播放请求
-                    if (province === '云南') {
+                    this.debug(location.href);
+                    if (province === '云南' && !/\/scaleimg/.test(location.href)) {
                         this.$dispatch('replay');
                     }
                 } else if (this.isVersionInfoShow) {
-                    this.isVersionInfoShow = false;
-                    this.mp.resume();
+                    this.hideVersionInfo();
                 }
             },
 
@@ -444,6 +460,45 @@ export default {
                 }
             },
 
+            volume() {
+                var args = arguments;
+                var vol = this.mp.getVolume();
+                if (args.length <= 0) {
+                    return vol;
+                } else if (args[0] > 0) { // volume +
+                    vol += 5; 
+                } else if (args[0] < 0) { // volume -
+                    vol -= 5;
+                }
+
+                // 设置每次加减，按5递增递减
+                if (vol % 10 < 5) {
+                    vol = vol - vol % 10;
+                } else if ( vol % 10 > 5 ) {
+                    vol = vol - vol % 10 + 5;
+                }
+
+                vol = vol > 100 ? 100
+                    : vol < 0 ? 0
+                    : vol;
+
+                this.mp.setVolume(vol);
+            },
+
+            volumeUp() {
+                this.volume(5);
+            },
+
+            volumeDown() {
+                this.volume(-5);
+            },
+
+            setMute() {
+                this.mp.setMuteFlag(
+                    this.mp.getMuteFlag() == 0 ? 1 : 0
+                );
+            },
+
             listenBackKey() {
                 var _this = this;
                 var province = sessionStorage.getItem('province');
@@ -472,7 +527,10 @@ export default {
                         case 181: _this.homepage(); break;
                         case 0x0300:
                         case 768: _this.virtualKey();
-                        default: return false; break;
+                        case 259: _this.volumeUp();     return false; break;
+                        case 260: _this.volumeDown();   return false; break;
+                        case 261: _this.setMute();      return false; break;
+                        default: return true; break;
                     }
                 });
             },
@@ -739,9 +797,7 @@ export default {
             // 9988 组合键弹出版本信息
             this.showEPGVersionInfo = this.combineKeyFunction(
                 function () {
-                    // [1]
-                    _this.isVersionInfoShow = true;
-                    _this.mp.pause();
+                    _this.showVersionInfo();
                 },
                 [9, 9, 8, 8]
             );
@@ -749,9 +805,6 @@ export default {
             this.listenBackKey();
             this.updateFirstClassTab(0);
             this.updateSecondClassTab(0);
-
-            // debug 开关
-            this.isDebug = (sessionStorage.getItem('MainPath') === 'test');
         },
         store: store,
 }

@@ -301,7 +301,6 @@ export default {
             } else {
                 this.tophint = "全部商品";
                 this.lefthint = "酒店商城";
-                this.righthint = '"确定"进入,"返回"退出';
             }
 
             this.getStoreData(this.$route.params.id);

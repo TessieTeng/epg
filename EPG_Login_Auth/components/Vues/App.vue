@@ -455,6 +455,26 @@ export default {
 
                 this.doLogin();
             },
+
+            configYunnanParams() {
+
+                var ynIndexUrl = '';
+                var relativePath = sessionStorage.getItem('relativePath');
+                var localIp = sessionStorage.getItem('EPGIP');
+
+                relativePath = relativePath.replace(/\/service/, '');
+                
+                // Authentication.CTCSetConfig('EPGDomain', 'http://' + localIp + relativePath + '/portal.html');
+                // UT 盒子会自己下发，创维的不行，所以兼容没有returnUrl情况
+                if (!sessionStorage.getItem("indexUrl") && !!this.GetQueryString("indexUrl")) {
+                    ynIndexUrl = this.GetQueryString("indexUrl");
+                    sessionStorage.setItem("indexUrl", ynIndexUrl);
+                } else {
+                    // ynIndexUrl = 'http://' + localIp + '/iptv/ppthdplay/apps/index/index_epg.html';
+                    // sessionStorage.setItem("indexUrl", ynIndexUrl);
+                }
+                this.doLogin();
+            },
         },
 
         ready() {
@@ -484,18 +504,14 @@ export default {
             // 保存当前地址的 IP + Port
             let epgIp = window.location.href.replace(/http:\/\/|https:\/\//, '');
             if (epgIp.indexOf('/') > -1) {
-                epgIp = epgIp.substring(0, ip.indexOf('/'));
+                epgIp = epgIp.substring(0, epgIp.indexOf('/'));
             }
-            sessionStorage.setItem('EPGIP', ip);
+            sessionStorage.setItem('EPGIP', epgIp);
 
             let indexUrl = '';
             switch (sessionStorage.getItem('province')) {
                 case '云南':
-                    if (!sessionStorage.getItem("indexUrl") && !!this.GetQueryString("indexUrl")) {
-                        indexUrl = this.GetQueryString("indexUrl");
-                        sessionStorage.setItem("indexUrl", indexUrl);
-                    }
-                    this.doLogin();
+                    this.configYunnanParams();
                     break;
                 case '湖北':
                     indexUrl = "http://116.210.255.120:8080/HBEpg/epg/broadBandTV.jsp";
