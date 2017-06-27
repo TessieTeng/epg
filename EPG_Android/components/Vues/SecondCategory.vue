@@ -237,9 +237,9 @@ export default {
         ready() {
             this.updateIsMainLayout(false);
             this.getRootCategoryData(this.$route.params.id);
-
+            var bgMediaUrl=sessionStorage.getItem('bg_media_url')
             // 判断是否有视频
-            if (!!sessionStorage.getItem('bg_media_url')) {
+            if (!!bgMediaUrl && bgMediaUrl!=='0') {
                 this.hasVideo = true;
                 if (!this.isVideoPlay) {
                     this.$dispatch("replay");
