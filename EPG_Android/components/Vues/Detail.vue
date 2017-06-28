@@ -1,4 +1,42 @@
 <style scoped>
+.rootView {
+    position: fixed;
+    z-index: 2;
+    left: 0;
+    top: 0;
+    margin-top: 40px;
+    width: 100%;
+    height: 100%;
+    font-family: "微软雅黑";
+    background-color: black;
+}
+.swiperLevel {
+    position: absolute;
+    z-index: 2;
+}
+
+
+.content {
+    position: relative;
+    width: 1146.67px;
+    height: 666.67px;
+    margin: auto;
+    overflow: hidden;
+}
+
+.pag {
+    position: absolute;
+    right: 10px;
+    bottom: 10px;
+    color: white;
+}
+
+img {
+    width: 1146.67px;
+    height: 613.34px;
+}
+
+/*
 .info {
     position: fixed;
     z-index: 2;
@@ -26,7 +64,7 @@
     height: 666.67px;
     margin: auto;
     overflow: hidden;
-}
+}*/
 
 
 /*
@@ -53,20 +91,27 @@
     margin-left: 6.67px;
     margin: -5.34px 0;
 }*/
+
 </style>
 <!--******************图片展示详情页*******************-->
 <template>
-    <div class="info" id="detailLayout">
-        <div class="main">
-            <div class="conent">
-                <swiper :picture-list="pictureList" :options='options' class="one" v-if='isShowSwiper'>
-                </swiper>
-            </div>
+    
+    <div class="rootView swiperLevel">
+        <div class="content">
+            <img style="transition: all 1s; position: absolute;" :style="{ opacity: $index === picIndex ? 1 : 0 }" v-for="item in pictureList" :src="item.PictureUrl" v-show='isShowSwiper'>
+
+            <div class="pag">{{picIndex + 1}} / {{pictureList.length}}</div>
         </div>
     </div>
+<!--     <div class="info" id="detailLayout">
+        <div class="main">
+            <div class="conent">
+            </div>
+        </div>
+    </div> -->
 </template>
 <script>
-import swiper from 'Tools/Swiper.vue';
+// import swiper from 'Tools/Swiper.vue';
 import store from '../../vuex/store.js';
 import {
     updateIsVideoPlay,
@@ -81,17 +126,11 @@ export default {
                 name: 'name',
                 isShowSwiper: true,
                 pictureList: [],
-                options: {
-                    autoplay: 4000,
-                    loop: true,
-                    keyboardControl: true,
-                    pagination: '.swiper-pagination',
-                    paginationType: 'fraction',
-                    autoplayDisableOnInteraction: false,
-                },
+                picIndex: 0,
+                timer: null,
+                restartTimer: null,
             };
         },
-
 
         events: {
             name: function(name) {
@@ -122,15 +161,62 @@ export default {
             }
         },
 
+        methods: {
+            eventHandler(e) {
+                var e = e ? e : window.event;
+                var keycode = e.which ? e.which : e.keyCode;
+
+                if (keycode === 37 || keycode === 39) {
+                    this.restart();
+                }
+
+                switch (keycode) {
+                    case 37:
+                        this.picIndex = --this.picIndex % this.pictureList.length;
+                        if (this.picIndex < 0) {
+                            this.picIndex += this.pictureList.length;
+                        }
+                    break;
+                    case 39:
+                        this.picIndex = ++this.picIndex % this.pictureList.length;
+                    break;
+                    case 8:
+                        history.back();
+                    break;
+                    default: return true; break;
+                }
+            },
+
+            restart() {
+                clearTimeout(this.restartTimer);
+                this.stop();
+                this.restartTimer = setTimeout(() => {
+                    this.start();
+                }, 6000);
+            },
+
+            start() {
+                this.timer = setInterval(() => {
+                    // let index = ++this.picIndex % this.pictureList.length;
+                    this.picIndex = ++this.picIndex % this.pictureList.length;
+                }, 3000);
+            },
+
+            stop() {
+                clearInterval(this.timer);
+            },
+        },
+
         ready() {
             this.pictureList = this.lastPicList;
             console.log('detail pic list: ' + this.pictureList);
             console.log("详情页面..." + this.isVideoPlay);
+            this.start();
+            document.onkeydown = this.eventHandler;
             if(this.isVideoPlay){
                 this.$dispatch("stopVideo");
                 this.updateIsVideoPlay(false);
             }
-
         },
 }
 </script>
