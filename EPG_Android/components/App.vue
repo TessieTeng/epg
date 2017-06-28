@@ -170,7 +170,6 @@ a {
     top: 0;
     width: 50%;
     height: 100%;
-    opacity: 0.5;
     color: red;
     z-index: 10000000;
     word-wrap: break-word;
@@ -789,7 +788,6 @@ export default {
             var _this = this;
 
             // 茁壮中间件默认焦点框问题
-            console.log('ipanel: ' + iPanel);
             if (!!window.iPanel) {
                 iPanel.focusWidth = 0;
             }
