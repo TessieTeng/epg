@@ -142,10 +142,6 @@ export default {
 
         },
 
-        components: {
-            swiper,
-        },
-
         props: [
             'showhint',
             'title',
