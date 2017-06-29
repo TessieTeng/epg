@@ -209,12 +209,12 @@
             <div class="bottom">
                 <div class="choice">
                     <div class="topBtn">
-                    <!--  @focus="changeChinese" -->
-                        <a id="defaultLang" href="javascript:;" tabindex="-1" v-focus="tabIndex===0" @click="gotoMainLayout">
+                    <!--  @focus="changeChinese" href="javascript:;"  @click="gotoMainLayout" -->
+                        <a id="defaultLang"  tabindex="-1" href="javascript:;" v-focus="tabIndex===0">
                             <div>简体中文</div>
                         </a>
-                        <!--  @focus="changeEnglish" -->
-                        <a href="javascript:;" tabindex="-1" v-focus="tabIndex===1" @click="gotoMainLayout">
+                        <!--  @focus="changeEnglish"  @click="gotoMainLayout" -->
+                        <a tabindex="-1" href="javascript:;" v-focus="tabIndex===1">
                             <div>ENGLISH</div>
                         </a>
                     </div>
@@ -452,6 +452,7 @@ export default {
                 if ((typeof(VideoArea) == "undefined") || null == VideoArea) {
                     console.log("视频内容是空");
                 } else {
+                    this.$dispatch('welcomeDebug');
                     this.contentID = VideoArea.IdList;
                     sessionStorage.setItem("welcomeMediaUrl", this.contentID);
                     this.getWelcomeMediaUrl();
@@ -467,6 +468,8 @@ export default {
                             Detail: 'keyvalue: ' + keyvalue,
                         });
                     }
+
+                    this.$dispatch('welcomeDebug', keyvalue);
 
                     switch (keyvalue) {
                         // 返回
@@ -506,7 +509,6 @@ export default {
                     userAgent
                 } = navigator;
 
-                // 跳转之前关闭视频播放
                 this.$dispatch('stopVideo');
 
                 if (/^https?:\/\//.test(sessionStorage.getItem("MainPath"))) {
@@ -524,6 +526,8 @@ export default {
                     file = 'main_outer.html?currLangCode=' + this.currentLang;
                 }
                 location.replace(path + file);
+
+                return false;
             },
             getWelcomeData() {
                 var _this = this;
@@ -782,67 +786,6 @@ export default {
                 });
             },
 
-            getProgramInfo() {
-                const _this = this;
-                const UrlOrigin = sessionStorage.getItem('UrlOrigin');
-                const USERID = sessionStorage.getItem('USERID');
-                const UserToken = sessionStorage.getItem('UserToken');
-                const contentID = sessionStorage.getItem('welcomeMediaUrl');
-
-                /**
-                 * 详情请参考文档《电信 EPG 与 BO 接口规范说明》
-                 * programId、productIDs 可以为空
-                 * userFlag 为 Authentication.CTCGetConfig('UserID')
-                 * userToken 为 Authentication.CTCGetConfig('UserToken')
-                 * contentID 为 视频32位的id，如：90000001000000015984724636843325、90000001000000015985026379023502
-                 */
-                Http({
-                    type: 'GET',
-                    url: UrlOrigin + '/GetProgramInfo?programId=78&userFlag=' + USERID + '&userToken=' + UserToken + '&contentID=' + contentID + '&productIDs=',
-                    data: '',
-                    complete: function(data) {
-                        if (data.status === 200) {
-                            const res = JSON.parse(data.response);
-                            _this.selectionStart(res.assetId, UrlOrigin, UserToken);
-                        } else {
-                            console.log('error: ' + data.status);
-                        }
-                    },
-                    error: function(err) {
-                        console.log('网络请求错误：' + err);
-                    },
-                });
-            },
-            selectionStart(assetId, UrlOrigin, UserToken) {
-                const _this = this;
-                Http({
-                    type: 'GET',
-                    url: UrlOrigin + '/SelectionStart?assetId=' + assetId + '&userToken=' + UserToken,
-                    data: '',
-                    complete: function(data) {
-                        if (data.status === 200) {
-                            const res = JSON.parse(data.response);
-                            sessionStorage.setItem('playUrl', res.playUrl);
-                            if (sessionStorage.getItem("MainPath") === 'test') {
-                                this.EPGLog({
-                                    OperationCode: '获取视频url: ',
-                                    Detail: res.playUrl,
-                                });
-                            }
-
-                            if (res.playUrl && res.playUrl !== '0') {
-                                _this.$dispatch("playVideo");
-                            }
-                        } else {
-                            console.log('error: ' + data.status);
-                        }
-                    },
-                    error: function(err) {
-                        console.log(err);
-                    },
-                });
-            },
-
             getWelcomeMediaUrl() {
                 if (!!this.contentID && this.contentID !== '0') {
                     this.hasVideo = true;
@@ -852,7 +795,8 @@ export default {
                     switch (sessionStorage.getItem('province')) {
                         case '云南':
                             //云南的视频暂时还不完善，所以先注释掉
-                            this.getProgramInfo();
+                            this.$dispatch('welcomeDebug', 'yn-replay');
+                            this.$dispatch('replay');
                             break;
                         case '湖北':
                             if (sessionStorage.getItem("partner") === "HUAWEI") {
@@ -876,9 +820,6 @@ export default {
         },
 
         events: {
-            replay() {
-                this.getProgramInfo();
-            },
 
             toChinese() {
                 this.tabIndex = 0;
@@ -912,7 +853,7 @@ export default {
                 this.getChannelList();
             }
 
-            this.listenBackKey();
+            // this.listenBackKey();
             if (province !== '云南') {
                 // 云南使用手动触发确定键，并将按键处理合并到 App.vue，统一处理
                 this.getWelcomeMediaUrl();
