@@ -209,10 +209,10 @@ export default {
             console.log("详情页面..." + this.isVideoPlay);
             this.start();
             document.onkeydown = this.eventHandler;
-            if(this.isVideoPlay){
+            // if(this.isVideoPlay){
                 this.$dispatch("stopVideo");
                 this.updateIsVideoPlay(false);
-            }
+            // }
         },
 }
 </script>
