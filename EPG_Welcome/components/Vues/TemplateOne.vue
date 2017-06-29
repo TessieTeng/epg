@@ -108,7 +108,7 @@
 }
 
 .rightWelcome {
-    width: 333px;
+   /* width: 333px;*/
     float: right;
     padding-top: 13.3px;
     line-height: 46px;
