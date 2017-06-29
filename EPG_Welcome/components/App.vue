@@ -2,16 +2,31 @@
 /*html {
     font-size: 100px;
 }*/
+
+#debug {
+    position: fixed;
+    right: 0;
+    top: 0;
+    width: 40%;
+    height: 100%;
+    background-color: black;
+    color: white;
+    z-index: 10000000;
+    word-wrap: break-word;
+    opacity: 0.3;
+}
 </style>
 <template>
     <div id="app">
         <template-one></template-one>
+        <div id="debug" v-if="isDebug"></div>
         <iframe name="if_smallscreen" @load="getMediastr" :src="mediaurl" v-if='showMediaIframe'></iframe>
     </div>
 </template>
 <script>
 import store from '../vuex/store.js';
 import TemplateOne from 'Vues/TemplateOne';
+import Http from '../assets/lib/Http.js';
 export default {
     data() {
             return {
@@ -19,10 +34,28 @@ export default {
                 mediaStr: null,
                 mediaurl: '',
                 showMediaIframe: false,
+                isDebug: true,
             };
         },
         methods: {
+            debug(obj) {
 
+                // config.js 中配置
+                //  && isDebug !== 1
+                if (!this.isDebug) { return; }
+
+                const debug = document.getElementById('debug');
+
+                let str = '';
+
+                if (typeof(obj) === 'object') {
+                    str = JSON.stringify(obj);
+                } else {
+                    str = '' + obj;
+                }
+
+                debug.innerHTML += '[' + str + ']';
+            },
             setMediaStr() {
 
                 var playUrl = sessionStorage.getItem("playUrl");
@@ -43,19 +76,19 @@ export default {
             },
 
             play() {
-
-                // this.mp.mediaPlayType = 'joinChannel';
-                // this.mp.stop();
-
+                this.debug('play');
                 this.setMediaStr();
                 this.mp.setSingleMedia(this.mediaStr);
-                // 有图片列表，则轮播列表，视频后台播放
-                // if (sessionStorage.getItem('HasPicList') == '1') {
-                    // this.mp.setVideoDisplayArea(0, 0, 1, 1);
-                // }
                 this.mp.playFromStart();
-                // this.mp.refreshVideoDisplay();
             },
+
+            stop() {
+                if (!this.mp) { return; }
+                this.mp.stop();
+                this.mp.releaseMediaPlayer(this.mp.getNativePlayerInstanceID());
+                this.mp = null;
+            },
+
             initMediaPlay() {
                 var playUrl = sessionStorage.getItem("playUrl");
                 // var playUrl = 'rtsp://121.60.246.180:554/vod/00000050280005300791.mpg?userid=sxzxjdh6&stbip=10.225.103.232&clienttype=1&mediaid=&ifcharge=1&time=20170602162426+08&life=172800&usersessionid=184528&vcdnid=vcdn001&boid=001&srcboid=001&columnid=&backupagent=121.60.255.132:1556&ctype=50&playtype=0&Drm=0&EpgId=&programid=00000050280005300791&contname=&fathercont=&bp=0&authid=0&tscnt=0&tstm=0&tsflow=0&ifpricereqsnd=1&nodelevel=3&usercharge=33F6C69FF0F48168DB3A6A69D549BBA4';
@@ -90,13 +123,13 @@ export default {
                 if (province !== '云南') { // 同上
                     this.mp.setSingleMedia(this.mediaStr); //设置媒体播放器播放媒体内容
                 }
-                this.mp.setAllowTrickmodeFlag(0); //设置是否允许trick操作。 0:允许 1：不允许
+                // this.mp.setAllowTrickmodeFlag(0); //设置是否允许trick操作。 0:允许 1：不允许
                 this.mp.setVideoDisplayMode(0);
                 this.mp.setVideoDisplayArea(left, top, width, height);
-                this.mp.setNativeUIFlag(0); //设置播放器本地UI显示功能 0:允许 1：不允许
-                this.mp.setAudioTrackUIFlag(1);
-                this.mp.setMuteUIFlag(1);
-                this.mp.setAudioVolumeUIFlag(1);
+                // this.mp.setNativeUIFlag(0); //设置播放器本地UI显示功能 0:允许 1：不允许
+                // this.mp.setAudioTrackUIFlag(1);
+                // this.mp.setMuteUIFlag(1);
+                // this.mp.setAudioVolumeUIFlag(1);
                 this.mp.refreshVideoDisplay();
             },
 
@@ -112,9 +145,10 @@ export default {
                 this.$dispatch('playVideo');
             },
 
-            listenVideoKey() {
+            // listenVideoKey() {
+            eventHandler(keyEvent) {
                 var _this = this;
-                document.addEventListener('keydown', (keyEvent) => {
+                // document.addEventListener('keydown', (keyEvent) => {
                     keyEvent = keyEvent ? keyEvent : window.event;
                     const keyvalue = keyEvent.which ? keyEvent.which : keyEvent.keyCode;
                     let virtualKey = "";
@@ -130,6 +164,7 @@ export default {
                             break;
                     }
 
+                    this.debug('key:' + keyvalue);
                     if (keyvalue == virtualKey) {
                         try {
                             // 每次捕获事件只能获取一次Utility.getEvent()
@@ -158,6 +193,7 @@ export default {
                                 }
                             }
                             const mediaEventType = mediaEvent.type.replace(/\"/g, "");
+                            this.debug('type:' + mediaEventType)
                             switch (mediaEventType) {
                                 case "EVENT_MEDIA_BEGINING":
                                     {
@@ -172,7 +208,7 @@ export default {
 
                                         // 播放失败了，显示欢迎页
                                         if (sessionStorage.getItem('province') === '云南') {
-                                            _this.$broadcast('replay');
+                                            _this.$dispatch('replay');
                                         }
                                         return "EVENT_MEDIA_ERROR";
                                         break;
@@ -182,7 +218,7 @@ export default {
                                         console.log("播放结束！");
                                         // 播放结束显示欢迎页
                                         if (sessionStorage.getItem('province') === '云南') {
-                                            _this.$broadcast('replay');
+                                            _this.$dispatch('replay');
                                         } else {
                                             this.mp.playFromStart();
                                         }
@@ -195,17 +231,84 @@ export default {
                         }
                     }
 
-                    /*
-                    if (sessionStorage.getItem('province') === '云南') {
+                    // if (sessionStorage.getItem('province') === '云南') {
                         if (keyvalue == 37) { // left
                             _this.$broadcast('toChinese');
                         } else if (keyvalue == 39) { // right
                             _this.$broadcast('toEnglish');
+                        } else if (keyvalue == 13) {
+                            _this.$broadcast('gotoMain');
                         }
-                    }*/
-                });
+                    // }
+                // });
             },
 
+
+            getProgramInfo() {
+                const _this = this;
+                let UrlOrigin = sessionStorage.getItem('UrlOrigin');
+                const USERID = sessionStorage.getItem('USERID');
+                const UserToken = sessionStorage.getItem('UserToken');
+                const contentID = sessionStorage.getItem('welcomeMediaUrl');
+
+                /**
+                 * 详情请参考文档《电信 EPG 与 BO 接口规范说明》
+                 * programId、productIDs 可以为空
+                 * userFlag 为 Authentication.CTCGetConfig('UserID')
+                 * userToken 为 Authentication.CTCGetConfig('UserToken')
+                 * contentID 为 视频32位的id，如：90000001000000015984724636843325、90000001000000015985026379023502
+                 */
+                
+                 const testLink = sessionStorage.getItem("isFromTestLink");
+                 this.debug('testLink:' + testLink);
+                 // 如果是测试链接，取链接中的IP
+                 if (testLink) {
+                    UrlOrigin = testLink.match(/^(https?:\/\/.*:\d+)\//)[1];
+                 }
+
+                 this.debug('urlOrigin:' + UrlOrigin);
+
+                Http({
+                    type: 'GET',
+                    url: UrlOrigin + '/GetProgramInfo?programId=78&userFlag=' + USERID + '&userToken=' + UserToken + '&contentID=' + contentID + '&productIDs=',
+                    data: '',
+                    complete: function(data) {
+                        if (data.status === 200) {
+                            const res = JSON.parse(data.response);
+                            _this.selectionStart(res.assetId, UrlOrigin, UserToken);
+                        } else {
+                            console.log('error: ' + data.status);
+                        }
+                    },
+                    error: function(err) {
+                        console.log('网络请求错误：' + err);
+                    },
+                });
+            },
+            selectionStart(assetId, UrlOrigin, UserToken) {
+                const _this = this;
+                Http({
+                    type: 'GET',
+                    url: UrlOrigin + '/SelectionStart?assetId=' + assetId + '&userToken=' + UserToken,
+                    data: '',
+                    complete: function(data) {
+                        if (data.status === 200) {
+                            const res = JSON.parse(data.response);
+                            sessionStorage.setItem('playUrl', res.playUrl);
+
+                            _this.debug('get url: ' + res.playUrl);
+                            if (res.playUrl && res.playUrl !== '0') {
+                                _this.$dispatch("playVideo");
+                            }
+                        } else {
+                            console.log('error: ' + data.status);
+                        }
+                    },
+                    error: function(err) {
+                        console.log(err);
+                    },
+                });
+            },
 
         },
         components: {
@@ -213,23 +316,34 @@ export default {
         },
 
         events: {
+
+            welcomeDebug(str) {
+                this.debug(str);
+            },
+
+            replay() {
+                this.debug('replay-mp:' + this.mp);
+                this.getProgramInfo();
+            },
+
             playVideo() {
-                if (!this.mp) {
-                    this.initMediaPlay();
-                }
+
+                this.debug('playVideo-mp:' + this.mp);
+                if (this.mp) { this.stop(); }
+                this.initMediaPlay();
 
                 if (sessionStorage.getItem('province') === '云南') {
-                    // this.$dispatch('hideWelcome');
                     this.play();
+                    // this.playByWidnow(0, 0, 1280, 720);
                 } else {
                     this.mp.playFromStart(); //从头开始播放
                 }
+
+                // this.updateIsVideoPlay(true);
             },
 
             stopVideo() {
-                // var nativePlayerInstanceId = this.mp.getNativePlayerInstanceID();
-                // this.mp.releaseMediaPlayer(nativePlayerInstanceId);
-                this.mp.stop();
+                this.stop();
             },
 
             setMediaUrl(mediaUrl) {
@@ -244,8 +358,15 @@ export default {
                 iPanel.focusWidth = 0;
             }
 
+            this.debug('wel ready');
+
+            var _this = this;
             //监控视频动作触发的虚拟按键
-            this.listenVideoKey();
+            // this.listenVideoKey();
+            var keyHandler = function (event) {
+                _this.eventHandler(event); 
+            };
+            document.onkeydown = keyHandler;
 
         },
 }
