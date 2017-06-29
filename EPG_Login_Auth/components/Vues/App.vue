@@ -1,4 +1,5 @@
 <style>
+
 </style>
 <template>
     <div id="app">
@@ -33,7 +34,30 @@ export default {
             };
         },
         methods: {
+            EPGLog(params = {
+                OperationCode: '',
+                Detail: '',
+            }) {
 
+                const tmpObj = {
+                    "Message": {
+                        "MessageType": "EPGLogReq",
+                        "MessageBody": {
+                            "USERID": sessionStorage.getItem("STBID"),
+                            "HostID": sessionStorage.getItem("HostID"),
+                            "OperationCode": params.OperationCode,
+                            "Detail": params.Detail,
+                        },
+                    }
+                };
+                Http({
+                    type: 'POST',
+                    url: sessionStorage.getItem("relativePath") + '/epgservice/index.php?MessageType=EPGLogReq',
+                    data: JSON.stringify(tmpObj),
+                    complete: function(data) {},
+                    error: function(err) {},
+                });
+            },
             //获取湖北链接参数
             getUrlParams() {
                 var x2js = new xml2json();
@@ -271,16 +295,17 @@ export default {
                                 _msgBody.ParamList.Param.map(item => {
                                     sessionStorage.setItem(item.Name, item.Value);
                                 });
+
                                 if (_this.GetQueryString("cKey") === 'back') {
                                     _this.gotoMainLayout();
                                 } else {
 
-                                    // 云南先走开机广告
-                                    if (sessionStorage.getItem('province') === '云南') {
-                                        _this.gotoAd();
-                                    } else {
-                                        _this.goToWelcome();
+                                    var isLinkPath = /^https?:\/\//.test(sessionStorage.getItem("WelcomePageGroupPath"));
+                                    if (isLinkPath) {
+                                        sessionStorage.setItem('isFromTestLink', sessionStorage.getItem("WelcomePageGroupPath"));
+                                        sessionStorage.setItem('WelcomePageGroupPath', 'test');
                                     }
+                                    _this.goToWelcome();
                                 }
                             } else {
                                 console.log("视频数据获取失败");
@@ -349,6 +374,10 @@ export default {
             },
 
             goToWelcome() {
+                this.EPGLog({
+                    OperationCode: 'goToWelcome-path',
+                    Detail: sessionStorage.getItem("WelcomePageGroupPath")
+                });
                 if (/^https?:\/\//.test(sessionStorage.getItem("WelcomePageGroupPath"))) {
                     // 链接跳转
                     location.replace(sessionStorage.getItem("WelcomePageGroupPath"));
@@ -489,11 +518,16 @@ export default {
             // 标识是不是第一次开机进入欢迎页，后面走portal就不用再认证登录，直接进入主页
             var isFirstStart = sessionStorage.getItem('ISFIRSTSTART');
 
-            if (isFirstStart !== '1') {
-                sessionStorage.setItem('ISFIRSTSTART', '1');
-            } else { // 直接进入主页面
-                this.gotoMainLayout();
-                return;
+            var isLinkPath = /^https?:\/\//.test(sessionStorage.getItem("WelcomePageGroupPath"));
+
+            // 湖北不采用此功能，且不能是链接路径
+            if (province !== '湖北' && !isLinkPath) {
+                if (isFirstStart !== '1') {
+                    sessionStorage.setItem('ISFIRSTSTART', '1');
+                } else { // 直接进入主页面
+                    this.gotoMainLayout();
+                    return;
+                }
             }
 
             // 茁壮中间件默认焦点框问题
