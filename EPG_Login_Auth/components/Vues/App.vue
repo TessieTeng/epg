@@ -168,6 +168,7 @@ export default {
                                 sessionStorage.setItem("AdPath", _msgBody.AdPath);
                                 sessionStorage.setItem("MainPath", _msgBody.MainPath);
                                 sessionStorage.setItem("WelcomePageGroupPath", _msgBody.WelcomePageGroupPath);
+
                                 _this.doAuth();
                             } else {
                                 console.log("doLogin请求数据失败");
@@ -496,7 +497,6 @@ export default {
             }
 
             // 茁壮中间件默认焦点框问题
-            console.log('ipanel: ' + iPanel);
             if (!!window.iPanel) {
                 iPanel.focusWidth = 0;
             }
