@@ -580,15 +580,15 @@ export default {
                 case '陕西':
                 case '湖北':
                     this.getTvmsMsg();
-                    setTimeout(() => {
-                        if (this.isFirstEnterKeXin) {
-                            this.getRoomMsg();
-                            document.querySelector(".hint").style.visibility = 'visible';
-                            document.querySelector(".hint").focus();
-                            this.preventKey();
-                            this.updateIsFirstEnterKeXin(false);
-                        }
-                    }, 3000);
+                    // setTimeout(() => {
+                    //     if (this.isFirstEnterKeXin) {
+                    //         this.getRoomMsg();
+                    //         document.querySelector(".hint").style.visibility = 'visible';
+                    //         document.querySelector(".hint").focus();
+                    //         this.preventKey();
+                    //         this.updateIsFirstEnterKeXin(false);
+                    //     }
+                    // }, 3000);
                     break;
                 default:
                     break;
