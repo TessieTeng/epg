@@ -128,7 +128,7 @@ export default {
                         if (typeof(cfg[key]) === 'object') {
                             sessionStorage.setItem(key, JSON.stringify(cfg[key]));
                         } else {
-                            sessionStorage.setItem(cfg[key]);
+                            sessionStorage.setItem(key, cfg[key]);
                         }
                     }   
                 };
@@ -143,22 +143,9 @@ export default {
             },
 
             getConfig() {
-                /*
-                for (const key in Config) {
 
-                    // 如果是对象转成 json 存储，用的时候请使用 JSON.parse 解析后使用
-                    if (typeof(Config[key]) === 'object') {
-                        sessionStorage.setItem(key, JSON.stringify(Config[key]));
-                    } else {
-                        sessionStorage.setItem(key, Config[key]);
-                    }
-                }
-
-                // 设置版本信息
-                sessionStorage.setItem('SYEpgVersion', SYEpgVersion);
-                */
-               
-               this.setConfig([Config, EpgVersion]);
+               this.setConfig(Config);
+               sessionStorage.setItem('EpgVersion', JSON.stringify(EpgVersion));
 
                 this.EPGLog({
                     OperationCode: 'Portal-EPG版本信息',
