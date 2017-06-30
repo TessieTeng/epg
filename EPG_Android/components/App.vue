@@ -175,6 +175,7 @@ a {
     z-index: 10000000;
     word-wrap: break-word;
     opacity: 0.3;
+    overflow: scroll;
 }
 
 </style>
@@ -221,34 +222,6 @@ export default {
         },
         methods: {
 
-            EPGLog(params = {
-                OperationCode: '',
-                Detail: '',
-                condition: '',
-            }) {
-
-                // 条件不满足不打印
-                if (!params.condition) { return; }
-
-                const tmpObj = {
-                    "Message": {
-                        "MessageType": "EPGLogReq",
-                        "MessageBody": {
-                            "USERID": sessionStorage.getItem("STBID"),
-                            "HostID": sessionStorage.getItem("HostID"),
-                            "OperationCode": params.OperationCode,
-                            "Detail": params.Detail,
-                        },
-                    }
-                };
-                Http({
-                    type: 'POST',
-                    url: sessionStorage.getItem("relativePath") + '/epgservice/index.php?MessageType=EPGLogReq',
-                    data: JSON.stringify(tmpObj),
-                    complete: function(data) {},
-                    error: function(err) {},
-                });
-            },
 
             debug(obj) {
 
@@ -297,6 +270,7 @@ export default {
             },
 
             stop() {
+                if (!this.mp) { return; }
                 this.mp.stop();
                 this.mp.releaseMediaPlayer(this.mp.getNativePlayerInstanceID());
                 this.mp = null;
@@ -387,14 +361,6 @@ export default {
 
             back() {
                 const province = sessionStorage.getItem('province');
-                this.EPGLog({
-                    OperationCode: '主页返回键',
-                    Detail: JSON.stringify({
-                        location: location.href,
-                        province: province,
-                    }),
-                    condition: (sessionStorage.getItem('MainPath') === 'test')
-                });
 
                 if (!/\/firstcategory/.test(location.href)) {
                     history.back();
@@ -695,9 +661,11 @@ export default {
                  * contentID 为 视频32位的id，如：90000001000000015984724636843325、90000001000000015985026379023502
                  */
 
+                 const testLink = sessionStorage.getItem("isFromTestLink");
+                 this.debug('link type:' + testLink);
                  // 如果是测试链接，取链接中的IP
-                 if (/^https?:\/\//.test(sessionStorage.getItem("WelcomePageGroupPath"))) {
-                    UrlOrigin = window.location.href.match(/^(https?:\/\/.*:\d+)\//)[1];
+                 if (testLink) {
+                    UrlOrigin = testLink.match(/^(https?:\/\/.*:\d+)\//)[1];
                  }
 
                  this.debug('UrlOrigin:' + UrlOrigin);
@@ -732,11 +700,6 @@ export default {
                         if (data.status === 200) {
                             const res = JSON.parse(data.response);
                             sessionStorage.setItem('playUrl', res.playUrl);
-                            _this.EPGLog({
-                                OperationCode: '获取视频url: ',
-                                Detail: res.playUrl,
-                                condition: sessionStorage.getItem("MainPath") === 'test'
-                            });
 
                             _this.debug('playUrl:' + res.playUrl);
                             _this.$dispatch("playVideo");
@@ -790,7 +753,8 @@ export default {
             stopVideo() {
                 // var nativePlayerInstanceId = this.mp.getNativePlayerInstanceID();
                 // this.mp.releaseMediaPlayer(nativePlayerInstanceId);
-                this.mp.stop();
+                // this.mp.stop();
+                this.stop();
             },
             setMediaUrl(mediaUrl) {
                 this.showMediaIframe = true;
@@ -825,14 +789,20 @@ export default {
             );
 
             // this.listenBackKey();
-            document.onkeypress = function (event) {
-                _this.eventHandler(event);
+            var keyHandler = function (event) {
+                _this.eventHandler(event);   
             };
+            document.onkeypress = keyHandler;
+            document.onkeydown = keyHandler;
+
             this.updateFirstClassTab(0);
             this.updateSecondClassTab(0);
         },
         store: store,
 
+        beforeDestroy() {
+            this.stop();
+        },
 
 }
 </script>
