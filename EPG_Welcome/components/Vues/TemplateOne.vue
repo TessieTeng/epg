@@ -108,7 +108,6 @@
 }
 
 .rightWelcome {
-   /* width: 333px;*/
     float: right;
     padding-top: 13.3px;
     line-height: 46px;
@@ -118,6 +117,13 @@
 
 .rightWelcome > div {
     height: 46px;
+}
+
+.rightGap {
+    float: right;
+    width: 15px;
+    height: 100%;
+    background-color: red;
 }
 
 .choice {
@@ -223,6 +229,7 @@
                         <span>{{UiWord[currentLang].OperationTips}}</span>
                     </div>
                 </div>
+                <div class="rightGap"></div>
                 <div class="rightWelcome">
                     <!-- <span>欢迎下榻本酒店</span> -->
                     <div>
@@ -796,7 +803,9 @@ export default {
                         case '云南':
                             //云南的视频暂时还不完善，所以先注释掉
                             this.$dispatch('welcomeDebug', 'yn-replay');
-                            this.$dispatch('replay');
+                            setTimeout(() => {
+                                this.$dispatch('replay');
+                            }, 1500);
                             break;
                         case '湖北':
                             if (sessionStorage.getItem("partner") === "HUAWEI") {
