@@ -123,7 +123,7 @@
     float: right;
     width: 15px;
     height: 100%;
-    background-color: red;
+    background:transparent;
 }
 
 .choice {
