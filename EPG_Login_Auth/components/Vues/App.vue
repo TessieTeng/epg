@@ -39,6 +39,16 @@ export default {
                 Detail: '',
             }) {
 
+                var mainPath = sessionStorage.getItem("MainPath");
+                var welPath = sessionStorage.getItem("WelcomePageGroupPath");
+                var isWelLinkPath = /^https?:\/\//.test(welPath);
+                var isMainLinkPath = /^https?:\/\//.test(mainPath);
+
+                // 如果不是测试路径且不是http(s)链接，就不启用日志功能
+                if (mainPath !== 'test' && welPath !== 'test' && !isWelLinkPath && !isMainLinkPath) {
+                    return;
+                }
+
                 const tmpObj = {
                     "Message": {
                         "MessageType": "EPGLogReq",
@@ -110,7 +120,30 @@ export default {
                 }
             },
 
+            setConfig(config) {
+
+                var setOne = function (cfg) {
+                    
+                    for (let key in cfg) {
+                        if (typeof(cfg[key]) === 'object') {
+                            sessionStorage.setItem(key, JSON.stringify(cfg[key]));
+                        } else {
+                            sessionStorage.setItem(cfg[key]);
+                        }
+                    }   
+                };
+
+                if (Object.prototype.toString.call(config) === '[object Array]') {
+                    for (let i = 0; i < config.length; i++) {
+                        setOne(config[i]);
+                    }
+                } else {
+                    setOne(config);
+                }
+            },
+
             getConfig() {
+                /*
                 for (const key in Config) {
 
                     // 如果是对象转成 json 存储，用的时候请使用 JSON.parse 解析后使用
@@ -120,6 +153,17 @@ export default {
                         sessionStorage.setItem(key, Config[key]);
                     }
                 }
+
+                // 设置版本信息
+                sessionStorage.setItem('SYEpgVersion', SYEpgVersion);
+                */
+               
+               this.setConfig([Config, EpgVersion]);
+
+                this.EPGLog({
+                    OperationCode: 'Portal-EPG版本信息',
+                    Detail: JSON.stringify(sessionStorage.getItem('EpgVersion'))
+                })
 
                 if (!!window.Authentication) {
                     const epgdomain = Authentication.CTCGetConfig('EPGDomain');
