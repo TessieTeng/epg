@@ -14,6 +14,7 @@
     z-index: 10000000;
     word-wrap: break-word;
     opacity: 0.3;
+    overflow: scroll;
 }
 </style>
 <template>
@@ -34,7 +35,7 @@ export default {
                 mediaStr: null,
                 mediaurl: '',
                 showMediaIframe: false,
-                isDebug: true,
+                isDebug: false,
             };
         },
         methods: {
@@ -315,6 +316,10 @@ export default {
             TemplateOne,
         },
 
+        beforeDestroy() {
+            this.stop();
+        },
+
         events: {
 
             welcomeDebug(str) {
@@ -366,6 +371,7 @@ export default {
             var keyHandler = function (event) {
                 _this.eventHandler(event); 
             };
+            document.onkeypress = keyHandler;
             document.onkeydown = keyHandler;
 
         },
