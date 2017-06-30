@@ -184,7 +184,7 @@ export default {
                 tophint: "",
                 lefthint: "",
                 righthint: "",
-                isDebug: true,
+                isDebug: false,
             };
         },
 
