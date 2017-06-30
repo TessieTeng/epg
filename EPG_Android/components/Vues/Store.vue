@@ -119,6 +119,21 @@
     color: #fff;
     font-size: 20px;
 }
+
+#store-debug {
+    position: fixed;
+    right: 0;
+    top: 0;
+    width: 40%;
+    height: 100%;
+    background-color: black;
+    color: white;
+    z-index: 10000000;
+    word-wrap: break-word;
+    opacity: 0.3;
+    overflow: scroll;
+}
+
 </style>
 <template>
     <div class="info">
@@ -128,7 +143,7 @@
         <div class="middle">
             <ul id="goodslist">
                 <li v-for="item in curList">
-                    <a href="javascript:;" id='goodsImage_{{storePicList.indexOf(item)}}' @focus='imgFocus(item)' @click="scaleimg(item)" @keydown='switchFocus($event, $index)'>
+                    <a href="javascript:;" id='goodsImage_{{storePicList.indexOf(item)}}' @focus='imgFocus(item)' @click="scaleimg(item)" @keydown='switchFocus($event, $index)' @keypress='switchFocus($event, $index)'>
                         <img v-bind:src='getPicItem(item)'>
                     </a>
                 </li>
@@ -140,6 +155,8 @@
             <span class="hint">{{lefthint}}</span>
             <span class="rights">{{righthint}}</span>
         </div>
+
+        <div id="store-debug" v-if="isDebug"></div>
     </div>
 </template>
 <script>
@@ -167,6 +184,7 @@ export default {
                 tophint: "",
                 lefthint: "",
                 righthint: "",
+                isDebug: true,
             };
         },
 
@@ -177,7 +195,24 @@ export default {
         },
 
         methods: {
+            debug(obj) {
+
+                if (!this.isDebug) { return; }
+
+                const debug = document.getElementById('store-debug');
+
+                let str = '';
+
+                if (typeof(obj) === 'object') {
+                    str = JSON.stringify(obj);
+                } else {
+                    str = '' + obj;
+                }
+
+                debug.innerHTML += '[' + str + ']';
+            },
             switchFocus(event, index) {
+                this.debug('be: ' + event.keyCode + ', ' + index + ', ' + this.curPage);
                 if (event.keyCode === 37 && index === 0 && this.curPage > 1) {
                     this.curPage--;
                     this.$nextTick(() => {
@@ -190,6 +225,8 @@ export default {
                         document.querySelector('#goodslist li a').focus();
                     });
                 }
+
+                this.debug('af: ' + event.keyCode + ', ' + index + ', ' + this.curPage);
                 if (event.keyCode === 8) {
                     history.back();
                 }
@@ -205,6 +242,7 @@ export default {
                         goodPic = urlTemp[i].PictureUrl;
                     }
                 }
+                this.debug('goodPic:' + goodPic);
                 return goodPic;
             },
 
