@@ -1,5 +1,4 @@
 <style>
-
 html {
     /*font-size: 100px;*/
 }
@@ -177,7 +176,6 @@ a {
     opacity: 0.3;
     overflow: scroll;
 }
-
 </style>
 <template>
     <!-- 路由外链 -->
@@ -227,7 +225,9 @@ export default {
 
                 // config.js 中配置
                 //  && isDebug !== 1
-                if (!this.isDebug) { return; }
+                if (!this.isDebug) {
+                    return;
+                }
 
                 const debug = document.getElementById('debug');
 
@@ -263,19 +263,25 @@ export default {
             },
 
             play() {
-                this.debug('play');
-                if (sessionStorage.getItem('province')=== '云南') {
+                // this.debug('play');
+                if (sessionStorage.getItem('province') === '云南') {
                     this.setMediaStr();
                     this.mp.setSingleMedia(this.mediaStr);
                     this.mp.playFromStart();
-                }else{
-                     this.mp.playFromStart();
+                } else {
+                    if (this.mp) {
+                        this.stop();
+                    }
+                    this.initMediaPlay();
+                    this.mp.playFromStart();
                 }
 
             },
 
             stop() {
-                if (!this.mp) { return; }
+                if (!this.mp) {
+                    return;
+                }
                 this.mp.stop();
                 this.mp.releaseMediaPlayer(this.mp.getNativePlayerInstanceID());
                 this.mp = null;
@@ -318,13 +324,31 @@ export default {
                 if (province !== '云南') { // 同上
                     this.mp.setSingleMedia(this.mediaStr); //设置媒体播放器播放媒体内容
                 }
+
                 // this.mp.setAllowTrickmodeFlag(0); //设置是否允许trick操作。 0:允许 1：不允许
-                this.mp.setVideoDisplayMode(0);
-                this.mp.setVideoDisplayArea(left, top, width, height);
-                // this.mp.setNativeUIFlag(0); //设置播放器本地UI显示功能 0:允许 1：不允许
-                // this.mp.setAudioTrackUIFlag(1);
-                // this.mp.setMuteUIFlag(1);
-                // this.mp.setAudioVolumeUIFlag(1);
+                if (Object.prototype.toString.call(this.mp.setVideoDisplayMode()) === "[object Function]") {
+                    this.mp.setVideoDisplayMode(0);
+                }
+                if (Object.prototype.toString.call(this.mp.setVideoDisplayArea()) === "[object Function]") {
+                    this.mp.setVideoDisplayArea(left, top, width, height);
+                }
+
+                if (Object.prototype.toString.call(this.mp.setNativeUIFlag()) === "[object Function]") {
+                    this.mp.setNativeUIFlag(0); //设置播放器本地UI显示功能 0:不使用 1：使用
+                }
+
+                if (Object.prototype.toString.call(this.mp.setAudioTrackUIFlag()) === "[object Function]") {
+                    this.mp.setAudioTrackUIFlag(1);
+                }
+
+                if (Object.prototype.toString.call(this.mp.setMuteUIFlag()) === "[object Function]") {
+                    this.mp.setMuteUIFlag(1);
+                }
+
+                if (Object.prototype.toString.call(this.mp.setAudioVolumeUIFlag()) === "[object Function]") {
+                    this.mp.setAudioVolumeUIFlag(1);
+                }
+              
                 this.mp.refreshVideoDisplay();
                 //console.log('mediaUrl: ' + playUrl);
                 this.debug('mp:' + this.mp);
@@ -349,7 +373,9 @@ export default {
             homepage() { // 首页键处理
 
                 // 如果当前就是首页
-                if (/\/firstcategory/.test(location.href)) { return; }
+                if (/\/firstcategory/.test(location.href)) {
+                    return;
+                }
 
                 const province = sessionStorage.getItem('province');
                 if (this.isVersionInfoShow) {
@@ -384,7 +410,7 @@ export default {
                 try {
                     // 每次捕获事件只能获取一次Utility.getEvent()
                     let mediaEvent = Utility.getEvent();
-                    this.debug('mediaEvent:' + mediaEvent);
+                    // this.debug('mediaEvent:' + mediaEvent);
                     if (!mediaEvent) {
                         return;
                     }
@@ -452,7 +478,7 @@ export default {
                 if (args.length <= 0) {
                     return vol;
                 } else if (args[0] > 0) { // volume +
-                    vol += 5; 
+                    vol += 5;
                 } else if (args[0] < 0) { // volume -
                     vol -= 5;
                 }
@@ -460,13 +486,11 @@ export default {
                 // 设置每次加减，按5递增递减
                 if (vol % 10 < 5) {
                     vol = vol - vol % 10;
-                } else if ( vol % 10 > 5 ) {
+                } else if (vol % 10 > 5) {
                     vol = vol - vol % 10 + 5;
                 }
 
-                vol = vol > 100 ? 100
-                    : vol < 0 ? 0
-                    : vol;
+                vol = vol > 100 ? 100 : vol < 0 ? 0 : vol;
 
                 this.mp.setVolume(vol);
             },
@@ -513,14 +537,32 @@ export default {
                 this.debug(keyvalue);
 
                 switch (keyvalue) {
-                    case 8: _this.back(); break;
-                    case 181: _this.homepage(); break;
+                    case 8:
+                        _this.back();
+                        break;
+                    case 181:
+                        _this.homepage();
+                        break;
                     case 0x0300:
-                    case 768: _this.virtualKey();   return false; break;
-                    case 259: _this.volumeUp();     return false; break;
-                    case 260: _this.volumeDown();   return false; break;
-                    case 261: _this.setMute();      return false; break;
-                    default: return true; break;
+                    case 768:
+                        _this.virtualKey();
+                        return false;
+                        break;
+                    case 259:
+                        _this.volumeUp();
+                        return false;
+                        break;
+                    case 260:
+                        _this.volumeDown();
+                        return false;
+                        break;
+                    case 261:
+                        _this.setMute();
+                        return false;
+                        break;
+                    default:
+                        return true;
+                        break;
                 }
                 // };
             },
@@ -542,21 +584,20 @@ export default {
             combineKeyFunction(callback, compoKeys, enable) {
                 // 只接受 enable === false 关闭组合键功能
                 if (typeof(enable) === 'boolean' && !enable) {
-                    return function () {};
+                    return function() {};
                 }
 
-                var targetKeyArr = [57, 57, 56, 56];    // 组合键数组，默认：9988
-                var currKeyArr = [];        // 当前按下的键值组
-                var currKeyArrLen = 0;      // 键值组长度
-                var combiKeySwitch = true;  // 组合键开关
-                var lastKeyTime = "";       // 记录上一次按键时间点
-                var currKeyTime = "";       // 记录当前按下的按键时时间点
-                var seconds = 2;            // 组合键时间
-                var isTimeout = false;      // 两次按键是否超时过
-                var isSupportTimeout = false;   // 是否支持超时
+                var targetKeyArr = [57, 57, 56, 56]; // 组合键数组，默认：9988
+                var currKeyArr = []; // 当前按下的键值组
+                var currKeyArrLen = 0; // 键值组长度
+                var combiKeySwitch = true; // 组合键开关
+                var lastKeyTime = ""; // 记录上一次按键时间点
+                var currKeyTime = ""; // 记录当前按下的按键时时间点
+                var seconds = 2; // 组合键时间
+                var isTimeout = false; // 两次按键是否超时过
+                var isSupportTimeout = false; // 是否支持超时
 
-                if (arguments.length > 1
-                    && Object.prototype.toString.call(arguments[1]) === '[object Array]') {
+                if (arguments.length > 1 && Object.prototype.toString.call(arguments[1]) === '[object Array]') {
                     const tmpArr = compoKeys;
                     let tmpValue = -1;
                     for (let i = 0; i < tmpArr.length; i++) {
@@ -571,16 +612,18 @@ export default {
                 }
 
                 // 重置数据
-                var reset = function () {
+                var reset = function() {
                     currKeyArr = [];
                     currKeyTime = "";
                     lastKeyTime = "";
                 };
 
                 // 缓存在允许时间内（seconds）按下的按键
-                var buffer = function (__code) {
+                var buffer = function(__code) {
 
-                    if (!combiKeySwitch) { return; }
+                    if (!combiKeySwitch) {
+                        return;
+                    }
 
                     if (currKeyArr.length < targetKeyArr.length) {
 
@@ -602,7 +645,9 @@ export default {
                             if (currKeyArr.toString() === targetKeyArr.toString()) {
                                 // TODO 组合键成功，执行业务行为
 
-                                if (callback) { callback(); }
+                                if (callback) {
+                                    callback();
+                                }
                             }
 
                             // 组合成功或者按键数达到组合键键数量，都需要重置
@@ -611,7 +656,7 @@ export default {
                     }
                 };
 
-                var checkWithTimeout = function () {
+                var checkWithTimeout = function() {
                     // 下面是支持超时机制情况
                     var delta = currKeyTime - lastKeyTime;
 
@@ -625,7 +670,7 @@ export default {
                 };
 
                 // 校验按键是否超时，超时标识组合键失败
-                var check = function (__keycode) {
+                var check = function(__keycode) {
 
                     // 不支持两个键的间隔超时机制情况
                     if (!isSupportTimeout) {
@@ -637,7 +682,7 @@ export default {
 
                 };
 
-                return function (__keycode) {
+                return function(__keycode) {
 
                     //记下此次按键的时间
                     lastKeyTime = currKeyTime;
@@ -666,14 +711,14 @@ export default {
                  * contentID 为 视频32位的id，如：90000001000000015984724636843325、90000001000000015985026379023502
                  */
 
-                 const testLink = sessionStorage.getItem("isFromTestLink");
-                 this.debug('link type:' + testLink);
-                 // 如果是测试链接，取链接中的IP
-                 if (testLink) {
+                const testLink = sessionStorage.getItem("isFromTestLink");
+                //this.debug('link type:' + testLink);
+                // 如果是测试链接，取链接中的IP
+                if (testLink) {
                     UrlOrigin = testLink.match(/^(https?:\/\/.*:\d+)\//)[1];
-                 }
+                }
 
-                 this.debug('UrlOrigin:' + UrlOrigin);
+                // this.debug('UrlOrigin:' + UrlOrigin);
 
                 Http({
                     type: 'GET',
@@ -722,10 +767,10 @@ export default {
         events: {
 
             replay() {
+                this.debug('hubei play:' + this.mp);
                 if (sessionStorage.getItem('province') === '云南') {
-                    this.debug('replay-mp:' + this.mp);
                     this.getProgramInfo();
-                }else if (sessionStorage.getItem('province') === '湖北') {
+                } else if (sessionStorage.getItem('province') === '湖北') {
                     this.play();
                 }
             },
@@ -733,7 +778,9 @@ export default {
             playVideo() {
 
                 this.debug('playVideo-mp:' + this.mp);
-                if (this.mp) { this.stop(); }
+                if (this.mp) {
+                    this.stop();
+                }
                 this.initMediaPlay();
 
                 if (sessionStorage.getItem('province') === '云南') {
@@ -791,15 +838,14 @@ export default {
 
             // 9988 组合键弹出版本信息
             this.showEPGVersionInfo = this.combineKeyFunction(
-                function () {
+                function() {
                     _this.showVersionInfo();
-                },
-                [9, 9, 8, 8]
+                }, [9, 9, 8, 8]
             );
 
             // this.listenBackKey();
-            var keyHandler = function (event) {
-                _this.eventHandler(event);   
+            var keyHandler = function(event) {
+                _this.eventHandler(event);
             };
             document.onkeypress = keyHandler;
             document.onkeydown = keyHandler;
