@@ -121,7 +121,7 @@
 
 .rightGap {
     float: right;
-    width: 15px;
+    width: 25px;
     height: 100%;
     background:transparent;
 }
@@ -185,7 +185,7 @@
         box-shadow: 0 0 0 rgba(6, 127, 210, 1);
     }
     50% {
-        box-shadow: 0 0.66px 20px rgba(6, 127, 210, 1);
+        box-shadow: 0 0.66px 30px rgba(6, 127, 210, 1);
     }
     100% {
         box-shadow: 0 0 0 rgba(6, 127, 210, 1);
