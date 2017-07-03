@@ -341,7 +341,7 @@ export default {
                         this.$nextTick(() => {
                             let userId = sessionStorage.getItem('UserID') || Authentication.CUGetConfig('UserID');
                             if (sessionStorage.getItem('province') === '河南') {
-                                let ip = sessionStorage.getItem('EPGIP') || "10.253.255.4:8080";
+                                let ip = sessionStorage.getItem('EPGIP') || "10.253.255.4";
                                 window.parent.location.href = ''
                                     + 'http://202.99.114.71:40001/hnlthotel/topSkip.html?userId='
                                     + userId
