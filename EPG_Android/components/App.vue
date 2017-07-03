@@ -264,9 +264,14 @@ export default {
 
             play() {
                 this.debug('play');
-                this.setMediaStr();
-                this.mp.setSingleMedia(this.mediaStr);
-                this.mp.playFromStart();
+                if (sessionStorage.getItem('province')=== '云南') {
+                    this.setMediaStr();
+                    this.mp.setSingleMedia(this.mediaStr);
+                    this.mp.playFromStart();
+                }else{
+                     this.mp.playFromStart();
+                }
+
             },
 
             stop() {
@@ -717,8 +722,12 @@ export default {
         events: {
 
             replay() {
-                this.debug('replay-mp:' + this.mp);
-                this.getProgramInfo();
+                if (sessionStorage.getItem('province') === '云南') {
+                    this.debug('replay-mp:' + this.mp);
+                    this.getProgramInfo();
+                }else if (sessionStorage.getItem('province') === '湖北') {
+                    this.play();
+                }
             },
 
             playVideo() {
