@@ -168,12 +168,11 @@
 }
 
 .topBtn a.focus {
-    /*-webkit-animation: breathe 4s ease-in-out infinite;
-    animation: breathe 4s ease-in-out infinite;*/
+    /*-webkit-animation: breathe 4s ease-in-out infinite;*/
+    /*animation: breathe 4s ease-in-out infinite;*/
     border: 3px solid rgba(36, 142, 248, 1);
 }
 
-/*
 @keyframes breathe {
     0% {
         box-shadow: 0 0 0 rgba(6, 127, 210, 1);
@@ -196,7 +195,21 @@
     100% {
         box-shadow: 0 0 0 rgba(6, 127, 210, 1);
     }
-}*/
+}
+
+#to-debug {
+    position: fixed;
+    right: 0;
+    top: 0;
+    width: 40%;
+    height: 100%;
+    background-color: black;
+    color: white;
+    z-index: 10000000;
+    word-wrap: break-word;
+    opacity: 0.3;
+    overflow: scroll;
+}
 </style>
 <template>
     <div class="rootView" id="welcomeLayout">
@@ -222,11 +235,11 @@
                 <div class="choice">
                     <div class="topBtn">
                     <!--  @focus="changeChinese" href="javascript:;"  @click="gotoMainLayout" -->
-                        <a id="defaultLang"  tabindex="-1" href="javascript:;" v-focus="tabIndex===0">
+                        <a id="defaultLang"  tabindex="-1" href="javascript:;" v-focus="tabIndex===0" @keydown.right.left.enter="langChgEvent(tabIndex, $event)" @keypress.left.right.enter="langChgEvent(tabIndex, $event)">
                             <div>简体中文</div>
                         </a>
                         <!--  @focus="changeEnglish"  @click="gotoMainLayout" -->
-                        <a id="engLang" tabindex="-1" href="javascript:;" v-focus="tabIndex===1">
+                        <a id="engLang" tabindex="-1" href="javascript:;" v-focus="tabIndex===1" @keydown.left.right.enter="langChgEvent(tabIndex, $event)" @keypress.left.right.enter="langChgEvent(tabIndex, $event)">
                             <div>ENGLISH</div>
                         </a>
                     </div>
@@ -245,6 +258,8 @@
                 </div>
             </div>
         </div>
+
+        <div id="to-debug" v-if="isDebug"></div>
     </div>
 </template>
 <script>
@@ -253,6 +268,7 @@ import Http from '../../assets/lib/Http';
 export default {
     data() {
             return {
+                isDebug: false,
                 tabIndex: -1,
                 isRequestStatus: false,
                 canNotGoBack: false,
@@ -298,9 +314,49 @@ export default {
 
         methods: {
 
-            fadeInOut(ids) {
+            resetFocusAni() {
                 document.querySelector('#defaultLang').style.border = '3px solid rgba(36, 142, 248, 0)';
                 document.querySelector('#engLang').style.border = '3px solid rgba(36, 142, 248, 0)';
+            },
+
+            langChgEvent(tidx, event) {
+                let e = event ? event : window.event;
+                let keycode = event.which ? event.which : event.keyCode;
+
+                this.debug('idx:' + tidx + ', keycode:' + keycode);
+
+                if (tidx === 0 && keycode === 39) { // cn -> en
+                    this.$dispatch('toenglish');
+                } else if (tidx === 1 && keycode === 37) { // en -> cn
+                    this.$dispatch('tochinese');
+                } else if (keycode === 13) {
+                    this.$dispatch('gotomain');
+                }
+
+                return false;
+            },
+
+            debug(obj) {
+
+                // config.js 中配置
+                //  && isDebug !== 1
+                if (!this.isDebug) { return; }
+
+                const debug = document.getElementById('to-debug');
+
+                let str = '';
+
+                if (typeof(obj) === 'object') {
+                    str = JSON.stringify(obj);
+                } else {
+                    str = '' + obj;
+                }
+
+                debug.innerHTML += '[' + str + ']';
+            },
+            fadeInOut(ids) {
+                this.resetFocusAni();
+                clearTimeout(this.fadeTimer);
                 let ele = document.querySelector(ids);
                 this.fadeFn(ele, 'in', 20, 0.2, function (el, v) {
                     el.style.border = '3px solid rgba(36, 142, 248, ' + v + ')';
@@ -363,7 +419,6 @@ export default {
                         fade(start, end, stepV);
                     }, 15);
                 };
-
             },
 
             handleTimeout() {
@@ -406,7 +461,6 @@ export default {
             //保存选择的语言
             saveLangCode(language) {
                 this.currentLang = language;
-                this.fadeInOut('.focus');
             },
             getUiWord(lang = '', UiWordList = []) {
                 var _this = this;
@@ -460,10 +514,12 @@ export default {
             },
             changeChinese() {
                 this.saveLangCode("chi");
+                this.fadeInOut('#defaultLang');
             },
 
             changeEnglish() {
                 this.saveLangCode("eng");
+                this.fadeInOut('#engLang');
             },
 
             handleData({
@@ -881,7 +937,7 @@ export default {
                             this.$dispatch('welcomeDebug', 'yn-replay');
                             setTimeout(() => {
                                 this.$dispatch('replay');
-                            }, 1500);
+                            }, 1000);
                             break;
                         case '湖北':
                             if (sessionStorage.getItem("partner") === "HUAWEI") {
@@ -906,17 +962,17 @@ export default {
 
         events: {
 
-            toChinese() {
+            tochinese() {
                 this.tabIndex = 0;
                 this.changeChinese();
             },
 
-            toEnglish() { 
+            toenglish() { 
                 this.tabIndex = 1;
                 this.changeEnglish();
             },
 
-            gotoMain() {
+            gotomain() {
                 this.gotoMainLayout();
             }
         },
@@ -930,8 +986,9 @@ export default {
             this.getHereWeatherInfo();
             this.getRoomInfoReq();
             setTimeout(() => {
-                this.tabIndex = 0;
-                this.fadeInOut('#defaultLang');
+                this.$dispatch('tochinese');
+                // this.tabIndex = 0;
+                // this.fadeInOut('#defaultLang');
             }, 100);
 
             // 河南的需要频道列表
