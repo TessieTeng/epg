@@ -508,7 +508,7 @@ export default {
 
                         this.$dispatch("stopVideo");
                         this.$nextTick(() => {
-                            let userId = sessionStorage.getItem('UserID') || Authentication.CUGetConfig('UserID');
+                            let userId = sessionStorage.getItem('USERID') || Authentication.CUGetConfig('UserID');
                             if (sessionStorage.getItem('province') === '河南') {
                                 let ip = sessionStorage.getItem('EPGIP') || "10.253.255.4";
                                 window.parent.location.href = ''
@@ -563,6 +563,7 @@ export default {
                 OperationCode: '',
                 Detail: ''
             }) {
+
                 const tmpObj = {
                     "Message": {
                         "MessageType": "EPGLogReq",
