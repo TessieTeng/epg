@@ -54,6 +54,20 @@
     padding: 4px 2px;
 }
 
+#fc-debug {
+    position: fixed;
+    right: 0;
+    top: 0;
+    width: 40%;
+    height: 100%;
+    background-color: black;
+    color: white;
+    z-index: 10000000;
+    word-wrap: break-word;
+    opacity: 0.3;
+    overflow: scroll;
+}
+
 </style>
 <template>
     <div>
@@ -73,9 +87,11 @@
                 <div class="advertisement">
                     <img class="advertisement" v-bind:src='adPic'>
                 </div>
-                <ul id="firstTabItem">
-                    <li v-for="item in categoryList">
-                        <a href="javascript:;" id='_{{item.ObjectID}}' @click="excuteAction(item)" @focus="isFoucs=true" @blurs="isFoucs=false">
+                <div class="tip tip-left" v-show="tipType===1"><img src="../../assets/images/left.png" height="32" width="32" alt=""></div>
+                <div class="tip tip-right" v-show="tipType===2"><img src="../../assets/images/right.png" height="32" width="32" alt=""></div>
+                <ul id="firstTabItem" :style="{'left':menuLeft + 'px', 'transition':'left 0.8s linear'}">
+                    <li v-for="(index, item) in currCategoryList">
+                        <a href="javascript:;" id='_{{item.ObjectID}}' @click="excuteAction(item)" @focus="itemFocus(index)" @blurs="itemBlurs(index)" @keydown.left.right="turnPage(index, $event)" @keypress.left.right="turnPage(index, $event)">
                             <div class="imgFrame">
                                 <img v-bind:src='getNormalIcon(item)'>
                                 <img v-bind:src='getFocusIcon(item)'>
@@ -87,6 +103,8 @@
                 </ul>
             </div>
         </div>
+
+        <div id="fc-debug" v-if="isDebug"></div>
     </div>
 </template>
 <script>
@@ -114,6 +132,8 @@ import {
 export default {
     data() {
             return {
+
+                isDebug: false,
                 isRequestStatus: false,
                 firstEnter: true,
                 exitTime: 0,
@@ -121,6 +141,7 @@ export default {
                 bgimg: '',
                 adPic: '',
                 showLoading: true,
+                currCategoryList: [],
                 categoryList: [{
                     PictureList: {
                         Picture: [{
@@ -176,10 +197,152 @@ export default {
                     TextWidth: '',
                 }],
 
+                // 更新数据方式
+                menuCount: 6,
+                dataIdx: 0,
+                currPage: 0,
+                menuTotal: 0,
+                tipType: 0,
 
             };
         },
+
+        watch: {
+            'dataIdx': function (newV, oldV) {
+                this.refresh();
+            },
+        },
+
         methods: {
+
+            show(els, type) {
+
+                let visible = type ? 'visible' : 'hidden';
+
+                if (!Array.isArray(els)) {
+                    els.style.visibility = visible;
+                } else {
+                    for (let i = 0; i < els.length; i++) {
+                        els[i].style.visibility = visible;
+                    }
+                }
+            },
+
+            focusOne(idx) {
+                this.debug('focus idx:' + idx);
+                this.$nextTick(() => {
+                    // if (!this.firstClassTab == 0) {
+                    //     document.getElementById("_" + this.firstClassTab).focus();
+                    // } else {
+                        var categary = document.getElementById("firstTabItem");
+                        var lis = categary.getElementsByTagName('li');
+                        lis[idx].children[0].focus();
+                        // categary.children[idx].children[0].focus();
+                    // }
+                });
+            },
+
+            refresh() {
+                this.currCategoryList = this.categoryList.slice(this.dataIdx, this.dataIdx + this.menuCount);
+            },
+
+            turnPage(idx, event) {
+                let code = event.which ? event.which : event.keyCode;
+                if (idx === 0 && code === 37 && this.dataIdx >= this.menuCount - 1) {
+                    this.currPage--;
+                    this.dataIdx = this.currPage * this.menuCount;
+                    this.focusOne(this.menuCount - 1);
+                } else if (idx === this.menuCount - 1 && code === 39 && this.dataIdx !== this.menuTotal - 1) {
+                    this.currPage++;
+                    this.dataIdx = this.currPage * this.menuCount;
+                    this.focusOne(0);
+                }
+
+                /*
+                this.debug(''
+                    + 'key:' + code
+                    + ', page:' + this.currPage 
+                    + ', idx:' + idx
+                    + ', dataIdx:' + this.dataIdx
+                    + ', total:' + this.menuTotal
+                );*/
+            },
+
+            itemFocus(idx) {
+                this.isFocus = true;
+
+                // 提示问题暂时保留[TODO]
+                return;
+
+                if (idx === 0 && this.dataIdx > 0) {
+                    this.tipType = 1;
+                } else if (idx === this.menuCount - 1 && this.dataIdx < this.menuTotal - 1) {
+                    this.tipType = 2;
+                } else {
+                    this.tipType = 0;
+                }
+
+                this.debug(''
+                    + 'focus idx:' + idx
+                    + ', focus dataIdx:' + this.dataIdx
+                    + ', tip type:' + this.tipType
+                );
+            },
+
+            itemBlurs(idx) {
+                this.isFocus = false;
+            },
+
+            debug(obj) {
+
+                // config.js 中配置
+                //  && isDebug !== 1
+                if (!this.isDebug) { return; }
+
+                const debug = document.getElementById('fc-debug');
+
+                let str = '';
+
+                if (typeof(obj) === 'object') {
+                    str = JSON.stringify(obj);
+                } else {
+                    str = '' + obj;
+                }
+
+                debug.innerHTML += '[' + str + ']';
+            },
+            responsiveWidth() {
+                // return;
+                const menuTab = document.querySelector('.menuTab');
+                const firstTabItem = document.getElementById('firstTabItem');
+                const ad = document.querySelector('.advertisement');
+                const lis = firstTabItem.getElementsByTagName('li');
+                const len = this.categoryList.length;
+                let mw = 0, liw = 0, li0 = lis[0];
+
+                this.menuLeft = ad.offsetLeft + ad.offsetWidth;
+                this.itemLis = lis;
+
+                liw = li0.offsetWidth;
+
+                // 菜单栏的实际总宽度
+                mw = this.menuLeft + len * liw + 48;
+
+                this.baseLeft = this.menuLeft;
+
+                this.debug(''
+                    + 'liw:' + liw 
+                    + ', mw:' + mw 
+                    + ', num:' + len 
+                    + ', lis num:' + lis.length
+                    + ', menu left:' + this.menuLeft
+                    + ', lisw:' + firstTabItem.offsetWidth
+                );
+
+                this.rootW = document.querySelector('.rootDiv').offsetWidth;
+
+                menuTab.style.width = mw + 'px';
+            },
 
             GetQueryString(name) {
                 var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
@@ -255,6 +418,8 @@ export default {
                                 }
 
                                 _this.categoryList = _msgBody.ChildrenObjectList.Object;
+                                _this.currCategoryList = _this.categoryList.slice(0, _this.menuCount);
+                                _this.menuTotal = _this.categoryList.length;
 
                                 _this.$nextTick(() => {
                                     if (!_this.firstClassTab == 0) {
@@ -263,6 +428,10 @@ export default {
                                         var categary = document.getElementById("firstTabItem");
                                         categary.children[0].children[0].focus();
                                     }
+
+                                    // 菜单栏宽度
+                                    // _this.responsiveWidth();
+
                                     _this.EPGLog({
                                         OperationCode: '主页获取列表数据',
                                         Detail: 'success',
@@ -398,7 +567,7 @@ export default {
                     "Message": {
                         "MessageType": "EPGLogReq",
                         "MessageBody": {
-                            "USERID": sessionStorage.getItem("STBID"),
+                            "USERID": sessionStorage.getItem("UserID"),
                             "HostID": sessionStorage.getItem("HostID"),
                             "OperationCode": params.OperationCode,
                             "Detail": params.Detail,
@@ -573,6 +742,7 @@ export default {
             this.updateLastStore(0);
             //先隐藏客信，过几秒后显示
             document.querySelector(".hint").style.visibility = 'hidden';
+
             switch (sessionStorage.getItem('province')) {
                 case '云南':
                     break;
