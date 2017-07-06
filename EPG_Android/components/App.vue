@@ -1,4 +1,5 @@
 <style>
+
 html {
     /*font-size: 100px;*/
 }
@@ -24,7 +25,7 @@ body {
     height: 166.67px;
     background: url(../assets/images/bg_portal_bottom.png);
     line-height: 166.67px;
-    background-color: black;
+    /*background-color: black;*/
 }
 
 .advertisement {
@@ -163,6 +164,22 @@ a {
     border: 1px solid rgba(0, 0, 0, 0);
 }
 
+
+.tip {
+    position: absolute;
+    top: 0px;
+    height: 150px;
+    line-height: 150px;
+}
+
+.tip-left {
+    left: 255px;
+}
+
+.tip-right {
+    right: 50px;
+}
+
 #debug {
     position: fixed;
     right: 0;
@@ -287,6 +304,16 @@ export default {
                 this.mp = null;
             },
 
+            type(obj) {
+                return (
+                    Object.prototype.toString
+                        .call(obj)
+                        .split(' ')[1]
+                        .replace(/]/, '')
+                        .toLowerCase()
+                );
+            },
+
             initMediaPlay() {
                 // var playUrl = "http://vod.ovt.ctlcdn.com/iptv2017/LOVEIT/201704/20170428/90000001000000025374837816083896/90000001000000025374837816083896.m3u8";
 
@@ -326,26 +353,26 @@ export default {
                 }
 
                 // this.mp.setAllowTrickmodeFlag(0); //设置是否允许trick操作。 0:允许 1：不允许
-                if (Object.prototype.toString.call(this.mp.setVideoDisplayMode()) === "[object Function]") {
+                if (this.type(this.mp.setVideoDisplayArea) === 'function') {
                     this.mp.setVideoDisplayMode(0);
                 }
-                if (Object.prototype.toString.call(this.mp.setVideoDisplayArea()) === "[object Function]") {
+                if (this.type(this.mp.setVideoDisplayArea) === 'function') {
                     this.mp.setVideoDisplayArea(left, top, width, height);
                 }
 
-                if (Object.prototype.toString.call(this.mp.setNativeUIFlag()) === "[object Function]") {
+                if (this.type(this.mp.setNativeUIFlag) === 'function') {
                     this.mp.setNativeUIFlag(0); //设置播放器本地UI显示功能 0:不使用 1：使用
                 }
 
-                if (Object.prototype.toString.call(this.mp.setAudioTrackUIFlag()) === "[object Function]") {
+                if (this.type(this.mp.setAudioTrackUIFlag) === 'function') {
                     this.mp.setAudioTrackUIFlag(1);
                 }
 
-                if (Object.prototype.toString.call(this.mp.setMuteUIFlag()) === "[object Function]") {
+                if (this.type(this.mp.setMuteUIFlag) === 'function') {
                     this.mp.setMuteUIFlag(1);
                 }
 
-                if (Object.prototype.toString.call(this.mp.setAudioVolumeUIFlag()) === "[object Function]") {
+                if (this.type(this.mp.setAudioVolumeUIFlag) === 'function') {
                     this.mp.setAudioVolumeUIFlag(1);
                 }
               
@@ -490,7 +517,9 @@ export default {
                     vol = vol - vol % 10 + 5;
                 }
 
-                vol = vol > 100 ? 100 : vol < 0 ? 0 : vol;
+                vol = vol > 100 ? 100
+                    : vol < 0 ? 0
+                    : vol;
 
                 this.mp.setVolume(vol);
             },
@@ -537,32 +566,14 @@ export default {
                 this.debug(keyvalue);
 
                 switch (keyvalue) {
-                    case 8:
-                        _this.back();
-                        break;
-                    case 181:
-                        _this.homepage();
-                        break;
+                    case 8: _this.back(); break;
+                    case 181: _this.homepage(); break;
                     case 0x0300:
-                    case 768:
-                        _this.virtualKey();
-                        return false;
-                        break;
-                    case 259:
-                        _this.volumeUp();
-                        return false;
-                        break;
-                    case 260:
-                        _this.volumeDown();
-                        return false;
-                        break;
-                    case 261:
-                        _this.setMute();
-                        return false;
-                        break;
-                    default:
-                        return true;
-                        break;
+                    case 768: _this.virtualKey();   return false; break;
+                    case 259: _this.volumeUp();     return false; break;
+                    case 260: _this.volumeDown();   return false; break;
+                    case 261: _this.setMute();      return false; break;
+                    default: return true; break;
                 }
                 // };
             },
@@ -597,7 +608,8 @@ export default {
                 var isTimeout = false; // 两次按键是否超时过
                 var isSupportTimeout = false; // 是否支持超时
 
-                if (arguments.length > 1 && Object.prototype.toString.call(arguments[1]) === '[object Array]') {
+                if (arguments.length > 1
+                    && Object.prototype.toString.call(arguments[1]) === '[object Array]') {
                     const tmpArr = compoKeys;
                     let tmpValue = -1;
                     for (let i = 0; i < tmpArr.length; i++) {
@@ -621,9 +633,7 @@ export default {
                 // 缓存在允许时间内（seconds）按下的按键
                 var buffer = function(__code) {
 
-                    if (!combiKeySwitch) {
-                        return;
-                    }
+                    if (!combiKeySwitch) { return; }
 
                     if (currKeyArr.length < targetKeyArr.length) {
 
@@ -645,9 +655,7 @@ export default {
                             if (currKeyArr.toString() === targetKeyArr.toString()) {
                                 // TODO 组合键成功，执行业务行为
 
-                                if (callback) {
-                                    callback();
-                                }
+                                if (callback) { callback(); }
                             }
 
                             // 组合成功或者按键数达到组合键键数量，都需要重置
