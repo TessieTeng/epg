@@ -39,13 +39,8 @@ export default {
                 Detail: '',
             }) {
 
-                var mainPath = sessionStorage.getItem("MainPath");
-                var welPath = sessionStorage.getItem("WelcomePageGroupPath");
-                var isWelLinkPath = /^https?:\/\//.test(welPath);
-                var isMainLinkPath = /^https?:\/\//.test(mainPath);
-
-                // 如果不是测试路径且不是http(s)链接，就不启用日志功能
-                if (mainPath !== 'test' && welPath !== 'test' && !isWelLinkPath && !isMainLinkPath) {
+                if (sessionStorage.getItem("WelcomePageGroupPath") !== 'test' 
+                    && sessionStorage.getItem("WelcomePageGroupPath").indexOf('http') === -1) {
                     return;
                 }
 
@@ -147,11 +142,6 @@ export default {
                this.setConfig(Config);
                sessionStorage.setItem('EpgVersion', JSON.stringify(EpgVersion));
 
-                this.EPGLog({
-                    OperationCode: 'Portal-EPG版本信息',
-                    Detail: JSON.stringify(sessionStorage.getItem('EpgVersion'))
-                })
-
                 if (!!window.Authentication) {
                     const epgdomain = Authentication.CTCGetConfig('EPGDomain');
                     //中兴平台
@@ -180,6 +170,7 @@ export default {
                 const tmpBody = {
                     "STBID": window.Authentication ? Authentication.CTCGetConfig("STBID") : '',
                 }
+
                 switch (sessionStorage.getItem('province')) {
                     case '云南':
                         tmpBody.USERID = window.Authentication ? Authentication.CTCGetConfig("UserID") : '';
@@ -190,7 +181,7 @@ export default {
                         tmpBody.HotelGroupID = this.cdc_group_id;
                         break;
                     case '陕西':
-                        tmpBOdy.USERID = this.userid;
+                        tmpBody.USERID = this.userid || sessionStorage.getItem('userid') || Authentication.CTCGetConfig("UserID");
                         break;
                     case '河南':
                         if (sessionStorage.getItem('from') === 'huawei') {
@@ -479,12 +470,13 @@ export default {
                     paramObj[param[0]] = param[1];
                 }
 
-                this.userid = paramObj.userid;
-                this.userGroup = paramObj.userGroup;
-                this.areaID = paramObj.areaID;
-                this.servername = paramObj.servername;
-                this.serverport = paramObj.serverport;
-                this.remoteaddr = paramObj.remoteaddr;
+                this.userid = paramObj.userid || this.GetQueryString('userid');
+                this.userGroup = paramObj.userGroup || this.GetQueryString('userGroup');
+                this.areaID = paramObj.areaID || this.GetQueryString('areaID');
+                this.servername = paramObj.servername || this.GetQueryString('servername');
+                this.serverport = paramObj.serverport || this.GetQueryString('serverport');
+                this.remoteaddr = paramObj.remoteaddr || this.GetQueryString('remoteaddr');
+                this.from = paramObj.from || this.GetQueryString('from');
 
                 sessionStorage.setItem('userid', this.userid);
                 sessionStorage.setItem('userGroup', this.userGroup);
@@ -492,18 +484,36 @@ export default {
                 sessionStorage.setItem('servername', this.servername);
                 sessionStorage.setItem('serverport', this.serverport);
                 sessionStorage.setItem('remoteaddr', this.remoteaddr);
+                sessionStorage.setItem('from', this.from);
 
                 /* IPTV 首页地址，ywbz是测试分组，后面根据需求会发生改变 */
                 const serverip = this.servername || '113.136.96.196';
                 const serverport = this.serverport || '8282';
-                let indexUrl = "http://" + serverip + ':' + serverport + "/EPG/jsp/ywbz/en/Category.jsp";
+                let indexUrl = '', key = '';
+                // 根据平台从config.js里取出配置
+                key = sessionStorage.getItem('from') + 'Path';
+                // 拼接 iptv 地址
+                indexUrl = "http://" + serverip + ':' + serverport + sessionStorage.getItem(key);
                 sessionStorage.setItem("indexUrl", indexUrl);
+
+                this.EPGLog({
+                    OperationCode: '模板参数',
+                    Detail: JSON.stringify({
+                        userid: sessionStorage.getItem('userid'),
+                        userGroup: sessionStorage.getItem('userGroup'),
+                        servername: sessionStorage.getItem('servername'),
+                        serverport: sessionStorage.getItem('serverport'),
+                        remoteaddr: sessionStorage.getItem('remoteaddr'),
+                        from: sessionStorage.getItem('from'),
+                        indexUrl: sessionStorage.getItem('indexUrl'),
+                    })
+                });
 
                 const currUrl = window.location.href;
 
                 // 这里固定写死，只要不包含查找的字符串，就直接重新设置
                 // 这里也可以不用添加该判断，因为只会在开机的时候执行一次
-                if (currUrl.indexOf('113.136.46.37/iptv/portal.html') === -1) {
+                if (currUrl.indexOf('113.136.46.40/iptv/portal.html') === -1) {
                     sessionStorage.setItem('EPGDomain', currUrl);
 
                     // 保障起见，将首页地址和272热键地址都修改成我们的portal地址
@@ -531,8 +541,12 @@ export default {
                     ynIndexUrl = this.GetQueryString("indexUrl");
                     sessionStorage.setItem("indexUrl", ynIndexUrl);
                 } else {
+
                     // ynIndexUrl = 'http://' + localIp + '/iptv/ppthdplay/apps/index/index_epg.html';
-                    // sessionStorage.setItem("indexUrl", ynIndexUrl);
+                    sessionStorage.setItem(
+                        "indexUrl", 
+                        "http://182.245.29.132:78/iptv/ppthdplay/hotelapps/index/index_epg.html"
+                    );
                 }
                 this.doLogin();
             },
@@ -567,10 +581,10 @@ export default {
             }
 
             // 保存当前地址的 IP + Port
-            let epgIp = window.location.href.replace(/http:\/\/|https:\/\//, '');
-            if (epgIp.indexOf('/') > -1) {
-                epgIp = epgIp.substring(0, epgIp.indexOf('/'));
-            }
+            let epgIp = window.location.href.replace(/https?\:\/\//, '').replace(/(\/|\?).+/, '');
+            // if (epgIp.indexOf('/') > -1 || epgIp.indexOf('?')) {
+                // epgIp = epgIp.substring(0, epgIp.indexOf('/'));
+            // }
             sessionStorage.setItem('EPGIP', epgIp);
 
             let indexUrl = '';
@@ -599,6 +613,14 @@ export default {
                     break;
             }
 
+            this.EPGLog({
+                OperationCode: '开机配置',
+                Detail: JSON.stringify({
+                    EPGIP: sessionStorage.getItem('EPGIP'),
+                    indexUrl: sessionStorage.getItem('indexUrl'),
+                })
+            });
+        
         },
 }
 </script>
