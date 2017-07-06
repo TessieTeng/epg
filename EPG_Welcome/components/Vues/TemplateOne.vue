@@ -163,11 +163,17 @@
     line-height: 47px;
 }
 
-.topBtn a.focus {
-    -webkit-animation: breathe 4s ease-in-out infinite;
-    animation: breathe 4s ease-in-out infinite;
+.topBtn a {
+    border: 3px solid rgba(36, 142, 248, 0);
 }
 
+.topBtn a.focus {
+    /*-webkit-animation: breathe 4s ease-in-out infinite;
+    animation: breathe 4s ease-in-out infinite;*/
+    border: 3px solid rgba(36, 142, 248, 1);
+}
+
+/*
 @keyframes breathe {
     0% {
         box-shadow: 0 0 0 rgba(6, 127, 210, 1);
@@ -190,7 +196,7 @@
     100% {
         box-shadow: 0 0 0 rgba(6, 127, 210, 1);
     }
-}
+}*/
 </style>
 <template>
     <div class="rootView" id="welcomeLayout">
@@ -220,7 +226,7 @@
                             <div>简体中文</div>
                         </a>
                         <!--  @focus="changeEnglish"  @click="gotoMainLayout" -->
-                        <a tabindex="-1" href="javascript:;" v-focus="tabIndex===1">
+                        <a id="engLang" tabindex="-1" href="javascript:;" v-focus="tabIndex===1">
                             <div>ENGLISH</div>
                         </a>
                     </div>
@@ -280,6 +286,7 @@ export default {
                 hasVideo: false,
                 VideoType: '',
                 contentID: '',
+                fadeTimer: null,
             };
 
         },
@@ -290,6 +297,74 @@ export default {
         },
 
         methods: {
+
+            fadeInOut(ids) {
+                document.querySelector('#defaultLang').style.border = '3px solid rgba(36, 142, 248, 0)';
+                document.querySelector('#engLang').style.border = '3px solid rgba(36, 142, 248, 0)';
+                let ele = document.querySelector(ids);
+                this.fadeFn(ele, 'in', 20, 0.2, function (el, v) {
+                    el.style.border = '3px solid rgba(36, 142, 248, ' + v + ')';
+                }, true)(20, 100, 1);
+            },
+
+            fadeFn(el, inout, refV, opacity, handler, circle) {
+
+                var value = refV;
+                var timer = null;
+                var _this = this;
+
+                clearTimeout(this.fadeTimer);
+                if (inout === 'in') {
+                    // el.style.display = 'block';
+                }
+
+                handler(el, opacity);
+                // fadeBorder(el, opacity);
+                // el.style.opacity = opacity;
+
+                return function fade(start, end, stepV) {
+                    var startV = start || 0;
+                    var endV = end || 100;
+                    var step = stepV || 1;
+                    var condition = inout === 'in' ? value >= endV : value <= startV;
+                    var args = arguments;
+                    // console.log(condition)
+                    if (condition) {
+                        // el.style.opacity = value / 100;
+                        if (inout === 'out') {
+                            // el.style.display = 'none';
+                        }
+
+                        if (circle) {
+                            if (inout === 'in') {
+                                inout = 'out';
+                                value = end;
+                            } else {
+                                inout = 'in';
+                                value = start;
+                            }
+                            fade(start, end, stepV);
+                        } else {
+                            clearTimeout(_this.fadeTimer);
+                            return;
+                        }
+                    }
+
+                    value = inout === 'in' ? value + step : value - step;
+
+                    // el.style.opacity = value / 100;
+                    // fadeBorder(el, value / 100);
+                    handler(el, value / 100);
+
+                    // console.log(el.style.opacity);
+
+                    clearTimeout(_this.fadeTimer);
+                    _this.fadeTimer = setTimeout(function () {
+                        fade(start, end, stepV);
+                    }, 15);
+                };
+
+            },
 
             handleTimeout() {
                 var timesRun = 0;
@@ -331,6 +406,7 @@ export default {
             //保存选择的语言
             saveLangCode(language) {
                 this.currentLang = language;
+                this.fadeInOut('.focus');
             },
             getUiWord(lang = '', UiWordList = []) {
                 var _this = this;
@@ -648,7 +724,7 @@ export default {
                     "Message": {
                         "MessageType": "EPGLogReq",
                         "MessageBody": {
-                            "USERID": sessionStorage.getItem("STBID"),
+                            "USERID": sessionStorage.getItem("UserID"),
                             "HostID": sessionStorage.getItem("HostID"),
                             "OperationCode": params.OperationCode,
                             "Detail": params.Detail,
@@ -855,6 +931,7 @@ export default {
             this.getRoomInfoReq();
             setTimeout(() => {
                 this.tabIndex = 0;
+                this.fadeInOut('#defaultLang');
             }, 100);
 
             // 河南的需要频道列表
