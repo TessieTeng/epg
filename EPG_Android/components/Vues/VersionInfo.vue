@@ -69,12 +69,14 @@ export default {
                 desc: '此次版本升级是为了获得更好的用户体验。',
                 buglist: ['解决视频不能播放问题', '解决焦点黄框问题', '解决视频播放卡顿问题'],
                 features: ['开机广告视频', '主页面背景视频及其循环播放', '频道直播页面'],
-            },    
+            },
         };
     },
 
     ready() {
-        this.version = JSON.parse(sessionStorage.getItem('SYEpgVersion'));
+        var _this = this;
+
+        this.version = JSON.parse(sessionStorage.getItem('EpgVersion'));
     },
 }
 </script>
