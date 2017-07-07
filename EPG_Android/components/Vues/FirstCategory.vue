@@ -248,6 +248,19 @@ export default {
 
             turnPage(idx, event) {
                 let code = event.which ? event.which : event.keyCode;
+
+                this.debug('' 
+                    + 'idx:' + idx 
+                    + ', tpcode:' + code 
+                    + ', count:' + this.menuCount 
+                    + ', len:' + this.categoryList.length
+                );
+
+                // 栏目数不足6个的时候不翻页
+                if (this.categoryList.length <= this.menuCount) {
+                    return;
+                }
+
                 if (idx === 0 && code === 37 && this.dataIdx >= this.menuCount - 1) {
                     this.currPage--;
                     this.dataIdx = this.currPage * this.menuCount;
@@ -757,7 +770,7 @@ export default {
                     + ', firstPlay: ' + this.firstVideoPlay 
                     + ', province: ' + sessionStorage.getItem('province')
                 );
-                if (!!bgMediaUrl && bgMediaUrl !== '0' ) {
+                if (!!bgMediaUrl && bgMediaUrl !== '0') {
                     this.hasVideo = true;
                     if (this.firstVideoPlay) {
                         var zhongxingMediaUrlOrigin = sessionStorage.getItem('zhongxingMediaUrlOrigin');
