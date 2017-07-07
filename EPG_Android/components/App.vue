@@ -353,13 +353,8 @@ export default {
                 }
 
                 // this.mp.setAllowTrickmodeFlag(0); //设置是否允许trick操作。 0:允许 1：不允许
-                if (this.type(this.mp.setVideoDisplayArea) === 'function') {
-                    this.mp.setVideoDisplayMode(0);
-                }
-                if (this.type(this.mp.setVideoDisplayArea) === 'function') {
-                    this.mp.setVideoDisplayArea(left, top, width, height);
-                }
-
+                this.mp.setVideoDisplayMode(0);
+                this.mp.setVideoDisplayArea(left, top, width, height);
                 if (this.type(this.mp.setNativeUIFlag) === 'function') {
                     this.mp.setNativeUIFlag(0); //设置播放器本地UI显示功能 0:不使用 1：使用
                 }
