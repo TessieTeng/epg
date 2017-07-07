@@ -31,6 +31,8 @@ export default {
                 servername: '',
                 serverport: '',
                 remoteaddr: '',
+
+                isLinkPath: false,
             };
         },
         methods: {
@@ -48,7 +50,7 @@ export default {
                     "Message": {
                         "MessageType": "EPGLogReq",
                         "MessageBody": {
-                            "USERID": sessionStorage.getItem("STBID"),
+                            "USERID": sessionStorage.getItem("USERID"),
                             "HostID": sessionStorage.getItem("HostID"),
                             "OperationCode": params.OperationCode,
                             "Detail": params.Detail,
@@ -190,7 +192,7 @@ export default {
                             tmpBody.USERID = window.Authentication ? Authentication.CTCGetConfig("UserID") : '';
                         }
                         break;
-                    default:
+                    default:          
                         break;
                 }
                 const tmpObj = {
@@ -322,8 +324,8 @@ export default {
                                     _this.gotoMainLayout();
                                 } else {
 
-                                    var isLinkPath = /^https?:\/\//.test(sessionStorage.getItem("WelcomePageGroupPath"));
-                                    if (isLinkPath) {
+                                    _this.isLinkPath = /^https?:\/\//.test(sessionStorage.getItem("WelcomePageGroupPath"));
+                                    if (_this.isLinkPath) {
                                         sessionStorage.setItem('isFromTestLink', sessionStorage.getItem("WelcomePageGroupPath"));
                                         sessionStorage.setItem('WelcomePageGroupPath', 'test');
                                     }
@@ -398,9 +400,13 @@ export default {
             goToWelcome() {
                 this.EPGLog({
                     OperationCode: 'goToWelcome-path',
-                    Detail: sessionStorage.getItem("WelcomePageGroupPath")
+                    Detail: JSON.stringify({
+                        welcomePath: sessionStorage.getItem("WelcomePageGroupPath"),
+                        isLink: this.isLinkPath
+                    })
                 });
-                if (/^https?:\/\//.test(sessionStorage.getItem("WelcomePageGroupPath"))) {
+                if (this.isLinkPath || /^https?:\/\//.test(sessionStorage.getItem("WelcomePageGroupPath"))) {
+                    this.isLinkPath = false;
                     // 链接跳转
                     location.replace(sessionStorage.getItem("WelcomePageGroupPath"));
                 } else if (sessionStorage.getItem("WelcomePageGroupPath") == "test") {
@@ -550,6 +556,39 @@ export default {
                 }
                 this.doLogin();
             },
+
+            configHenanParams() {
+
+                //TODO 区分中兴和华为
+                if (!sessionStorage.getItem("from") && !!this.GetQueryString("from")) {
+                    sessionStorage.setItem("from", this.GetQueryString("from"));
+                } else if (!sessionStorage.getItem("userid") && !!this.GetQueryString("userid")) {
+                    sessionStorage.setItem("userid", this.GetQueryString("userid"));
+                }
+
+                let userId = sessionStorage.getItem('USERID') || Authentication.CUGetConfig('UserID');
+                let ip = sessionStorage.getItem('EPGIP') || "10.253.255.4";
+                let indexUrl = ''
+                    + 'http://202.99.114.71:40001/hnlthotel/topSkip.html?userId='
+                    + userId
+                    + '&carrierId=204&industry=hotel&state=1&categoryid=dc00005224&backtovideo=false&'
+                    + 'returnurl=http%3A%2F%2F'
+                    + ip + '%2Fiptv%2Fportal.html';
+                    /*
+                    + 'http://202.99.114.71:40001/hnlthotel/homePage.html?'
+                    + 'userId=' + userId
+                    + '&carrierId=204&industry=hotel&state=1&categoryid=dc00005223&'
+                    + 'returnurl=http%3A%2F%2F'
+                    + ip + '%2Fiptv%2Fportal.html'; */
+
+                if (!sessionStorage.getItem('indexUrl') && !!this.GetQueryString('indexUrl')) {
+                    sessionStorage.setItem('indexUrl', this.GetQueryString('indexUrl'));
+                } else {
+                    sessionStorage.setItem('indexUrl', indexUrl);
+                }
+
+                this.doLogin();
+            },
         },
 
         ready() {
@@ -563,10 +602,10 @@ export default {
             // 标识是不是第一次开机进入欢迎页，后面走portal就不用再认证登录，直接进入主页
             var isFirstStart = sessionStorage.getItem('ISFIRSTSTART');
 
-            var isLinkPath = /^https?:\/\//.test(sessionStorage.getItem("WelcomePageGroupPath"));
+            // var isLinkPath = /^https?:\/\//.test(sessionStorage.getItem("WelcomePageGroupPath"));
 
             // 湖北不采用此功能，且不能是链接路径
-            if (province !== '湖北' && !isLinkPath) {
+            if (province !== '湖北' && !this.isLinkPath) {
                 if (isFirstStart !== '1') {
                     sessionStorage.setItem('ISFIRSTSTART', '1');
                 } else { // 直接进入主页面
@@ -601,13 +640,7 @@ export default {
                     this.configShanxiParams();
                     break;
                 case '河南':
-                    //TODO 区分中兴和华为
-                    if (!sessionStorage.getItem("from") && !!this.GetQueryString("from")) {
-                        sessionStorage.setItem("from", this.GetQueryString("from"));
-                    } else if (!sessionStorage.getItem("userid") && !!this.GetQueryString("userid")) {
-                        sessionStorage.setItem("userid", this.GetQueryString("userid"));
-                    }
-                    this.doLogin();
+                    this.configHenanParams();
                     break;
                 default:
                     break;
