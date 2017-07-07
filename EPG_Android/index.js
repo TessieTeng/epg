@@ -16,6 +16,7 @@ import SingleImg from "Vues/SingleImg";
 import Store from "Vues/Store";
 import ScaleImg from "Vues/ScaleImg";
 import VersionInfo from "Vues/VersionInfo";
+import SpecialRecommendation from "Vues/SpecialRecommendation";
 
 Vue.use(VueRouter);
 
@@ -66,6 +67,9 @@ router.map({
     },
     "/versioninfo": {
         component: VersionInfo,
+    },
+     "/specialrecommendation": {
+        component: SpecialRecommendation,
     },
 });
 
