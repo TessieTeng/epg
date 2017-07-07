@@ -297,6 +297,7 @@ export default {
                     LowTemperature: '0',
                     HighTemperature: '0',
                 },
+                timeInterval: null,
                 currentTime: '',
                 picIndex: 0,
                 hasVideo: false,
@@ -648,6 +649,7 @@ export default {
                     userAgent
                 } = navigator;
 
+                this.debug('gotomain');
                 this.$dispatch('stopVideo');
 
                 if (/^https?:\/\//.test(sessionStorage.getItem("MainPath"))) {
