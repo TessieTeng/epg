@@ -508,22 +508,8 @@ export default {
 
                         this.$dispatch("stopVideo");
                         this.$nextTick(() => {
-                            let userId = sessionStorage.getItem('USERID') || Authentication.CUGetConfig('UserID');
                             if (sessionStorage.getItem('province') === '河南') {
-                                let ip = sessionStorage.getItem('EPGIP') || "10.253.255.4";
-                                window.parent.location.href = ''
-                                    + 'http://202.99.114.71:40001/hnlthotel/topSkip.html?userId='
-                                    + userId
-                                    + '&carrierId=204&industry=hotel&state=1&categoryid=dc00005224&backtovideo=false&'
-                                    + 'returnurl=http%3A%2F%2F'
-                                    + ip + '%2Fiptv%2Fportal.html';
-                                    /*
-                                    + 'http://202.99.114.71:40001/hnlthotel/homePage.html?'
-                                    + 'userId=' + userId
-                                    + '&carrierId=204&industry=hotel&state=1&categoryid=dc00005223&'
-                                    + 'returnurl=http%3A%2F%2F'
-                                    + ip + '%2Fiptv%2Fportal.html'; */
-                                return;
+                                window.parent.location.href = sessionStorage.getItem('indexUrl');
                             }
                         });
                         break;
