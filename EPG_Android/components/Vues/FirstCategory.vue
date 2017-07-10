@@ -89,7 +89,7 @@
                 </div>
                 <div class="tip tip-left" v-show="tipType===1"><img src="../../assets/images/left.png" height="32" width="32" alt=""></div>
                 <div class="tip tip-right" v-show="tipType===2"><img src="../../assets/images/right.png" height="32" width="32" alt=""></div>
-                <ul id="firstTabItem" :style="{'left':menuLeft + 'px', 'transition':'left 0.8s linear'}">
+                <ul id="firstTabItem" :style="{transition: menuReresh}">
                     <li v-for="(index, item) in currCategoryList">
                         <a href="javascript:;" id='_{{item.ObjectID}}' @click="excuteAction(item)" @focus="itemFocus(index)" @blurs="itemBlurs(index)" @keydown.left.right="turnPage(index, $event)" @keypress.left.right="turnPage(index, $event)">
                             <div class="imgFrame">
@@ -203,6 +203,7 @@ export default {
                 currPage: 0,
                 menuTotal: 0,
                 tipType: 0,
+                menuReresh: '',
 
             };
         },
@@ -244,10 +245,13 @@ export default {
 
             refresh() {
                 this.currCategoryList = this.categoryList.slice(this.dataIdx, this.dataIdx + this.menuCount);
+                this.menuReresh = 'all 1s';
             },
 
             turnPage(idx, event) {
                 let code = event.which ? event.which : event.keyCode;
+
+                this.menuReresh = '';
 
                 this.debug('' 
                     + 'idx:' + idx 
@@ -791,6 +795,10 @@ export default {
                                     this.mediaurl = urls;
                                 }
                                 this.$dispatch('setMediaUrl', this.mediaurl);
+                                break;
+                            case'陕西':
+                                sessionStorage.setItem('playUrl', bgMediaUrl);
+                                this.$dispatch('playVideo');
                                 break;
                             default:
                                 break;
