@@ -111,6 +111,11 @@ export default {
 
                     // 后期如果从url参数拿到indexUrl，则要在这里set到sessionStorage里面
 
+                    this.EPGLog({
+                        OperationCode: 'getUrlParams',
+                        Detail: JSON.stringify(jsonObj),
+                    });
+
                     this.doLogin();
                 } else {
                     this.goToIptv('获取不了url参数');
@@ -161,6 +166,21 @@ export default {
                     sessionStorage.setItem("USERID", Authentication.CTCGetConfig("UserID"));
                     sessionStorage.setItem("STBID", Authentication.CTCGetConfig("STBID"));
                 }
+
+                this.EPGLog({
+                    OperationCode: 'getConfig',
+                    Detail: JSON.stringify({
+                        EpgVersion,
+                        epgdomain,
+                        last,
+                        zhongxingMediaUrlOrigin,
+                        huaweiMediaUrlOrigin,
+                        UserToken: Authentication.CTCGetConfig('UserToken'),
+                        USERID: Authentication.CTCGetConfig("UserID"),
+                        STBID: Authentication.CTCGetConfig("STBID"),
+                        UrlOrigin: Authentication.CTCGetConfig('EPGDomain').match(/^(https?:\/\/.*:\d+)\//)[1],
+                    }),
+                });
             },
 
             doLogin() {
@@ -216,7 +236,13 @@ export default {
                                 sessionStorage.setItem("AdPath", _msgBody.AdPath);
                                 sessionStorage.setItem("MainPath", _msgBody.MainPath);
                                 sessionStorage.setItem("WelcomePageGroupPath", _msgBody.WelcomePageGroupPath);
-
+                                this.EPGLog({
+                                    OperationCode: 'STBLoginReq',
+                                    Detail: JSON.stringify({
+                                        reqBody: tmpObj,
+                                        data: data.response,
+                                    }),
+                                });
                                 _this.doAuth();
                             } else {
                                 console.log("doLogin请求数据失败");
@@ -268,6 +294,16 @@ export default {
                                 sessionStorage.setItem("LoginID", _msgBody.LoginID);
                                 sessionStorage.setItem("RootCategoryID", _msgBody.RootCategoryID);
                                 sessionStorage.setItem("Token", _msgBody.Token);
+
+                                this.EPGLog({
+                                    OperationCode: 'DoAuthReq',
+                                    Detail: JSON.stringify({
+                                        reqBody: tmpObj,
+                                        data: data.response,
+                                    }),
+                                });
+
+
                                 _this.getSysParam();
                             } else {
                                 console.log("Auth请求数据失败");
@@ -318,6 +354,14 @@ export default {
                             if (_msgBody.ResultCode == 200) {
                                 _msgBody.ParamList.Param.map(item => {
                                     sessionStorage.setItem(item.Name, item.Value);
+                                });
+
+                                this.EPGLog({
+                                    OperationCode: 'GetSysParamReq',
+                                    Detail: JSON.stringify({
+                                        reqBody: tmpObj,
+                                        data: data.response,
+                                    }),
                                 });
 
                                 if (_this.GetQueryString("cKey") === 'back') {
@@ -376,6 +420,11 @@ export default {
                     str = this.getObjStr(err);
                 }
 
+                this.EPGLog({
+                    OperationCode: 'goToIptv-request broken',
+                    Detail: str,
+                });
+
                 // alert(str);
                 location.href = sessionStorage.getItem("indexUrl");
             },
@@ -402,7 +451,8 @@ export default {
                     OperationCode: 'goToWelcome-path',
                     Detail: JSON.stringify({
                         welcomePath: sessionStorage.getItem("WelcomePageGroupPath"),
-                        isLink: this.isLinkPath
+                        isLink: this.isLinkPath,
+                        location: window.location.href,
                     })
                 });
                 if (this.isLinkPath || /^https?:\/\//.test(sessionStorage.getItem("WelcomePageGroupPath"))) {
@@ -447,6 +497,14 @@ export default {
                 }
 
                 let targetUrl = path + file;
+
+                this.EPGLog({
+                    OperationCode: 'gotoMainLayout',
+                    Detail: JSON.stringify({
+                        targetUrl: targetUrl,
+                        navigator: navigator,
+                    })
+                });
 
                 location.replace(targetUrl);
             },
@@ -554,6 +612,16 @@ export default {
                         "http://182.245.29.132:78/iptv/ppthdplay/hotelapps/index/index_epg.html"
                     );
                 }
+
+                this.EPGLog({
+                    OperationCode: '模板参数',
+                    Detail: JSON.stringify({
+                        localIp: sessionStorage.getItem('localIp'),
+                        relativePath: sessionStorage.getItem('relativePath'),
+                        indexUrl: sessionStorage.getItem('indexUrl'),
+                    })
+                });
+
                 this.doLogin();
             },
 
@@ -586,6 +654,15 @@ export default {
                 } else {
                     sessionStorage.setItem('indexUrl', indexUrl);
                 }
+
+                this.EPGLog({
+                    OperationCode: '模板参数',
+                    Detail: JSON.stringify({
+                        from: sessionStorage.getItem('from'),
+                        userid: sessionStorage.getItem('userid'),
+                        indexUrl: sessionStorage.getItem('indexUrl'),
+                    })
+                });
 
                 this.doLogin();
             },
@@ -650,7 +727,13 @@ export default {
                 OperationCode: '开机配置',
                 Detail: JSON.stringify({
                     EPGIP: sessionStorage.getItem('EPGIP'),
-                    indexUrl: sessionStorage.getItem('indexUrl'),
+                    indexUrl: JSON.stringify({
+                        indexUrl: sessionStorage.getItem('indexUrl'),
+                        EPGIP: sessionStorage.getItem('EPGIP'),
+                        MainPath: sessionStorage.getItem("MainPath"),
+                        isLinkPath: this.isLinkPath,
+                        isFirstStart: isFirstStart,
+                    }),
                 })
             });
         
