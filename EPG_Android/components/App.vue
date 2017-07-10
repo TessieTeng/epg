@@ -853,7 +853,6 @@ export default {
 
             // this.listenBackKey();
             var keyHandler = function(event) {
-                this.debug('kh:' + (event.which ? event.which : event.keyCode));
                 _this.eventHandler(event);
             };
             document.onkeypress = keyHandler;
