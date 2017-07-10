@@ -478,8 +478,9 @@ export default {
                             {
                                 console.log("播放结束！");
                                 this.debug('play end: ' + sessionStorage.getItem('province'));
+                                const province = sessionStorage.getItem('province');
                                 // 云南特殊处理，通过广播通知子组件去发起播放请求
-                                if (sessionStorage.getItem('province') === '云南') {
+                                if (province === '云南' || province === '陕西') {
                                     this.$dispatch("replay");
                                 } else {
                                     this.mp.playFromStart();
@@ -552,6 +553,9 @@ export default {
                         break;
                     case '湖北':
                         virtualKey = 768;
+                        break;
+                    case '陕西':
+                        virtualkey = 768;
                         break;
                     default:
                         virtualKey = 0x0300;
@@ -773,7 +777,8 @@ export default {
                 this.debug('hubei play:' + this.mp);
                 if (sessionStorage.getItem('province') === '云南') {
                     this.getProgramInfo();
-                } else if (sessionStorage.getItem('province') === '湖北') {
+                } else {
+                    //  if (sessionStorage.getItem('province') === '湖北')
                     this.play();
                 }
             },
@@ -848,6 +853,7 @@ export default {
 
             // this.listenBackKey();
             var keyHandler = function(event) {
+                this.debug('kh:' + (event.which ? event.which : event.keyCode));
                 _this.eventHandler(event);
             };
             document.onkeypress = keyHandler;
