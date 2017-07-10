@@ -157,6 +157,7 @@ export default {
                         case '云南':
                             virtualKey = 0x0300;
                             break;
+                        case '陕西':
                         case '湖北':
                             virtualKey = 768;
                             break;
