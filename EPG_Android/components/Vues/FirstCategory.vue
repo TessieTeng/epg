@@ -89,7 +89,7 @@
                 </div>
                 <div class="tip tip-left" v-show="tipType===1"><img src="../../assets/images/left.png" height="32" width="32" alt=""></div>
                 <div class="tip tip-right" v-show="tipType===2"><img src="../../assets/images/right.png" height="32" width="32" alt=""></div>
-                <ul id="firstTabItem" :style="{transition: menuReresh}">
+                <ul id="firstTabItem">
                     <li v-for="(index, item) in currCategoryList">
                         <a href="javascript:;" id='_{{item.ObjectID}}' @click="excuteAction(item)" @focus="itemFocus(index)" @blurs="itemBlurs(index)" @keydown.left.right="turnPage(index, $event)" @keypress.left.right="turnPage(index, $event)">
                             <div class="imgFrame">
@@ -203,7 +203,6 @@ export default {
                 currPage: 0,
                 menuTotal: 0,
                 tipType: 0,
-                menuReresh: '',
 
             };
         },
@@ -245,13 +244,10 @@ export default {
 
             refresh() {
                 this.currCategoryList = this.categoryList.slice(this.dataIdx, this.dataIdx + this.menuCount);
-                this.menuReresh = 'all 1s';
             },
 
             turnPage(idx, event) {
                 let code = event.which ? event.which : event.keyCode;
-
-                this.menuReresh = '';
 
                 this.debug('' 
                     + 'idx:' + idx 
@@ -675,6 +671,7 @@ export default {
                                     _this.RoomMsg = _msgBody.MsgList.RoomMsg[0];
                                     _this.BgImageUrl = _msgBody.MsgList.RoomMsg[0].BgImageUrl;
                                     _this.chiword = _msgBody.MsgList.RoomMsg[0].OkButtonText.chiword;
+
                                 }
                             } else {
                                 console.log("请求数据失败");
@@ -737,8 +734,11 @@ export default {
             if (/main_outer.html/.test(window.parent.location.pathname)) {
                 this.getCurrLangCodeFromParentWindow();
             }
-            var categary = document.getElementById("firstTabItem");
-            categary.children[0].children[0].focus();
+
+            // 这里去掉，修改多级栏目后，在请求之前调用会报错
+            // var categary = document.getElementById("firstTabItem");
+            // categary.children[0].children[0].focus();
+
             document.querySelector("#firstTabItem").style.pointerEvents = 'none';
             this.listenBackKey();
             this.getRootCategoryData(sessionStorage.getItem("RootCategoryID"));
@@ -749,7 +749,6 @@ export default {
 
             switch (sessionStorage.getItem('province')) {
                 case '云南':
-                    break;
                 case '河南':
                 case '陕西':
                 case '湖北':
