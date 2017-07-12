@@ -41,10 +41,11 @@ export default {
                 Detail: '',
             }) {
 
-                if (sessionStorage.getItem("WelcomePageGroupPath") !== 'test' 
-                    && sessionStorage.getItem("WelcomePageGroupPath").indexOf('http') === -1) {
-                    return;
-                }
+                const path = sessionStorage.getItem("WelcomePageGroupPath");
+
+                // if (sessionStorage.getItem("WelcomePageGroupPath") !== 'test') {
+                //     return;
+                // }
 
                 const tmpObj = {
                     "Message": {
@@ -148,7 +149,6 @@ export default {
 
                this.setConfig(Config);
                sessionStorage.setItem('EpgVersion', JSON.stringify(EpgVersion));
-
                 if (!!window.Authentication) {
                     const epgdomain = Authentication.CTCGetConfig('EPGDomain');
                     //中兴平台
@@ -165,22 +165,20 @@ export default {
                     sessionStorage.setItem("UserToken", Authentication.CTCGetConfig('UserToken'));
                     sessionStorage.setItem("USERID", Authentication.CTCGetConfig("UserID"));
                     sessionStorage.setItem("STBID", Authentication.CTCGetConfig("STBID"));
+                    
+                    this.EPGLog({
+                        OperationCode: 'getConfig',
+                        Detail: JSON.stringify({
+                            EpgVersion: EpgVersion,
+                            zhongxingMediaUrlOrigin: sessionStorage.getItem('zhongxingMediaUrlOrigin'),
+                            huaweiMediaUrlOrigin: sessionStorage.getItem('huaweiMediaUrlOrigin'),
+                            UserToken: Authentication.CTCGetConfig('UserToken'),
+                            USERID: Authentication.CTCGetConfig("UserID"),
+                            STBID: Authentication.CTCGetConfig("STBID"),
+                            UrlOrigin: Authentication.CTCGetConfig('EPGDomain').match(/^(https?:\/\/.*:\d+)\//)[1],
+                        }),
+                    });
                 }
-
-                this.EPGLog({
-                    OperationCode: 'getConfig',
-                    Detail: JSON.stringify({
-                        EpgVersion,
-                        epgdomain,
-                        last,
-                        zhongxingMediaUrlOrigin,
-                        huaweiMediaUrlOrigin,
-                        UserToken: Authentication.CTCGetConfig('UserToken'),
-                        USERID: Authentication.CTCGetConfig("UserID"),
-                        STBID: Authentication.CTCGetConfig("STBID"),
-                        UrlOrigin: Authentication.CTCGetConfig('EPGDomain').match(/^(https?:\/\/.*:\d+)\//)[1],
-                    }),
-                });
             },
 
             doLogin() {
@@ -236,7 +234,7 @@ export default {
                                 sessionStorage.setItem("AdPath", _msgBody.AdPath);
                                 sessionStorage.setItem("MainPath", _msgBody.MainPath);
                                 sessionStorage.setItem("WelcomePageGroupPath", _msgBody.WelcomePageGroupPath);
-                                this.EPGLog({
+                                _this.EPGLog({
                                     OperationCode: 'STBLoginReq',
                                     Detail: JSON.stringify({
                                         reqBody: tmpObj,
@@ -295,7 +293,7 @@ export default {
                                 sessionStorage.setItem("RootCategoryID", _msgBody.RootCategoryID);
                                 sessionStorage.setItem("Token", _msgBody.Token);
 
-                                this.EPGLog({
+                                _this.EPGLog({
                                     OperationCode: 'DoAuthReq',
                                     Detail: JSON.stringify({
                                         reqBody: tmpObj,
@@ -356,7 +354,7 @@ export default {
                                     sessionStorage.setItem(item.Name, item.Value);
                                 });
 
-                                this.EPGLog({
+                                _this.EPGLog({
                                     OperationCode: 'GetSysParamReq',
                                     Detail: JSON.stringify({
                                         reqBody: tmpObj,
@@ -455,7 +453,7 @@ export default {
                         location: window.location.href,
                     })
                 });
-                if (this.isLinkPath || /^https?:\/\//.test(sessionStorage.getItem("WelcomePageGroupPath"))) {
+                if (/^https?:\/\//.test(sessionStorage.getItem("WelcomePageGroupPath"))) {
                     this.isLinkPath = false;
                     // 链接跳转
                     location.replace(sessionStorage.getItem("WelcomePageGroupPath"));
@@ -681,9 +679,9 @@ export default {
 
             // var isLinkPath = /^https?:\/\//.test(sessionStorage.getItem("WelcomePageGroupPath"));
 
-            // 湖北不采用此功能，且不能是链接路径
-            if (province !== '湖北' && !this.isLinkPath) {
-                if (isFirstStart !== '1') {
+            // 湖北和云南不采用此功能，且不能是链接路径
+            if (province !== '湖北' && province !== '云南') {
+                if (!isFirstStart && isFirstStart !== '1') {
                     sessionStorage.setItem('ISFIRSTSTART', '1');
                 } else { // 直接进入主页面
                     this.gotoMainLayout();
