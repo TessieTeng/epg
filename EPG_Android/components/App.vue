@@ -392,14 +392,36 @@ export default {
                 this.mp.resume();
             },
 
+            goToWelcome() {
+                if (/^https?:\/\//.test(sessionStorage.getItem("WelcomePageGroupPath"))) {
+                    // 链接跳转
+                    location.replace(sessionStorage.getItem("WelcomePageGroupPath"));
+                } else if (sessionStorage.getItem("WelcomePageGroupPath") == "test") {
+                    // 测试路径
+                    location.replace("../../epggroup_welcomes/welcome_test/welcome.html");
+                } else {
+                    // 正式路径
+                    location.replace("../../epggroup_welcomes/welcome_default/welcome.html");
+                }
+            },
+
             homepage() { // 首页键处理
+
+                const province = sessionStorage.getItem('province');
+
+                if (province === '云南') {
+                    if (this.mp) {
+                        this.stop();
+                    }
+                    this.goToWelcome();
+                    return;
+                }
 
                 // 如果当前就是首页
                 if (/\/firstcategory/.test(location.href)) {
                     return;
                 }
 
-                const province = sessionStorage.getItem('province');
                 if (this.isVersionInfoShow) {
                     this.hideVersionInfo();
                 } else {
@@ -606,6 +628,7 @@ export default {
                 var seconds = 2; // 组合键时间
                 var isTimeout = false; // 两次按键是否超时过
                 var isSupportTimeout = false; // 是否支持超时
+                var _this = this;
 
                 if (arguments.length > 1
                     && Object.prototype.toString.call(arguments[1]) === '[object Array]') {
@@ -639,6 +662,7 @@ export default {
                         // 缓存当前按键
                         currKeyArr.push(__code);
 
+                        _this.debug(JSON.stringify(currKeyArr));
                         // 判断按下的按键键值是否和组件键值匹配
                         for (var j = 0; j < currKeyArr.length; j++) {
                             if (currKeyArr[j] !== targetKeyArr[j]) {
@@ -653,7 +677,7 @@ export default {
                             // 这个 if 可省略
                             if (currKeyArr.toString() === targetKeyArr.toString()) {
                                 // TODO 组合键成功，执行业务行为
-
+                                _this.debug('combine key got!');
                                 if (callback) { callback(); }
                             }
 
@@ -719,20 +743,20 @@ export default {
                  */
 
                 const testLink = sessionStorage.getItem("isFromTestLink");
-                //this.debug('link type:' + testLink);
+                this.debug('link type:' + testLink);
                 // 如果是测试链接，取链接中的IP
                 if (testLink) {
                     UrlOrigin = testLink.match(/^(https?:\/\/.*:\d+)\//)[1];
                 }
 
-                // this.debug('UrlOrigin:' + UrlOrigin);
+                this.debug('UrlOrigin:' + UrlOrigin);
 
                 Http({
                     type: 'GET',
                     url: UrlOrigin + '/GetProgramInfo?programId=78&userFlag=' + USERID + '&userToken=' + UserToken + '&contentID=' + contentID + '&productIDs=',
                     data: '',
                     complete: function(data) {
-                        _this.debug('getProgramInfo:' + data.status);
+                        // _this.debug('getProgramInfo:' + data.status);
                         if (data.status === 200) {
                             const res = JSON.parse(data.response);
                             _this.selectionStart(res.assetId, UrlOrigin, UserToken);
@@ -753,12 +777,12 @@ export default {
                     url: UrlOrigin + '/SelectionStart?assetId=' + assetId + '&userToken=' + UserToken,
                     data: '',
                     complete: function(data) {
-                        _this.debug('selectionStart:' + data.status)
+                        // _this.debug('selectionStart:' + data.status)
                         if (data.status === 200) {
                             const res = JSON.parse(data.response);
                             sessionStorage.setItem('playUrl', res.playUrl);
 
-                            _this.debug('playUrl:' + res.playUrl);
+                            // _this.debug('playUrl:' + res.playUrl);
                             _this.$dispatch("playVideo");
                         } else {
                             console.log('error: ' + data.status);
@@ -848,7 +872,7 @@ export default {
             this.showEPGVersionInfo = this.combineKeyFunction(
                 function() {
                     _this.showVersionInfo();
-                }, [9, 9, 8, 8]
+                }, [9, 9, 9, 9, 8, 8, 8, 8]
             );
 
             // this.listenBackKey();
