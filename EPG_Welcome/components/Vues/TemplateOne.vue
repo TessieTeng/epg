@@ -19,7 +19,7 @@
     position: absolute;
     width: 1280px;
     z-index: 2;
-    height: 121px;
+    height: 140px;
     bottom: 0;
     background-color: black;
 }
@@ -73,6 +73,7 @@
 #timetext {
     font-size: 20px;
     color: white;
+    padding-right: 20px;
 }
 
 .langBtn {
@@ -121,7 +122,7 @@
 
 .rightGap {
     float: right;
-    width: 25px;
+    width: 40px;
     height: 100%;
     background:transparent;
 }
