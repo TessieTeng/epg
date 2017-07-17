@@ -577,7 +577,7 @@ export default {
                         virtualKey = 768;
                         break;
                     case '陕西':
-                        virtualkey = 768;
+                        virtualKey = 768;
                         break;
                     default:
                         virtualKey = 0x0300;
