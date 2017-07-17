@@ -797,7 +797,7 @@ export default {
                                 break;
                             case'陕西':
                                 sessionStorage.setItem('playUrl', bgMediaUrl);
-                                this.$dispatch('playVideo');
+                                this.$dispatch('replay');
                                 break;
                             default:
                                 break;
