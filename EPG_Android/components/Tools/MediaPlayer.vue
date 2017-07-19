@@ -475,6 +475,7 @@
                      case "EVENT_MEDIA_ERROR":
                          {
                              console.log("播放失败，请检查网络！\t错误代码：" + mediaEvent.error_code);
+                             this.play();
                              this.tips = '播放失败';
                              return "EVENT_MEDIA_ERROR";
                              break;
