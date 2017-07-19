@@ -4,6 +4,7 @@ import VueRouter from 'vue-router';
 import './assets/lib/sessionStorage';
 
 import App from "App";
+import MPlayer from "Tools/MediaPlayer";
 import FirstCategory from "Vues/FirstCategory";
 import SecondCategory from "Vues/SecondCategory";
 import ThirdCategory from "Vues/ThirdCategory";
@@ -70,6 +71,9 @@ router.map({
     },
      "/specialrecommendation": {
         component: SpecialRecommendation,
+    },
+    "/mplayer": {
+        component: MPlayer,
     },
 });
 
