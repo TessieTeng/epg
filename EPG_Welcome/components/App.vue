@@ -353,6 +353,7 @@ export default {
                 iPanel.focusWidth = 0;
             }
 
+            this.isDebug = sessionStorage.getItem('EPG_DEBUG_SWITCHER') === 'open';
             this.debug('wel ready');
 
             var _this = this;
