@@ -191,6 +191,7 @@
              isReinit: false,
              isTipShow: true,
              isMusic: false,
+             isEnablePlayControl: 'disable', // 默认不需要播控
 
              secondTimer: null,
              keys: {},
@@ -198,6 +199,7 @@
              keypress: null,
              keydown: null,
              backUrl: '',
+
          };
      },
 
@@ -434,7 +436,6 @@
              try {
                  // 每次捕获事件只能获取一次Utility.getEvent()
                  let mediaEvent = Utility.getEvent();
-                 this.debug('mediaEvent:' + mediaEvent);
                  if (!mediaEvent) {
                      return;
                  }
@@ -811,9 +812,17 @@
              } else {
                  keycode = event;
              }
-             this.debug('key:' + keycode);
-             this.debug('back:' + this.backUrl);
+             this.debug('key:' + keycode + '-' + this.isEnablePlayControl);
 
+             // 需要处理的按键或消息
+             let enableKeys = [613, 181, 272, 8, 768];
+             // 不需要播控
+             if (this.isEnablePlayControl === 'disable') {
+                 if (enableKeys.indexOf(keycode) === -1) {
+                     this.debug('disable:' + keycode);
+                     return false;
+                 }
+             }
              const province = sessionStorage.getItem('province');
              this.currKeycode = keycode;
              switch (keycode) {
@@ -956,7 +965,6 @@
          },
 
          event768() {
-             this.debug('vEvent in');
              this.virtualKeyHandler();
          },
 
@@ -1080,7 +1088,6 @@
          // }
      },
 
-
      beforeDestroy() {
          this.resetEvent();
          this.stop();
@@ -1098,13 +1105,16 @@
              this.area = route.query.area || this.area;
              this.objId = route.query.objId || this.objId;
              this.backUrl = route.query.backUrl || this.backUrl;
+             // 播控开关
+             this.isEnablePlayControl = route.query.isEnablePlayControl;
          }
 
+         this.debug('isEPC:' + this.isEnablePlayControl);
          this.config({
              playUrl: this.playUrl,
              area: this.area,
              isChannel: false,
          }).play();
      },
- };
+};
 </script>
