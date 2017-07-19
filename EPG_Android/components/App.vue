@@ -535,7 +535,14 @@
                      case "EVENT_MEDIA_ERROR":
                          {
                              console.log("播放失败，请检查网络！\t错误代码：" + mediaEvent.error_code);
+                             this.debug('play error, retry');
                              // this.updateToken();
+                             const province = sessionStorage.getItem('province');
+                             if (province === '云南' || province === '陕西') {
+                                 this.$dispatch('replay');
+                             } else {
+                                 this.mp.playFromStart();
+                             }
                              return "EVENT_MEDIA_ERROR";
                              break;
                          }
