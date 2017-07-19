@@ -526,6 +526,19 @@ export default {
                             }
                         });
                         break;
+                    case "vod_play":
+                        const url = item.RelatedInfo;
+                        this.debug('RelatedInfo:' + url);
+                        this.$dispatch('stopVideo');
+                        this.$router.replace({
+                            path: "/mplayer",
+                            query: {
+                                playUrl: item.RelatedInfo,
+                                backUrl: '/firstcategory',
+                                isEnablePlayControl: 'disable',
+                            },
+                        });
+                        break;
                     case 'show_category':
                     case '':
                         switch (item.ObjectType) {
@@ -735,6 +748,7 @@ export default {
                 this.getCurrLangCodeFromParentWindow();
             }
 
+            this.isDebug = sessionStorage.getItem('EPG_DEBUG_SWITCHER') === 'open';
             // 这里去掉，修改多级栏目后，在请求之前调用会报错
             // var categary = document.getElementById("firstTabItem");
             // categary.children[0].children[0].focus();
@@ -768,7 +782,7 @@ export default {
             }
             this.$nextTick(() => {
                 const bgMediaUrl = sessionStorage.getItem('bg_media_url');
-                console.log(''
+                this.debug(''
                     + 'bg_media_url: ' + bgMediaUrl 
                     + ', firstPlay: ' + this.firstVideoPlay 
                     + ', province: ' + sessionStorage.getItem('province')
@@ -795,7 +809,8 @@ export default {
                                 }
                                 this.$dispatch('setMediaUrl', this.mediaurl);
                                 break;
-                            case'陕西':
+                            case '河南':
+                            case '陕西':
                                 sessionStorage.setItem('playUrl', bgMediaUrl);
                                 this.$dispatch('replay');
                                 break;
@@ -804,7 +819,7 @@ export default {
                         }
                     } else {
                         if (!this.isVideoPlay) {
-                            this.$dispatch("playVideo");
+                            this.$dispatch("replay");
                             this.updateIsVideoPlay(true);
                         }
                     }
