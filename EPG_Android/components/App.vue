@@ -786,12 +786,17 @@
              };
          },
 
+         getIp(url) {
+             return url.match(/^(https?:\/\/.*[:\d+])\//)[1];
+         },
+
          getProgramInfo() {
              const _this = this;
              let UrlOrigin = sessionStorage.getItem('UrlOrigin');
              const USERID = sessionStorage.getItem('USERID');
              const UserToken = sessionStorage.getItem('UserToken');
              const contentID = sessionStorage.getItem('bg_media_url');
+             const EPGIP = sessionStorage.getItem('EPGIP');
              /**
               * 详情请参考文档《电信 EPG 与 BO 接口规范说明》
               * programId、productIDs 可以为空
@@ -804,10 +809,17 @@
              this.debug('link type:' + testLink);
              // 如果是测试链接，取链接中的IP
              if (testLink) {
-                 UrlOrigin = testLink.match(/^(https?:\/\/.*:\d+)\//)[1];
+                 UrlOrigin = this.getIp(testLink);
+             }
+             if (!UrlOrigin || UrlOrigin === 'undefined' || UrlOrigin === undefined) {
+                 UrlOrigin = EPGIP || this.getIp(location.href);
              }
 
-             this.debug('UrlOrigin:' + UrlOrigin);
+             this.debug(''
+                      + 'urlOrigin:' + UrlOrigin
+                      + ', EPGIP:' + EPGIP
+                      + ', testLink:' + testLink
+             );
 
              Http({
                  type: 'GET',
