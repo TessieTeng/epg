@@ -21,8 +21,8 @@
         'shanxi': {
             province: '陕西',
             relativePath: '',
-            huaweiPath: '/EPG/jsp/kjxxtest/en/Category.jsp',
-            ztePath: '/iptvepg/frame13/portal.jsp',
+            huaweiPath: '/EPG/jsp/ylgqftkdb/en/Category.jsp',
+            ztePath: '/iptvepg/frame207/portal.jsp',
 
         },
         'henan': {
