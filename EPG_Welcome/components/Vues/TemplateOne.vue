@@ -112,7 +112,7 @@
      float: right;
      padding-top: 13.3px;
      line-height: 46px;
-     font-size: 26px;
+     font-size: 29px;
      color: white;
  }
 

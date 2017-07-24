@@ -67,14 +67,13 @@
     opacity: 0.3;
     overflow: scroll;
 }
-
 </style>
 <template>
     <div>
         <div class="rootDiv">
             <div class="kexin" :style="{'height':Height + 'px','left':Left + 'px', 'top':Top + 'px','width':Width + 'px','background-image': 'url(' + BgImageUrl +  ')'}">
                 <div class="info" :style="{'height':RoomMsg.TextHeight + 'px','left':RoomMsg.TextLeft + 'px', 'top':RoomMsg.TextTop + 'px','width':RoomMsg.TextWidth + 'px',}"> {{{RoomMsg.MsgText}}}</div>
-                <a href="javascript:;" class="hint" @click="hideNotice">{{RoomMsg.OkButtonText.chiword}}
+                <a href="javascript:;" class="hint" @click="hideNotice" v-if="showKeXin">{{RoomMsg.OkButtonText.chiword}}
                 </a>
             </div>
             <div class="scrolls" v-if='!!TvmsMsg.MsgText'>
@@ -101,7 +100,6 @@
                 </ul>
             </div>
         </div>
-
         <div id="fc-debug" v-if="isDebug"></div>
     </div>
 </template>
@@ -130,7 +128,7 @@ import {
 export default {
     data() {
             return {
-
+                showKeXin: false,
                 isDebug: false,
                 isRequestStatus: false,
                 firstEnter: true,
@@ -206,9 +204,29 @@ export default {
         },
 
         watch: {
-            'dataIdx': function (newV, oldV) {
+            'dataIdx': function(newV, oldV) {
                 this.refresh();
             },
+            'RoomMsg': function(RoomMsg) {
+                if (RoomMsg.length != 0) {
+                    setTimeout(() => {
+                        if (this.isFirstEnterKeXin) {
+                            this.showKeXin = true;
+                        }
+                    }, 3000);
+
+                } else {
+                    this.showKeXin = false;
+                }
+            },
+            showKeXin: function(showKeXin) {
+                if (showKeXin) {
+                    document.querySelector(".hint").style.visibility = 'visible';
+                    document.querySelector(".hint").focus();
+                    this.preventKey();
+                    this.updateIsFirstEnterKeXin(false);
+                }
+            }
         },
 
         methods: {
@@ -232,10 +250,10 @@ export default {
                     // if (!this.firstClassTab == 0) {
                     //     document.getElementById("_" + this.firstClassTab).focus();
                     // } else {
-                        var categary = document.getElementById("firstTabItem");
-                        var lis = categary.getElementsByTagName('li');
-                        lis[idx].children[0].focus();
-                        // categary.children[idx].children[0].focus();
+                    var categary = document.getElementById("firstTabItem");
+                    var lis = categary.getElementsByTagName('li');
+                    lis[idx].children[0].focus();
+                    // categary.children[idx].children[0].focus();
                     // }
                 });
             },
@@ -247,12 +265,7 @@ export default {
             turnPage(idx, event) {
                 let code = event.which ? event.which : event.keyCode;
 
-                this.debug('' 
-                    + 'idx:' + idx 
-                    + ', tpcode:' + code 
-                    + ', count:' + this.menuCount 
-                    + ', len:' + this.categoryList.length
-                );
+                this.debug('' + 'idx:' + idx + ', tpcode:' + code + ', count:' + this.menuCount + ', len:' + this.categoryList.length);
 
                 // 栏目数不足6个的时候不翻页
                 if (this.categoryList.length <= this.menuCount) {
@@ -293,11 +306,7 @@ export default {
                     this.tipType = 0;
                 }
 
-                this.debug(''
-                    + 'focus idx:' + idx
-                    + ', focus dataIdx:' + this.dataIdx
-                    + ', tip type:' + this.tipType
-                );
+                this.debug('' + 'focus idx:' + idx + ', focus dataIdx:' + this.dataIdx + ', tip type:' + this.tipType);
             },
 
             itemBlurs(idx) {
@@ -308,7 +317,9 @@ export default {
 
                 // config.js 中配置
                 //  && isDebug !== 1
-                if (!this.isDebug) { return; }
+                if (!this.isDebug) {
+                    return;
+                }
 
                 const debug = document.getElementById('fc-debug');
 
@@ -329,7 +340,9 @@ export default {
                 const ad = document.querySelector('.advertisement');
                 const lis = firstTabItem.getElementsByTagName('li');
                 const len = this.categoryList.length;
-                let mw = 0, liw = 0, li0 = lis[0];
+                let mw = 0,
+                    liw = 0,
+                    li0 = lis[0];
 
                 this.menuLeft = ad.offsetLeft + ad.offsetWidth;
                 this.itemLis = lis;
@@ -341,14 +354,7 @@ export default {
 
                 this.baseLeft = this.menuLeft;
 
-                this.debug(''
-                    + 'liw:' + liw 
-                    + ', mw:' + mw 
-                    + ', num:' + len 
-                    + ', lis num:' + lis.length
-                    + ', menu left:' + this.menuLeft
-                    + ', lisw:' + firstTabItem.offsetWidth
-                );
+                this.debug('' + 'liw:' + liw + ', mw:' + mw + ', num:' + len + ', lis num:' + lis.length + ', menu left:' + this.menuLeft + ', lisw:' + firstTabItem.offsetWidth);
 
                 this.rootW = document.querySelector('.rootDiv').offsetWidth;
 
@@ -674,6 +680,11 @@ export default {
                             const _data = JSON.parse(data.response);
                             const _msgBody = _data.Message.MessageBody;
                             if (_msgBody.ResultCode == 200) {
+                                _this.EPGLog({
+                                    OperationCode: 'GetRoomMsgReq: ',
+                                    Detail: 'success',
+                                });
+                                console.log(_msgBody);
                                 if (!!_msgBody.MsgList && !!_msgBody.MsgList.RoomMsg && _msgBody.MsgList.RoomMsg.length > 0) {
                                     _this.Height = _msgBody.Height;
                                     _this.Left = _msgBody.Left;
@@ -741,6 +752,7 @@ export default {
             Loading,
         },
         ready() {
+
             // 兼容UT盒子从main_outer.html进入时取不到currLangCode的问题
             if (/main_outer.html/.test(window.parent.location.pathname)) {
                 this.getCurrLangCodeFromParentWindow();
@@ -758,33 +770,20 @@ export default {
             this.updateLastStore(0);
             //先隐藏客信，过几秒后显示
             document.querySelector(".hint").style.visibility = 'hidden';
-
             switch (sessionStorage.getItem('province')) {
                 case '云南':
                 case '河南':
                 case '陕西':
                 case '湖北':
                     this.getTvmsMsg();
-                    // setTimeout(() => {
-                    //     if (this.isFirstEnterKeXin) {
-                    //         this.getRoomMsg();
-                    //         document.querySelector(".hint").style.visibility = 'visible';
-                    //         document.querySelector(".hint").focus();
-                    //         this.preventKey();
-                    //         this.updateIsFirstEnterKeXin(false);
-                    //     }
-                    // }, 3000);
+                    this.getRoomMsg();
                     break;
                 default:
                     break;
             }
             this.$nextTick(() => {
                 const bgMediaUrl = sessionStorage.getItem('bg_media_url');
-                this.debug(''
-                    + 'bg_media_url: ' + bgMediaUrl 
-                    + ', firstPlay: ' + this.firstVideoPlay 
-                    + ', province: ' + sessionStorage.getItem('province')
-                );
+                this.debug('' + 'bg_media_url: ' + bgMediaUrl + ', firstPlay: ' + this.firstVideoPlay + ', province: ' + sessionStorage.getItem('province'));
                 if (!!bgMediaUrl && bgMediaUrl !== '0') {
                     this.hasVideo = true;
                     if (this.firstVideoPlay) {
