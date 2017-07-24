@@ -124,14 +124,14 @@
          setConfig(config) {
 
              var setOne = function (cfg) {
-                 
+
                  for (let key in cfg) {
                      if (typeof(cfg[key]) === 'object') {
                          sessionStorage.setItem(key, JSON.stringify(cfg[key]));
                      } else {
                          sessionStorage.setItem(key, cfg[key]);
                      }
-                 }   
+                 }
              };
 
              if (Object.prototype.toString.call(config) === '[object Array]') {
@@ -163,7 +163,7 @@
                  sessionStorage.setItem("UserToken", Authentication.CTCGetConfig('UserToken'));
                  sessionStorage.setItem("USERID", Authentication.CTCGetConfig("UserID"));
                  sessionStorage.setItem("STBID", Authentication.CTCGetConfig("STBID"));
-                 
+
                  this.EPGLog({
                      OperationCode: 'getConfig',
                      Detail: JSON.stringify({
@@ -208,7 +208,7 @@
                          tmpBody.USERID = window.Authentication ? Authentication.CTCGetConfig("UserID") : '';
                      }
                      break;
-                 default:          
+                 default:
                      break;
              }
              const tmpObj = {
@@ -436,14 +436,45 @@
                 }*/
          },
 
-         openTestLink() {
-             const welPath = sessionStorage.getItem('WelcomePageGroupPath');
+         runTestWelcome() {
+             const toLinkPath = sessionStorage.getItem('toLinkPath') === '1';
 
-             // 警告：这个重设操作，请只在本地版本使用，提交前先注释
-             // 作用：现网到测试EPG跳转
-             /* sessionStorage.setItem('WelcomePageGroupPath', 'test');*/
-             // 链接跳转
-             location.replace(welPath);
+             // 之前跳转过链接
+             if (toLinkPath) {
+                 sessionStorage.setItem('WelcomePageGroupPath', 'test');
+             }
+
+             const welPath = sessionStorage.getItem('WelcomePageGroupPath');
+             const isWelLink = /^https?:\/\//.test(welPath);
+             if (!toLinkPath && isWelLink) {
+                 sessionStorage.setItem(
+                     'isFromTestLink',
+                     sessionStorage.getItem('WelcomePageGroupPath')
+                 );
+                 sessionStorage.setItem('toLinkPath', '1');
+                 // 链接跳转
+                 location.replace(welPath);
+             } else if (sessionStorage.getItem("WelcomePageGroupPath") == "test") {
+                 // 测试路径
+                 location.replace("./epggroup_welcomes/welcome_test/welcome.html");
+             } else {
+                 // 正式路径
+                 location.replace("./epggroup_welcomes/welcome_default/welcome.html");
+             }
+         },
+
+         runNormalWelcome() {
+             const welPath = sessionStorage.getItem('WelcomePageGroupPath');
+             if (/^https?:\/\//.test(welPath)) {
+                 // 链接跳转
+                 location.replace(welPath);
+             } else if (sessionStorage.getItem("WelcomePageGroupPath") == "test") {
+                 // 测试路径
+                 location.replace("./epggroup_welcomes/welcome_test/welcome.html");
+             } else {
+                 // 正式路径
+                 location.replace("./epggroup_welcomes/welcome_default/welcome.html");
+             }
          },
 
          goToWelcome() {
@@ -454,15 +485,13 @@
                      location: window.location.href,
                  })
              });
-             if (/^https?:\/\//.test(sessionStorage.getItem("WelcomePageGroupPath"))) {
-                 this.openTestLink();
-             } else if (sessionStorage.getItem("WelcomePageGroupPath") == "test") {
-                 // 测试路径
-                 location.replace("./epggroup_welcomes/welcome_test/welcome.html");
-             } else {
-                 // 正式路径
-                 location.replace("./epggroup_welcomes/welcome_default/welcome.html");
-             }
+
+             /*
+                警告：测试时使用 runTestWelcome，正式环境使用 runNormalWelcome，
+                提交时请注释 this.runTestWelcome();, 放开 this.runNormalWelcome();
+              */
+             /* this.runTestWelcome();*/
+             this.runNormalWelcome();
          },
 
          gotoMainLayout() {
@@ -508,7 +537,7 @@
 
          configShanxiParams() {
              // var domain = Authentication.CTCGetConfig('EPGDomain');
-             /* 
+             /*
                 这里可以直接使用 location.href，因为ready里面做了判断，只有第一次开机
                 才会到这个配置函数，即不会重复配置
               */
@@ -595,7 +624,7 @@
              var localIp = sessionStorage.getItem('EPGIP');
 
              relativePath = relativePath.replace(/\/service/, '');
-             
+
              // Authentication.CTCSetConfig('EPGDomain', 'http://' + localIp + relativePath + '/portal.html');
              // UT 盒子会自己下发，创维的不行，所以兼容没有returnUrl情况
              if (!sessionStorage.getItem("indexUrl") && !!this.GetQueryString("indexUrl")) {
@@ -605,7 +634,7 @@
 
                  // ynIndexUrl = 'http://' + localIp + '/iptv/ppthdplay/apps/index/index_epg.html';
                  sessionStorage.setItem(
-                     "indexUrl", 
+                     "indexUrl",
                      "http://182.245.29.132:78/iptv/ppthdplay/hotelapps/index/index_epg.html"
                  );
              }
@@ -731,7 +760,7 @@
                  }),
              })
          });
-         
+
      },
  }
 </script>
