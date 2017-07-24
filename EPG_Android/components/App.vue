@@ -165,21 +165,21 @@
  }
 
 
- .tip {
-     position: absolute;
-     top: 0px;
-     height: 150px;
-     line-height: 150px;
- }
+ /* .tip {
+    position: absolute;
+    top: 0px;
+    height: 150px;
+    line-height: 150px;
+    }
 
- .tip-left {
-     left: 255px;
- }
+    .tip-left {
+    left: 255px;
+    }
 
- .tip-right {
-     right: 50px;
- }
-
+    .tip-right {
+    right: 50px;
+    }
+  */
  #debug {
      position: fixed;
      left: 0;
