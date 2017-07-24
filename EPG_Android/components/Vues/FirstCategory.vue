@@ -87,8 +87,6 @@
                 <div class="advertisement">
                     <img class="advertisement" v-bind:src='adPic'>
                 </div>
-                <!-- <div class="tip tip-left" v-show="tipType===1"><img src="../../assets/images/left.png" height="32" width="32" alt=""></div>
-                     <div class="tip tip-right" v-show="tipType===2"><img src="../../assets/images/right.png" height="32" width="32" alt=""></div> -->
                 <ul id="firstTabItem">
                     <li v-for="(index, item) in currCategoryList">
                         <a href="javascript:;" id='_{{item.ObjectID}}' @click="excuteAction(item)" @focus="itemFocus(index)" @blurs="itemBlurs(index)" @keydown.left.right="turnPage(index, $event)" @keypress.left.right="turnPage(index, $event)">
