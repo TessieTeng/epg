@@ -23,9 +23,9 @@
      bottom: 0;
      width: 1280px;
      height: 166.67px;
-     background: url(../assets/images/bg_portal_bottom.png);
+     background: url(../assets/images/bg_portal_bottom.png) no-repeat;
      line-height: 166.67px;
-     /*background-color: black;*/
+     background-color: #000;
  }
 
  .advertisement {
@@ -164,22 +164,6 @@
      border: 1px solid rgba(0, 0, 0, 0);
  }
 
-
- /* .tip {
-    position: absolute;
-    top: 0px;
-    height: 150px;
-    line-height: 150px;
-    }
-
-    .tip-left {
-    left: 255px;
-    }
-
-    .tip-right {
-    right: 50px;
-    }
-  */
  #debug {
      position: fixed;
      left: 0;
@@ -484,8 +468,13 @@
                  history.back();
                  // 云南要重新发起播放请求
                  this.debug(location.href);
-                 if (province === '云南' && !/\/scaleimg/.test(location.href)) {
-                     this.$dispatch('replay');
+                 if (province === '云南'
+                     && !/\/scaleimg/.test(location.href)
+                     && !/\/secondcategory/.test(location.href)
+                 ) {
+                     setTimeout(() => {
+                         this.$dispatch('replay');
+                     }, 100);
                  }
              } else if (this.isVersionInfoShow) {
                  this.hideVersionInfo();
