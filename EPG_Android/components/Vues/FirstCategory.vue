@@ -71,9 +71,9 @@
 <template>
     <div>
         <div class="rootDiv">
-            <div class="kexin" :style="{'height':Height + 'px','left':Left + 'px', 'top':Top + 'px','width':Width + 'px','background-image': 'url(' + BgImageUrl +  ')'}">
+            <div class="kexin"  v-if="showKeXin" :style="{'height':Height + 'px','left':Left + 'px', 'top':Top + 'px','width':Width + 'px','background-image': 'url(' + BgImageUrl +  ')'}">
                 <div class="info" :style="{'height':RoomMsg.TextHeight + 'px','left':RoomMsg.TextLeft + 'px', 'top':RoomMsg.TextTop + 'px','width':RoomMsg.TextWidth + 'px',}"> {{{RoomMsg.MsgText}}}</div>
-                <a href="javascript:;" class="hint" @click="hideNotice" v-if="showKeXin">{{RoomMsg.OkButtonText.chiword}}
+                <a href="javascript:;" class="hint" @click="hideNotice">{{RoomMsg.OkButtonText.chiword}}
                 </a>
             </div>
             <div class="scrolls" v-if='!!TvmsMsg.MsgText'>
@@ -212,6 +212,7 @@ export default {
                     setTimeout(() => {
                         if (this.isFirstEnterKeXin) {
                             this.showKeXin = true;
+                            this.updateIsFirstEnterKeXin(false) ;
                         }
                     }, 3000);
 
@@ -684,7 +685,6 @@ export default {
                                     OperationCode: 'GetRoomMsgReq: ',
                                     Detail: 'success',
                                 });
-                                console.log(_msgBody);
                                 if (!!_msgBody.MsgList && !!_msgBody.MsgList.RoomMsg && _msgBody.MsgList.RoomMsg.length > 0) {
                                     _this.Height = _msgBody.Height;
                                     _this.Left = _msgBody.Left;
