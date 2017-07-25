@@ -215,8 +215,8 @@
 <template>
     <div class="rootView" id="welcomeLayout">
         <div class="rootView swiperLevel">
-            <div style="width: 19.2rem; height: 10.8rem; position: relative;">
-                <img style="transition: all 1s; position: absolute;" :style="{ opacity: $index === picIndex ? 1 : 0 }" v-for="item in pictureList" :src="item.ImageUrl" v-show='hasVideo'>
+            <div style=" position: relative;">
+                <img style="transition: all 1s; position: absolute; width:1280px; height:720px;" :style="{ opacity: $index === picIndex ? 1 : 0 }" v-for="item in pictureList" :src="item.ImageUrl" v-show='hasVideo'>
             </div>
         </div>
         <div class="rootView contentLevel">
