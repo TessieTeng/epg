@@ -527,7 +527,7 @@
                              this.debug('play error, retry');
                              // this.updateToken();
                              const province = sessionStorage.getItem('province');
-                             if (province === '云南' || province === '陕西') {
+                             if (province === '云南' || province === '陕西'||province === '湖北') {
                                  this.$dispatch('replay');
                              } else {
                                  this.mp.playFromStart();
