@@ -21,6 +21,7 @@
      z-index: 2;
      height: 140px;
      bottom: 0;
+     background: url(../../assets/images/bg_portal_bottom.png) no-repeat;
      background-color: black;
  }
 
