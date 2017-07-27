@@ -118,6 +118,7 @@
              this.updateSecondClassTab(item.ObjectID);
 
              this.debug('item:' + JSON.stringify(item));
+             this.isDebug = false;
              switch (item.RelatedAction) {
                  case "weather_list":
                      this.$router.go("/weatherforecast");

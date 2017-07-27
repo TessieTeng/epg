@@ -112,18 +112,9 @@
 <!--******************图片展示详情页*******************-->
 <template>
 
-    <div class="rootView swiperLevel"
-         @keydown.37.39.8="eventHandler('key', $event)"
-         @keypress.37.39.8="eventHandler('key', $event)"
-    >
+    <div class="rootView swiperLevel">
         <div class="content">
-            <img
-                style="transition: all 1s; position: absolute;"
-                :style="{ opacity: $index === picIndex ? 1 : 0 }"
-                :src="item.PictureUrl"
-                v-for="item in pictureList"
-                v-show='isShowSwiper'
-            >
+            <img style="transition: all 1s; position: absolute;" :src="item.PictureUrl" v-for="item in pictureList" :style="{ opacity: $index === picIndex ? 1 : 0 }" v-show='isShowSwiper'>
 
             <div class="pag">{{picIndex + 1}} / {{pictureList.length}}</div>
         </div>
@@ -162,6 +153,20 @@
              this.isShowSwiper = false;
          },
 
+         edetaildirectionkey(keycode) {
+             if (!keycode) {
+                 this.debug('key null');
+                 return false;
+             }
+             const key = parseInt(keycode, 10);
+             if (key === 37 || key === 39) {
+                 this.restart();
+             }
+             switch (key) {
+                 case 37: this.left(); break;
+                 case 39: this.right(); break;
+             }
+         },
      },
 
      props: [
@@ -199,30 +204,17 @@
              debug.innerHTML += '[' + str + ']';
          },
 
-         eventHandler(msg, e) {
-             var e = e ? e : window.event;
-             var keycode = e.which ? e.which : e.keyCode;
-
-             this.debug(msg + ':' + keycode);
-             if (keycode === 37 || keycode === 39) {
-                 this.restart();
+         left() {
+             this.debug('37');
+             this.picIndex = --this.picIndex % this.pictureList.length;
+             if (this.picIndex < 0) {
+                 this.picIndex += this.pictureList.length;
              }
+         },
 
-             switch (keycode) {
-                 case 37:
-                     this.picIndex = --this.picIndex % this.pictureList.length;
-                     if (this.picIndex < 0) {
-                         this.picIndex += this.pictureList.length;
-                     }
-                     break;
-                 case 39:
-                     this.picIndex = ++this.picIndex % this.pictureList.length;
-                     break;
-                 case 8:
-                     history.back();
-                     break;
-                 default: return true; break;
-             }
+         right() {
+             this.debug('39');
+             this.picIndex = ++this.picIndex % this.pictureList.length;
          },
 
          restart() {
@@ -230,7 +222,7 @@
              this.stop();
              this.restartTimer = setTimeout(() => {
                  this.start();
-             }, 6000);
+             }, 4000);
          },
 
          start() {

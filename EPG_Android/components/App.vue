@@ -597,12 +597,18 @@
              );
          },
 
+         /* trig event to change child component */ 
+         directionKeyHandler(keycode) {
+             const isDetail = window.location.href.indexOf('/detail') > -1;
+             if (isDetail) {
+                 this.$broadcast('edetaildirectionkey', keycode);
+             }
+         },
+
          // listenBackKey() {
          eventHandler(keyEvent) {
              var _this = this;
              var province = sessionStorage.getItem('province');
-             // addEventListener('keypress',
-             // document.onkeydown = (keyEvent) => {
              keyEvent = keyEvent ? keyEvent : window.event;
              const keyvalue = keyEvent.which ? keyEvent.which : keyEvent.keyCode;
 
@@ -634,6 +640,8 @@
                  case 259: _this.volumeUp();     return false; break;
                  case 260: _this.volumeDown();   return false; break;
                  case 261: _this.setMute();      return false; break;
+                 case 37: _this.directionKeyHandler(keyvalue); return false; break;
+                 case 39: _this.directionKeyHandler(keyvalue); return false; break;
                  default: return true; break;
              }
              // };
@@ -858,6 +866,9 @@
      },
      events: {
 
+         eback() {
+             this.back();
+         },
          replay() {
              this.debug('hubei play:' + this.mp);
              if (sessionStorage.getItem('province') === '云南') {
@@ -949,7 +960,7 @@
          var keyHandler = function(event) {
              _this.eventHandler(event);
          };
-         document.onkeypress = keyHandler;
+         /* document.onkeypress = keyHandler;*/
          document.onkeydown = keyHandler;
 
          this.updateFirstClassTab(0);
