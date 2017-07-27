@@ -289,7 +289,7 @@
 
              var playUrl = sessionStorage.getItem("playUrl");
 
-             this.debug('url:' + playUrl);
+             /* this.debug('url:' + playUrl);*/
              this.mediaStr = '[{mediaUrl:"' + playUrl + '",';
              this.mediaStr += 'mediaCode: "jsoncode1",';
              this.mediaStr += 'mediaType:2,';
@@ -464,10 +464,12 @@
          back() {
              const province = sessionStorage.getItem('province');
 
-             if (!/\/firstcategory/.test(location.href)) {
+             this.debug(location.href);
+             if (!/\/firstcategory/.test(location.href)
+                 && location.href.indexOf('firstcategory') === -1
+             ) {
                  history.back();
                  // 云南要重新发起播放请求
-                 this.debug(location.href);
                  if (province === '云南'
                      && !/\/scaleimg/.test(location.href)
                      && !/\/secondcategory/.test(location.href)
@@ -697,7 +699,7 @@
                  lastKeyTime = "";
              };
 
-             this.debug('target:' + JSON.stringify(targetKeyArr));
+             /* this.debug('target:' + JSON.stringify(targetKeyArr));*/
              // 缓存在允许时间内（seconds）按下的按键
              var buffer = function(__code) {
 
@@ -708,8 +710,8 @@
                      // 缓存当前按键
                      currKeyArr.push(__code);
 
-                     _this.debug('curr:' + JSON.stringify(currKeyArr));
-
+                     /* _this.debug('curr:' + JSON.stringify(currKeyArr));
+                      */
                      // 判断按下的按键键值是否和组件键值匹配
                      for (var j = 0; j < currKeyArr.length; j++) {
                          if (currKeyArr[j] !== targetKeyArr[j]) {

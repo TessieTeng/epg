@@ -95,23 +95,41 @@
     margin: -5.34px 0;
     }*/
 
+ #detail-debug {
+     position: fixed;
+     right: 0;
+     top: 0;
+     width: 40%;
+     height: 100%;
+     background-color: black;
+     color: white;
+     z-index: 10000000;
+     word-wrap: break-word;
+     opacity: 0.3;
+     overflow: scroll;
+ }
 </style>
 <!--******************图片展示详情页*******************-->
 <template>
 
-    <div class="rootView swiperLevel">
+    <div class="rootView swiperLevel"
+         @keydown.37.39.8="eventHandler('key', $event)"
+         @keypress.37.39.8="eventHandler('key', $event)"
+    >
         <div class="content">
-            <img style="transition: all 1s; position: absolute;" :style="{ opacity: $index === picIndex ? 1 : 0 }" v-for="item in pictureList" :src="item.PictureUrl" v-show='isShowSwiper'>
+            <img
+                style="transition: all 1s; position: absolute;"
+                :style="{ opacity: $index === picIndex ? 1 : 0 }"
+                :src="item.PictureUrl"
+                v-for="item in pictureList"
+                v-show='isShowSwiper'
+            >
 
             <div class="pag">{{picIndex + 1}} / {{pictureList.length}}</div>
         </div>
+
+        <div id="detail-debug" v-if="isDebug"></div>
     </div>
-    <!--     <div class="info" id="detailLayout">
-         <div class="main">
-         <div class="conent">
-         </div>
-         </div>
-         </div> -->
 </template>
 <script>
  // import swiper from 'Tools/Swiper.vue';
@@ -132,6 +150,7 @@
              picIndex: 0,
              timer: null,
              restartTimer: null,
+             isDebug: false,
          };
      },
 
@@ -161,10 +180,30 @@
      },
 
      methods: {
-         eventHandler(e) {
+         debug(obj) {
+
+             // config.js 中配置
+             //  && isDebug !== 1
+             if (!this.isDebug) { return; }
+
+             const debug = document.getElementById('detail-debug');
+
+             let str = '';
+
+             if (typeof(obj) === 'object') {
+                 str = JSON.stringify(obj);
+             } else {
+                 str = '' + obj;
+             }
+
+             debug.innerHTML += '[' + str + ']';
+         },
+
+         eventHandler(msg, e) {
              var e = e ? e : window.event;
              var keycode = e.which ? e.which : e.keyCode;
 
+             this.debug(msg + ':' + keycode);
              if (keycode === 37 || keycode === 39) {
                  this.restart();
              }
@@ -211,7 +250,7 @@
          console.log('detail pic list: ' + this.pictureList);
          console.log("详情页面..." + this.isVideoPlay);
          this.start();
-         document.onkeydown = this.eventHandler;
+         this.isDebug = sessionStorage.getItem('EPG_DEBUG_SWITCHER') === 'open';
          // if(this.isVideoPlay){
          this.$dispatch("stopVideo");
          this.updateIsVideoPlay(false);
