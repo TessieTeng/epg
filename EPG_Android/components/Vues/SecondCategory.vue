@@ -296,7 +296,7 @@
          this.debug('id:' + this.$route.params.id);
          this.backObjId = this.$route.params.id;
          // 判断是否有视频
-         if (!!bgMediaUrl && bgMediaUrl!=='0') {
+         if (!!bgMediaUrl && bgMediaUrl!=='0' && bgMediaUrl.indexOf("rtsp")==-1) {
              this.hasVideo = true;
              if (!this.isVideoPlay) {
                  this.$dispatch("replay");

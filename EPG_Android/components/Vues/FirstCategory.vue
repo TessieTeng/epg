@@ -784,7 +784,7 @@ export default {
             this.$nextTick(() => {
                 const bgMediaUrl = sessionStorage.getItem('bg_media_url');
                 this.debug('' + 'bg_media_url: ' + bgMediaUrl + ', firstPlay: ' + this.firstVideoPlay + ', province: ' + sessionStorage.getItem('province'));
-                if (!!bgMediaUrl && bgMediaUrl !== '0') {
+                if (!!bgMediaUrl && bgMediaUrl !== '0'&& bgMediaUrl.indexOf("rtsp")==-1) {
                     this.hasVideo = true;
                     if (this.firstVideoPlay) {
                         var zhongxingMediaUrlOrigin = sessionStorage.getItem('zhongxingMediaUrlOrigin');
