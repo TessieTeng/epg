@@ -20,6 +20,7 @@
 <template>
     <div id="app">
         <template-one></template-one>
+        <volume :mp="mp"></volume>
         <div id="debug" v-if="isDebug"></div>
         <iframe name="if_smallscreen" @load="getMediastr" :src="mediaurl" v-if='showMediaIframe'></iframe>
     </div>
@@ -28,6 +29,7 @@
  import store from '../vuex/store.js';
  import TemplateOne from 'Vues/TemplateOne';
  import Http from '../assets/lib/Http.js';
+ import Volume from 'Vues/Volume';
  export default {
      data() {
          return {
@@ -129,6 +131,9 @@
              this.mp.setVideoDisplayArea(left, top, width, height);
              // this.mp.setNativeUIFlag(0); //设置播放器本地UI显示功能 0:允许 1：不允许
              // this.mp.setAudioTrackUIFlag(1);
+             if (this.mp.setNativeUIFlag) {
+                 this.mp.setNativeUIFlag(0);
+             }
              // this.mp.setMuteUIFlag(1);
              // this.mp.setAudioVolumeUIFlag(1);
              this.mp.refreshVideoDisplay();
@@ -149,7 +154,6 @@
          // listenVideoKey() {
          eventHandler(keyEvent) {
              var _this = this;
-             // document.addEventListener('keydown', (keyEvent) => {
              keyEvent = keyEvent ? keyEvent : window.event;
              const keyvalue = keyEvent.which ? keyEvent.which : keyEvent.keyCode;
              let virtualKey = "";
@@ -167,70 +171,80 @@
              }
 
              this.debug('key:' + keyvalue);
-             if (keyvalue == virtualKey) {
-                 try {
-                     // 每次捕获事件只能获取一次Utility.getEvent()
-                     let mediaEvent = Utility.getEvent();
-                     if (!mediaEvent) {
-                         return;
-                     }
-                     try {
-                         mediaEvent = JSON.parse(mediaEvent);
-                     } catch (e) {
-                         mediaEvent = mediaEvent.substring(1, mediaEvent.length - 1);
-                         const mediaEventParams = mediaEvent.split(",");
-                         mediaEvent = {};
-                         let tempParams = null;
-                         for (let i = 0; i < mediaEventParams.length; i++) {
-                             tempParams = mediaEventParams[i].split(":");
-                             if (tempParams.length == 2) {
-                                 mediaEvent[tempParams[0]] = tempParams[1];
-                             }
-                         }
-                     }
-                     // 有些key带有双引号
-                     for (const key in mediaEvent) {
-                         if (mediaEvent.hasOwnProperty(key)) {
-                             mediaEvent[key.replace(/\"/g, "")] = mediaEvent[key];
-                         }
-                     }
-                     const mediaEventType = mediaEvent.type.replace(/\"/g, "");
-                     this.debug('type:' + mediaEventType)
-                     switch (mediaEventType) {
-                         case "EVENT_MEDIA_BEGINING":
-                             {
-                                 console.log("播放开始！");
-                                 return "EVENT_MEDIA_BEGINING";
-                                 break;
-                             }
-                         case "EVENT_MEDIA_ERROR":
-                             {
-                                 console.log("播放失败，请检查网络！\t错误代码：" + mediaEvent.error_code);
-                                 // this.updateToken();
 
-                                 // 播放失败了，显示欢迎页
-                                 if (sessionStorage.getItem('province') === '云南') {
-                                     _this.$dispatch('replay');
-                                 }
-                                 return "EVENT_MEDIA_ERROR";
-                                 break;
-                             }
-                         case "EVENT_MEDIA_END":
-                             {
-                                 console.log("播放结束！");
-                                 // 播放结束显示欢迎页
-                                 if (sessionStorage.getItem('province') === '云南') {
-                                     _this.$dispatch('replay');
-                                 } else {
-                                     this.mp.playFromStart();
-                                 }
-                                 return "EVENT_MEDIA_END";
-                                 break;
-                             }
-                     }
-                 } catch (e) {
-                     console.log(e);
+             switch (keyvalue) {
+                 case 259: this.$broadcast('evolume', 5); return false; break;
+                 case 260: this.$broadcast('evolume', -5); return false; break;
+                 case 0x0300:
+                 case 768: this.virtualKey(); return false; break;
+                 default: return true;
+                     break;
+             }
+         },
+
+         virtualKey() {
+             try {
+                 // 每次捕获事件只能获取一次Utility.getEvent()
+                 let mediaEvent = Utility.getEvent();
+                 if (!mediaEvent) {
+                     return;
                  }
+                 try {
+                     mediaEvent = JSON.parse(mediaEvent);
+                 } catch (e) {
+                     mediaEvent = mediaEvent.substring(1, mediaEvent.length - 1);
+                     const mediaEventParams = mediaEvent.split(",");
+                     mediaEvent = {};
+                     let tempParams = null;
+                     for (let i = 0; i < mediaEventParams.length; i++) {
+                         tempParams = mediaEventParams[i].split(":");
+                         if (tempParams.length == 2) {
+                             mediaEvent[tempParams[0]] = tempParams[1];
+                         }
+                     }
+                 }
+                 // 有些key带有双引号
+                 for (const key in mediaEvent) {
+                     if (mediaEvent.hasOwnProperty(key)) {
+                         mediaEvent[key.replace(/\"/g, "")] = mediaEvent[key];
+                     }
+                 }
+                 const mediaEventType = mediaEvent.type.replace(/\"/g, "");
+                 this.debug('type:' + mediaEventType)
+                 switch (mediaEventType) {
+                     case "EVENT_MEDIA_BEGINING":
+                         {
+                             console.log("播放开始！");
+                             return "EVENT_MEDIA_BEGINING";
+                             break;
+                         }
+                     case "EVENT_MEDIA_ERROR":
+                         {
+                             console.log("播放失败，请检查网络！\t错误代码：" + mediaEvent.error_code);
+                             // this.updateToken();
+
+                             // 播放失败了，显示欢迎页
+                             if (sessionStorage.getItem('province') === '云南') {
+                                 this.$dispatch('replay');
+                             }
+                             return "EVENT_MEDIA_ERROR";
+                             break;
+                         }
+                     case "EVENT_MEDIA_END":
+                         {
+                             console.log("播放结束！");
+                             // 播放结束显示欢迎页
+                             if (sessionStorage.getItem('province') === '云南') {
+                                 this.$dispatch('replay');
+                             } else {
+                                 this.mp.playFromStart();
+                             }
+                             return "EVENT_MEDIA_END";
+                             break;
+                         }
+                 }
+             } catch (e) {
+                 console.log(e);
              }
          },
 
@@ -314,6 +328,7 @@
      },
      components: {
          TemplateOne,
+         Volume,
      },
 
      beforeDestroy() {
@@ -321,7 +336,6 @@
      },
 
      events: {
-
          welcomeDebug(str) {
              this.debug(str);
          },
@@ -365,6 +379,7 @@
 
          this.isDebug = sessionStorage.getItem('EPG_DEBUG_SWITCHER') === 'open';
          this.debug('wel ready');
+         this.debug('location:' + window.location.href);
 
          var _this = this;
          //监控视频动作触发的虚拟按键
