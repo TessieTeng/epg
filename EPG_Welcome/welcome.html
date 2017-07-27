@@ -32,5 +32,10 @@
     <div id="app"></div>
      <!--<script type="text/javascript" src="../../assets/debug/alloy_lever.js"></script> -->
 </body>
-
+<script>
+ /* 解决云南中心盒子白色背景问题 */
+ if (sessionStorage.getItem('province') === '云南') {
+     document.body.style.backgroundColor = 'transparent';
+ }
+</script>
 </html>
