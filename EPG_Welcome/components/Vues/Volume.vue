@@ -131,13 +131,13 @@
              } else if (vbarW - w < stepW) {
                  w = vbarW
              }
-             this.debug('vol:' + newV);
              this.volBarWidth = w;
          },
      },
 
      events: {
          evolume(vol) {
+             console.log('vol:' + vol + ', type:' + typeof(vol));
              if (vol < 0) { this.volumeDown(); }
              else if (vol === 0) { this.setMute(1); }
              else { this.volumeUp(); }
