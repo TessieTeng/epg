@@ -960,7 +960,8 @@
          var keyHandler = function(event) {
              _this.eventHandler(event);
          };
-         /* document.onkeypress = keyHandler;*/
+         document.onkeypress = keyHandler;
+         // changes 2
          document.onkeydown = keyHandler;
 
          this.updateFirstClassTab(0);
