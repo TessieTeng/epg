@@ -862,8 +862,6 @@
                  var len = channels.length;
                  Authentication.CUSetConfig('ChannelCount', len);
 
-                 console.log('channel count: ' + len);
-
                  var obj = null,
                      channel = null,
                      listChannels = [];
@@ -889,7 +887,7 @@
                  sessionStorage.setItem('FirstChannel', JSON.stringify(listChannels[0]));
                  sessionStorage.setItem('AllChannels', JSON.stringify(listChannels));
 
-                 console.log('all channels: ' + JSON.stringify(listChannels));
+                 //console.log('all channels: ' + JSON.stringify(listChannels));
              }
 
              Http({
@@ -902,7 +900,7 @@
                          const _msgBody = _data.Message.MessageBody;
                          if (_msgBody.ResultCode == 200) {
                              let channel = _msgBody.ChannelList.Channel;
-                             console.log('post channel list: ' + channel.length);
+                            // console.log('post channel list: ' + channel.length);
                              if (channel && channel.length > 0) {
                                  setChannels(channel);
                              } else {
@@ -953,6 +951,13 @@
                          }
                          this.$dispatch('setMediaUrl', this.mediaurl);
                          break;
+                    case '河南':
+                         console.log('河南欢迎页配置地址',this.contentID);
+                         sessionStorage.setItem('playUrl', this.contentID);
+                         console.log("河南欢迎页播放地址",sessionStorage.getItem('playUrl'));
+                         this.$dispatch('playVideo');
+                         console.log('after dispatch....');
+                        break;
                      default:
                          break;
                  }

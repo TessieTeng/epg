@@ -225,7 +225,9 @@
 
                              // 播放失败了，显示欢迎页
                              if (sessionStorage.getItem('province') === '云南') {
-                                 this.$dispatch('replay');
+                                this.$dispatch('replay');
+                             }else if (sessionStorage.getItem('province') === '河南') {
+                                this.$dispatch('playVideo');
                              }
                              return "EVENT_MEDIA_ERROR";
                              break;
@@ -235,9 +237,11 @@
                              console.log("播放结束！");
                              // 播放结束显示欢迎页
                              if (sessionStorage.getItem('province') === '云南') {
-                                 this.$dispatch('replay');
-                             } else {
-                                 this.mp.playFromStart();
+                                this.$dispatch('replay');
+                             }else if (sessionStorage.getItem('province') === '河南') {
+                                this.$dispatch('playVideo');
+                             }else {
+                                this.mp.playFromStart();
                              }
                              return "EVENT_MEDIA_END";
                              break;
