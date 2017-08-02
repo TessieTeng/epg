@@ -529,7 +529,7 @@
                              this.debug('play error, retry');
                              // this.updateToken();
                              const province = sessionStorage.getItem('province');
-                             if (province === '云南' || province === '陕西'||province === '湖北') {
+                             if (province === '云南' || province === '陕西'||province === '湖北'|| province === '河南') {
                                  this.$dispatch('replay');
                              } else {
                                  this.mp.playFromStart();
@@ -543,7 +543,7 @@
                              this.debug('play end: ' + sessionStorage.getItem('province'));
                              const province = sessionStorage.getItem('province');
                              // 云南特殊处理，通过广播通知子组件去发起播放请求
-                             if (province === '云南' || province === '陕西') {
+                             if (province === '云南' || province === '陕西'|| province === '河南') {
                                  this.$dispatch("replay");
                              } else {
                                  this.mp.playFromStart();
@@ -620,9 +620,8 @@
                      virtualKey = 0x0300;
                      break;
                  case '湖北':
-                     virtualKey = 768;
-                     break;
                  case '陕西':
+                 case '河南':
                      virtualKey = 768;
                      break;
                  default:
