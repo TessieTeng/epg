@@ -6,31 +6,35 @@
 
 (function(window) {
     // 当前省份
-    var province = 'yunnan';
+    var province = 'shenzhen';
 
     // 所有省份
     var ConfigObj = {
         'yunnan': {
             province: '云南',
-            relativePath: '/iptv/ppthdplay/SYHOTEL/service',
+            relativePath: '/iptv/ppthdplay/SYHOTEL/service'
         },
         'hubei': {
             province: '湖北',
-            relativePath: '',
+            relativePath: ''
         },
         'shanxi': {
             province: '陕西',
             relativePath: '',
             huaweiPath: '/EPG/jsp/ylgqftkdb/en/Category.jsp',
-            ztePath: '/iptvepg/frame207/portal.jsp',
+            ztePath: '/iptvepg/frame207/portal.jsp'
 
         },
         'henan': {
             province: '河南',
-            relativePath: '',
+            relativePath: ''
         },
+        'shenzhen': {
+            province: '深圳',
+            relativePath: ''
+        }
 
     };
 
     window.Config = ConfigObj[province];
-})(window)
+})(window);
