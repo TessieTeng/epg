@@ -540,12 +540,18 @@ export default {
                    这里可以直接使用 location.href，因为ready里面做了判断，只有第一次开机
                    才会到这个配置函数，即不会重复配置
                  */
-                const domain = window.location.href;
+             let domain = window.location.href;
+             // 不带参数的时候，兼容IPTV返回是不带参数的
+             if (domain.indexOf('?') === -1) {
+                 domain = sessionStorage.getItem('PortalURL') || domain;
+             }
                 console.log('domain: ' + domain);
                 let paramObj = null;
                 let params = domain.split('?')[1].split('&');
                 let param = null;
 
+             // 保存开机认证后的portal地址
+             sessionStorage.setItem('PortalURL', domain);
                 console.log('params: ' + JSON.stringify(params));
                 if (!params || params.length <= 0) {
                     this.goToIptv('获取不了url参数');

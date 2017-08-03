@@ -326,7 +326,9 @@
                  return;
              }
              this.mp.stop();
-             this.mp.releaseMediaPlayer(this.mp.getNativePlayerInstanceID());
+             if (sessionStorage.getItem('province') !== '陕西') {
+                 this.mp.releaseMediaPlayer(this.mp.getNativePlayerInstanceID());
+             }
              this.mp = null;
          },
 
