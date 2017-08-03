@@ -524,6 +524,7 @@
              }
 
              let domain = window.location.href.split('/portal.html')[0];
+
              // 只有开机或者从IPTV返回时才是用绝对地址
              if (sessionStorage.getItem('province') === '陕西'
                  && hasFrom
@@ -532,6 +533,15 @@
              } else {
                  location.replace(dot + path + file);
              }
+
+             if (sessionStorage.getItem('province') === '河南'
+                 && hasFrom
+             ) {
+                 window.location.href = domain + path + file;
+             } else {
+                 location.replace(dot + path + file);
+             }
+
          },
 
          configShanxiParams() {
@@ -691,9 +701,16 @@
                  })
              });
 
-             //处理河南华为平台机顶盒按首页键和选项键界面卡死问题
+            
              if (!!window.Authentication) {
+                 //处理河南华为平台机顶盒按首页键和选项键界面卡死问题
                  Authentication.CUSetConfig('EPGDomain', 'http://10.253.255.4/iptv/epggroup_mains/main_default/main.html');
+                 //处理中兴平台 直播(F1)、回看(F2)、点播(F3)、资讯(F4) 点击报错(10071)
+                 Authentication.CUSetConfig('ServiceEntry','URL="",HotKey="275",Desc="null"');
+                 Authentication.CUSetConfig('ServiceEntry','URL="",HotKey="276",Desc="null"');
+                 Authentication.CUSetConfig('ServiceEntry','URL="",HotKey="277",Desc="null"');
+                 Authentication.CUSetConfig('ServiceEntry','URL="",HotKey="278",Desc="null"');
+    
              }
 
              this.doLogin();
