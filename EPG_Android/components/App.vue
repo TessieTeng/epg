@@ -961,10 +961,14 @@
          var keyHandler = function(event) {
              _this.eventHandler(event);
          };
-         document.onkeypress = keyHandler;
-         // changes 2
-         document.onkeydown = keyHandler;
 
+        if (sessionStorage.getItem('province') == "河南") {
+            document.onkeydown = keyHandler;
+        }else{
+            document.onkeypress = keyHandler;
+            // changes 2
+            document.onkeydown = keyHandler;
+        }
          this.updateFirstClassTab(0);
          this.updateSecondClassTab(0);
      },
