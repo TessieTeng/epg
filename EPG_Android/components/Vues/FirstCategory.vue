@@ -10,7 +10,7 @@
     width: 100%;
     z-index: 50;
     position: fixed;
-    background-image: url('../../assets/images/bg_path1.png') no-repeat;
+    background: url(../../assets/images/bg_path1.png) no-repeat;
     background-size: cover;
     height: 50px;
     color: white;

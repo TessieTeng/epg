@@ -203,8 +203,10 @@
                  case '河南':
                      if (sessionStorage.getItem('from') === 'huawei') {
                          tmpBody.USERID = sessionStorage.getItem('userid') || Authentication.CUGetConfig("UserID");
+                         tmpBody.Platform="HUAWEI";
                      } else {
                          tmpBody.USERID = window.Authentication ? Authentication.CTCGetConfig("UserID") : '';
+                         tmpBody.Platform="ZTE"; 
                      }
                      break;
                  default:
