@@ -54,19 +54,19 @@
     padding: 4px 2px;
 }
 
-#fc-debug {
-    position: fixed;
-    right: 0;
-    top: 0;
-    width: 40%;
-    height: 100%;
-    background-color: black;
-    color: white;
-    z-index: 10000000;
-    word-wrap: break-word;
-    opacity: 0.3;
-    overflow: scroll;
-}
+ #fc-debug {
+     position: fixed;
+     right: 0;
+     top: 0;
+     width: 40%;
+     height: 100%;
+     background-color: black;
+     color: white;
+     z-index: 10000000;
+     word-wrap: break-word;
+     opacity: 0.6;
+     overflow: scroll;
+ }
 </style>
 <template>
     <div>
@@ -731,6 +731,72 @@
                  }
              });
          },
+
+         
+         requestUrlByIfr(url) {
+
+             const ifr = document.createElement('iframe');
+             ifr.id = 'requestUrlIfr';
+             ifr.style.width = '1px';
+             ifr.style.height = '1px';
+             ifr.src = url;
+
+             document.body.appendChild(ifr);
+         },
+         ss(key, vaue) {
+             if (!key || key === '') {
+                 return false;
+             }
+
+             if (value) {
+                 sessionStorage.setItem('' + key, value);
+                 return true;
+             }
+
+             return sessionStorage.getItem('' + key);
+         },
+
+         getRtspURL(rtsp) {
+             if (!rtsp || rtsp === '') {
+                 return false;
+             }
+
+             sessionStorage.setItem('playUrl', rtsp);
+             this.$dispatch('playVideo');
+
+             let ifr = document.querySelector('requestUrlIfr');
+             if (ifr) {
+                 document.body.removeChild(ifr);
+             }
+         },
+         getIp(str) {
+             if (!str || str === '') {
+                 return null;
+             }
+
+             return str.match(/^https?:\/\/\d+\.\d+\.\d+\.\d+(\:\d+)?/)[0];
+         },
+         configShenzhenMediaUrl(contentID) {
+             let domain = Authentication.CTCGetConfig('EPGDomain');
+             console.log('Domain:' + domain);
+             let ip = this.getIp(domain);
+             let iptvRequestUrl = this.ss('rtspRequestUrl');
+
+             window.getRtspURL = this.getRtspURL;
+
+             let reqUrl = ip + iptvRequestUrl
+                        + '?foreignId=' + contentID
+                        + '&callback=getRtspURL';
+
+             console.log('request url: ' + reqUrl);
+             this.EPGLog({
+                 OperationCode: '主页请求播放地址',
+                 Detail: reqUrl
+             });
+
+             this.requestUrlByIfr(reqUrl);
+
+         },
      },
 
      store: store,
@@ -815,6 +881,9 @@
                          case '陕西':
                              sessionStorage.setItem('playUrl', bgMediaUrl);
                              this.$dispatch('replay');
+                             break;
+                         case '深圳':
+                             this.configShenzhenMediaUrl(bgMediaUrl);
                              break;
                          default:
                              break;

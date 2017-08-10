@@ -173,6 +173,7 @@
                          USERID: Authentication.CTCGetConfig("UserID"),
                          STBID: Authentication.CTCGetConfig("STBID"),
                          UrlOrigin: Authentication.CTCGetConfig('EPGDomain').match(/^(https?:\/\/.*:\d+)\//)[1],
+                         rtspRequestUrl: sessionStorage.getItem('rtspRequestUrl')
                      }),
                  });
              }
@@ -208,6 +209,9 @@
                          tmpBody.USERID = window.Authentication ? Authentication.CTCGetConfig("UserID") : '';
                          tmpBody.Platform="ZTE"; 
                      }
+                     break;
+                 case '深圳':
+                     tmpBody.USERID = Authentication.CTCGetConfig("UserID");
                      break;
                  default:
                      break;
@@ -717,6 +721,48 @@
 
              this.doLogin();
          },
+         getIp(str) {
+             if (!str || str === '') {
+                 return null;
+             }
+
+             return str.match(/^https?:\/\/\d+\.\d+\.\d+\.\d+(\:\d+)?/)[0];
+         },
+
+
+         ss(key, vaue) {
+             if (!key || key === '') {
+                 return false;
+             }
+
+             if (value) {
+                 sessionStorage.setItem('' + key, value);
+                 return true;
+             }
+
+             return sessionStorage.getItem('' + key);
+         },
+
+         configShenzhenParams() {
+
+             let indexUrl = '';
+             let domain = Authentication.CTCGetConfig('EPGDomain');
+             console.log('Domain:' + domain);
+             let ip = this.getIp(domain);
+             let iptvPath = this.ss('IPTVPath');
+
+             sessionStorage.setItem('indexUrl', ip + iptvPath);
+
+             this.EPGLog({
+                 OperationCode: 'portal params',
+                 Detail: JSON.stringify({
+                     domain,
+                     indexUrl: ip + iptvPath
+                 })
+             });
+
+             this.doLogin();
+         },
      },
 
      ready() {
@@ -732,7 +778,7 @@
 
 
          // 湖北和云南不采用此功能，且不能是链接路径
-         if (province !== '湖北' && province !== '云南') {
+         if (province !== '湖北' && province !== '云南' && province !== '深圳') {
              if (!isFirstStart && isFirstStart !== '1') {
                  sessionStorage.setItem('ISFIRSTSTART', '1');
              } else { // 直接进入主页面
@@ -768,6 +814,9 @@
                  break;
              case '河南':
                  this.configHenanParams();
+                 break;
+             case '深圳':
+                 this.configShenzhenParams();
                  break;
              default:
                  break;

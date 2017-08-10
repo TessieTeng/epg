@@ -5,7 +5,7 @@
 
  #debug {
      position: fixed;
-     right: 0;
+     left: 0;
      top: 0;
      width: 40%;
      height: 100%;
@@ -13,7 +13,7 @@
      color: white;
      z-index: 10000000;
      word-wrap: break-word;
-     opacity: 0.3;
+     opacity: 0.6;
      overflow: scroll;
  }
 </style>
@@ -225,9 +225,9 @@
 
                              // 播放失败了，显示欢迎页
                              if (sessionStorage.getItem('province') === '云南') {
-                                this.$dispatch('replay');
+                                 this.$dispatch('replay');
                              }else if (sessionStorage.getItem('province') === '河南') {
-                                this.$dispatch('playVideo');
+                                 this.$dispatch('playVideo');
                              }
                              return "EVENT_MEDIA_ERROR";
                              break;
@@ -237,11 +237,11 @@
                              console.log("播放结束！");
                              // 播放结束显示欢迎页
                              if (sessionStorage.getItem('province') === '云南') {
-                                this.$dispatch('replay');
+                                 this.$dispatch('replay');
                              }else if (sessionStorage.getItem('province') === '河南') {
-                                this.$dispatch('playVideo');
+                                 this.$dispatch('playVideo');
                              }else {
-                                this.mp.playFromStart();
+                                 this.mp.playFromStart();
                              }
                              return "EVENT_MEDIA_END";
                              break;
@@ -253,7 +253,11 @@
          },
 
          getIp(url) {
-             return url.match(/^(https?:\/\/.*[:\d+])\//)[1];
+             if (!str || str === '') {
+                 return null;
+             }
+
+             return str.match(/^https?:\/\/\d+\.\d+\.\d+\.\d+(\:\d+)?/)[0];
          },
 
          getProgramInfo() {
@@ -355,7 +359,8 @@
              if (this.mp) { this.stop(); }
              this.initMediaPlay();
 
-             if (sessionStorage.getItem('province') === '云南') {
+             const province = sessionStorage.getItem('province');
+             if (province === '云南' || province === '深圳') {
                  this.play();
                  // this.playByWidnow(0, 0, 1280, 720);
              } else {
@@ -382,7 +387,7 @@
          }
 
          this.isDebug = sessionStorage.getItem('EPG_DEBUG_SWITCHER') === 'open';
-         this.debug('wel ready');
+         /* this.isDebug = true;*/
          this.debug('location:' + window.location.href);
 
          var _this = this;

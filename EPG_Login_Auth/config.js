@@ -31,7 +31,9 @@
         },
         'shenzhen': {
             province: '深圳',
-            relativePath: ''
+            relativePath: '',
+            IPTVPath: '/defaulthdcctv/gx2/page/index/index.jsp',
+            rtspRequestUrl: '/EPG/jsp/defaulthdcctv/gx2/page/toidc/getRtspToIDC.jsp'
         }
 
     };

@@ -1,268 +1,268 @@
 <style scoped>
- .rootView {
-     width: 1280px;
-     height: 720px;
-     position: relative;
- }
+.rootView {
+    width: 1280px;
+    height: 720px;
+    position: relative;
+}
 
- .swiperLevel {
-     position: absolute;
-     z-index: 2;
- }
+.swiperLevel {
+    position: absolute;
+    z-index: 2;
+}
 
- .contentLevel {
-     z-index: 2;
-     position: absolute;
- }
+.contentLevel {
+    z-index: 2;
+    position: absolute;
+}
 
- .bottom {
-     position: absolute;
-     width: 1280px;
-     z-index: 2;
-     height: 140px;
-     bottom: 0;
-     background: url(../../assets/images/bg_portal_bottom.png) no-repeat;
-     background-color: black;
- }
+.bottom {
+    position: absolute;
+    width: 1280px;
+    z-index: 2;
+    height: 140px;
+    bottom: 0;
+    background: url(../../assets/images/bg_portal_bottom.png) no-repeat;
+    background-color: black;
+}
 
- .wifi {
-     width: 700px;
-     height: 80px;
-     position: relative;
-     padding-left: 30px;
-     line-height: 80px;
-     float: left;
- }
+.wifi {
+    width: 700px;
+    height: 80px;
+    position: relative;
+    padding-left: 30px;
+    line-height: 80px;
+    float: left;
+}
 
- #wifiaccount {
-     display: block;
-     font-size: 24px;
-     color: white;
- }
+#wifiaccount {
+    display: block;
+    font-size: 24px;
+    color: white;
+}
 
- .wifiicon {
-     margin-right: 10px;
-     height: 24px;
-     vertical-align: middle;
- }
+.wifiicon {
+    margin-right: 10px;
+    height: 24px;
+    vertical-align: middle;
+}
 
- #wifiaccount span {
-     vertical-align: middle;
- }
+#wifiaccount span {
+    vertical-align: middle;
+}
 
- .time {
-     float: right;
-     position: relative;
-     padding: 0 30px;
-     height: 80px;
-     line-height: 80px;
- }
+.time {
+    float: right;
+    position: relative;
+    padding: 0 30px;
+    height: 80px;
+    line-height: 80px;
+}
 
- .weather {
-     margin-right: 10px;
-     padding-right: 10px;
-     border-right: 1px solid #fff;
-     color: #fff;
-     font-size: 20px;
- }
+.weather {
+    margin-right: 10px;
+    padding-right: 10px;
+    border-right: 1px solid #fff;
+    color: #fff;
+    font-size: 20px;
+}
 
- .weathericon {
-     height: 30px;
-     vertical-align: middle;
- }
+.weathericon {
+    height: 30px;
+    vertical-align: middle;
+}
 
- #timetext {
-     font-size: 20px;
-     color: white;
-     padding-right: 20px;
- }
+#timetext {
+    font-size: 20px;
+    color: white;
+    padding-right: 20px;
+}
 
- .langBtn {
-     width: 153px;
-     float: left;
-     border-radius: 33px;
-     height: 47px;
-     font-size: 20px;
-     background-color: black;
-     color: white;
- }
+.langBtn {
+    width: 153px;
+    float: left;
+    border-radius: 33px;
+    height: 47px;
+    font-size: 20px;
+    background-color: black;
+    color: white;
+}
 
- .bottomTip {
-     width: 400px;
-     padding-left: 133px;
-     height: 53px;
-     font-size: 23px;
-     line-height: 53px;
- }
+.bottomTip {
+    width: 400px;
+    padding-left: 133px;
+    height: 53px;
+    font-size: 23px;
+    line-height: 53px;
+}
 
- .english {
-     margin-left: 13.3px;
- }
+.english {
+    margin-left: 13.3px;
+}
 
- .bottomTip span {
-     color: white;
- }
+.bottomTip span {
+    color: white;
+}
 
- .surfaceLevel {
-     width: 1280px;
-     height: 960px;
-     position: absolute;
- }
+.surfaceLevel {
+    width: 1280px;
+    height: 960px;
+    position: absolute;
+}
 
- .rightWelcome {
-     float: right;
-     padding-top: 13.3px;
-     line-height: 46px;
-     font-size: 29px;
-     color: white;
- }
+.rightWelcome {
+    float: right;
+    padding-top: 13.3px;
+    line-height: 46px;
+    font-size: 29px;
+    color: white;
+}
 
- .rightWelcome > div {
-     height: 46px;
- }
+.rightWelcome > div {
+    height: 46px;
+}
 
- .rightGap {
-     float: right;
-     width: 40px;
-     height: 100%;
-     background:transparent;
- }
+.rightGap {
+    float: right;
+    width: 40px;
+    height: 100%;
+    background:transparent;
+}
 
- .choice {
-     float: left;
- }
+.choice {
+    float: left;
+}
 
- :focus {
-     outline: none;
-     -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
- }
+:focus {
+    outline: none;
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+}
 
- .topBtn {
-     width: 467px;
-     height: 53px;
-     margin-top: 13.3px;
-     margin-left: 33px;
-     line-height: 60px;
-     display: -webkit-box;
- }
+.topBtn {
+    width: 467px;
+    height: 53px;
+    margin-top: 13.3px;
+    margin-left: 33px;
+    line-height: 60px;
+    display: -webkit-box;
+}
 
- .topBtn a {
-     display: block;
-     margin-left: 20px;
-     width: 153px;
-     border-radius: 33px;
-     height: 47px;
-     line-height: 47px;
-     text-align: center;
-     text-decoration: none;
-     font-size: 27px;
-     background-color: black;
-     color: white;
- }
+.topBtn a {
+    display: block;
+    margin-left: 20px;
+    width: 153px;
+    border-radius: 33px;
+    height: 47px;
+    line-height: 47px;
+    text-align: center;
+    text-decoration: none;
+    font-size: 27px;
+    background-color: black;
+    color: white;
+}
 
- .topBtn a div {
-     height: 47px;
-     line-height: 47px;
- }
+.topBtn a div {
+    height: 47px;
+    line-height: 47px;
+}
 
- .topBtn a {
-     border: 3px solid rgba(36, 142, 248, 0);
- }
+.topBtn a {
+    border: 3px solid rgba(36, 142, 248, 0);
+}
 
- .topBtn a.focus {
-     /*-webkit-animation: breathe 4s ease-in-out infinite;*/
-     /*animation: breathe 4s ease-in-out infinite;*/
-     border: 3px solid rgba(36, 142, 248, 1);
- }
+.topBtn a.focus {
+    /*-webkit-animation: breathe 4s ease-in-out infinite;*/
+    /*animation: breathe 4s ease-in-out infinite;*/
+    border: 3px solid rgba(36, 142, 248, 1);
+}
 
- @keyframes breathe {
-     0% {
-         box-shadow: 0 0 0 rgba(6, 127, 210, 1);
-     }
-     50% {
-         box-shadow: 0 0.66px 20px rgba(6, 127, 210, 1);
-     }
-     100% {
-         box-shadow: 0 0 0 rgba(6, 127, 210, 1);
-     }
- }
+@keyframes breathe {
+    0% {
+        box-shadow: 0 0 0 rgba(6, 127, 210, 1);
+    }
+    50% {
+        box-shadow: 0 0.66px 20px rgba(6, 127, 210, 1);
+    }
+    100% {
+        box-shadow: 0 0 0 rgba(6, 127, 210, 1);
+    }
+}
 
- @-webkit-keyframes breathe {
-     0% {
-         box-shadow: 0 0 0 rgba(6, 127, 210, 1);
-     }
-     50% {
-         box-shadow: 0 0.66px 30px rgba(6, 127, 210, 1);
-     }
-     100% {
-         box-shadow: 0 0 0 rgba(6, 127, 210, 1);
-     }
- }
+@-webkit-keyframes breathe {
+    0% {
+        box-shadow: 0 0 0 rgba(6, 127, 210, 1);
+    }
+    50% {
+        box-shadow: 0 0.66px 30px rgba(6, 127, 210, 1);
+    }
+    100% {
+        box-shadow: 0 0 0 rgba(6, 127, 210, 1);
+    }
+}
 
- #to-debug {
-     position: fixed;
-     right: 0;
-     top: 0;
-     width: 40%;
-     height: 100%;
-     background-color: black;
-     color: white;
-     z-index: 10000000;
-     word-wrap: break-word;
-     opacity: 0.3;
-     overflow: scroll;
- }
-</style>
+#to-debug {
+    position: fixed;
+    right: 0;
+    top: 0;
+    width: 40%;
+    height: 100%;
+    background-color: black;
+    color: white;
+    z-index: 10000000;
+    word-wrap: break-word;
+    opacity: 0.6;
+    overflow: scroll;
+}
+  </style>
 <template>
-    <div class="rootView" id="welcomeLayout">
-        <div class="rootView swiperLevel">
-            <div style=" position: relative;">
-                <img style="transition: all 1s; position: absolute; width:1280px; height:720px;" :style="{ opacity: $index === picIndex ? 1 : 0 }" v-for="item in pictureList" :src="item.ImageUrl" v-show='hasVideo'>
-            </div>
-        </div>
-        <div class="rootView contentLevel">
-            <div class="top">
-                <div class="top wifi">
-                    <span id="wifiaccount"><img class='wifiicon' src='../../assets/images/wifi.png' /><span>{{wifiTip}}</span> </span>
-                </div>
-                <div class="top time">
-                    <span class='weather' v-if='!!weather'>
-                        <img class='weathericon' :src='weather.SmallImageUrl' />
-                        {{weather.LowTemperature + '℃-' + weather.HighTemperature + '℃'}}
-                    </span>
-                    <span id="timetext">{{currentTime}}</span>
-                </div>
-            </div>
-            <div class="bottom">
-                <div class="choice">
-                    <div class="topBtn">
-                        <!--  @focus="changeChinese" href="javascript:;"  @click="gotoMainLayout" -->
-                        <a id="defaultLang"  tabindex="-1" href="javascript:;" v-focus="tabIndex===0" @keydown.right.left.enter="langChgEvent(tabIndex, $event)" @keypress.left.right.enter="langChgEvent(tabIndex, $event)">
-                            <div>简体中文</div>
-                        </a>
-                        <!--  @focus="changeEnglish"  @click="gotoMainLayout" -->
-                        <a id="engLang" tabindex="-1" href="javascript:;" v-focus="tabIndex===1" @keydown.left.right.enter="langChgEvent(tabIndex, $event)" @keypress.left.right.enter="langChgEvent(tabIndex, $event)">
-                            <div>ENGLISH</div>
-                        </a>
-                    </div>
-                    <!-- <span>请按OK键进入主菜单</span> -->
-                    <div class="bottomTip">
-                        <span>{{UiWord[currentLang].OperationTips}}</span>
-                    </div>
-                </div>
-                <div class="rightGap"></div>
-                <div class="rightWelcome">
-                    <!-- <span>欢迎下榻本酒店</span> -->
-                    <div>
-                        <span>{{{UiWord[currentLang].SubscriberName}}}</span>
-                    </div>
-                    <span>{{UiWord[currentLang].WelcomeWords}}</span>
-                </div>
-            </div>
-        </div>
-
-        <div id="to-debug" v-if="isDebug"></div>
+  <div class="rootView" id="welcomeLayout">
+    <div class="rootView swiperLevel">
+      <div style=" position: relative;">
+        <img style="transition: all 1s; position: absolute; width:1280px; height:720px;" :style="{ opacity: $index === picIndex ? 1 : 0 }" v-for="item in pictureList" :src="item.ImageUrl" v-show='hasVideo'>
+      </div>
     </div>
+    <div class="rootView contentLevel">
+      <div class="top">
+        <div class="top wifi">
+          <span id="wifiaccount"><img class='wifiicon' src='../../assets/images/wifi.png' /><span>{{wifiTip}}</span> </span>
+        </div>
+        <div class="top time">
+          <span class='weather' v-if='!!weather'>
+            <img class='weathericon' :src='weather.SmallImageUrl' />
+            {{weather.LowTemperature + '℃-' + weather.HighTemperature + '℃'}}
+          </span>
+          <span id="timetext">{{currentTime}}</span>
+        </div>
+      </div>
+      <div class="bottom">
+        <div class="choice">
+          <div class="topBtn">
+            <!--  @focus="changeChinese" href="javascript:;"  @click="gotoMainLayout" -->
+            <a id="defaultLang"  tabindex="-1" href="javascript:;" v-focus="tabIndex===0" @keydown.right.left.enter="langChgEvent(tabIndex, $event)" @keypress.left.right.enter="langChgEvent(tabIndex, $event)">
+              <div>简体中文</div>
+            </a>
+            <!--  @focus="changeEnglish"  @click="gotoMainLayout" -->
+            <a id="engLang" tabindex="-1" href="javascript:;" v-focus="tabIndex===1" @keydown.left.right.enter="langChgEvent(tabIndex, $event)" @keypress.left.right.enter="langChgEvent(tabIndex, $event)">
+              <div>ENGLISH</div>
+            </a>
+          </div>
+          <!-- <span>请按OK键进入主菜单</span> -->
+          <div class="bottomTip">
+            <span>{{UiWord[currentLang].OperationTips}}</span>
+          </div>
+        </div>
+        <div class="rightGap"></div>
+        <div class="rightWelcome">
+          <!-- <span>欢迎下榻本酒店</span> -->
+          <div>
+            <span>{{{UiWord[currentLang].SubscriberName}}}</span>
+          </div>
+          <span>{{UiWord[currentLang].WelcomeWords}}</span>
+        </div>
+      </div>
+    </div>
+
+    <div id="to-debug" v-if="isDebug"></div>
+  </div>
 </template>
 <script>
  import Http from '../../assets/lib/Http';
@@ -900,7 +900,7 @@
                          const _msgBody = _data.Message.MessageBody;
                          if (_msgBody.ResultCode == 200) {
                              let channel = _msgBody.ChannelList.Channel;
-                            // console.log('post channel list: ' + channel.length);
+                             // console.log('post channel list: ' + channel.length);
                              if (channel && channel.length > 0) {
                                  setChannels(channel);
                              } else {
@@ -927,6 +927,74 @@
              });
          },
 
+         
+         requestUrlByIfr(url) {
+
+             const ifr = document.createElement('iframe');
+             ifr.id = 'requestUrlIfr';
+             ifr.style.width = '1px';
+             ifr.style.height = '1px';
+             ifr.src = url;
+
+             document.body.appendChild(ifr);
+         },
+         getIp(str) {
+             if (!str || str === '') {
+                 return null;
+             }
+
+             return str.match(/^https?:\/\/\d+\.\d+\.\d+\.\d+(\:\d+)?/)[0];
+         },
+
+         ss(key, vaue) {
+             if (!key || key === '') {
+                 return false;
+             }
+
+             if (value) {
+                 sessionStorage.setItem('' + key, value);
+                 return true;
+             }
+
+             return sessionStorage.getItem('' + key);
+         },
+
+         getRtspURL(rtsp) {
+             if (!rtsp || rtsp === '') {
+                 return false;
+             }
+
+             sessionStorage.setItem('playUrl', rtsp);
+             this.$dispatch('playVideo');
+
+             let ifr = document.querySelector('requestUrlIfr');
+             if (ifr) {
+                 document.body.removeChild(ifr);
+             }
+         },
+
+         configShenzhenMediaUrl() {
+             let domain = Authentication.CTCGetConfig('EPGDomain');
+             console.log('Domain:' + domain);
+             let ip = this.getIp(domain);
+             let iptvRequestUrl = this.ss('rtspRequestUrl');
+
+             window.getRtspURL = this.getRtspURL;
+
+             let reqUrl = ip + iptvRequestUrl
+                        + '?foreignId=' + this.contentID
+                        + '&callback=getRtspURL';
+
+             console.log('request url: ' + reqUrl);
+             this.EPGLog({
+                 OperationCode: '欢迎页请求播放地址',
+                 Detail: reqUrl
+             });
+
+             this.requestUrlByIfr(reqUrl);
+
+         },
+
          getWelcomeMediaUrl() {
              if (!!this.contentID && this.contentID !== '0') {
                  this.hasVideo = true;
@@ -951,13 +1019,16 @@
                          }
                          this.$dispatch('setMediaUrl', this.mediaurl);
                          break;
-                    case '河南':
+                     case '河南':
                          console.log('河南欢迎页配置地址',this.contentID);
                          sessionStorage.setItem('playUrl', this.contentID);
                          console.log("河南欢迎页播放地址",sessionStorage.getItem('playUrl'));
                          this.$dispatch('playVideo');
                          console.log('after dispatch....');
-                        break;
+                         break;
+                     case '深圳':
+                         this.configShenzhenMediaUrl();
+                         break;
                      default:
                          break;
                  }
@@ -988,6 +1059,7 @@
 
      ready() {
          this.isDebug = sessionStorage.getItem('EPG_DEBUG_SWITCHER') === 'open';
+         /* this.isDebug = true;*/
          const province = sessionStorage.getItem('province');
          document.querySelector("#defaultLang").focus();
          this.canNotGoBack = true;

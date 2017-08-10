@@ -174,7 +174,7 @@
      color: white;
      z-index: 10000000;
      word-wrap: break-word;
-     opacity: 0.3;
+     opacity: 0.6;
      overflow: scroll;
  }
 </style>
