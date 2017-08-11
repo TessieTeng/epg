@@ -77,7 +77,7 @@
                 </a>
             </div>
             <div class="scrolls" v-if='!!TvmsMsg.MsgText'>
-                <marquee class="marquee" behavior="scroll" scrollamount="3" scrolldelay="0" height="50" v-bind:style="{fontSize: TvmsMsg.FontSize + 'px', loop:TvmsMsg.ScrollTimes}">
+                <marquee class="marquee" behavior="scroll" scrollamount="3" scrolldelay="0" height="50" v-bind:style="{fontSize: TvmsMsg.FontSize + 'px'}" :loop.prop="TvmsMsg.ScrollTimes">
                     {{TvmsMsg.MsgText}}
                 </marquee>
             </div>
