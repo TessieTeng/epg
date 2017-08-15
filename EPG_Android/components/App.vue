@@ -962,7 +962,9 @@
              _this.eventHandler(event);
          };
 
-        if (sessionStorage.getItem('province') == "河南") {
+         const province = sessionStorage.getItem('province');
+
+        if (province == "河南" || province === '陕西') {
             document.onkeydown = keyHandler;
         }else{
             document.onkeypress = keyHandler;

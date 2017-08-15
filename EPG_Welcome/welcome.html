@@ -30,11 +30,14 @@
 
 <body>
     <div id="app"></div>
-     <!--<script type="text/javascript" src="../../assets/debug/alloy_lever.js"></script> -->
+    <!-- <script type="text/javascript" src="../../assets/debug/alloy_lever.js"></script> -->
 </body>
 <script>
+ var welProvince = sessionStorage.getItem('province');
  /* 解决云南/河南中兴盒子白色背景问题 */
- if (sessionStorage.getItem('province') === '云南' || sessionStorage.getItem('province') === '河南') {
+ if (welProvince === '云南' || welProvince === '河南'
+     || welProvince === '陕西'
+ ) {
      document.body.style.backgroundColor = 'transparent';
  }
 </script>
