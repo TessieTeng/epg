@@ -576,6 +576,15 @@
                              break;
                      }
                      break;
+                 case 'overseas_channel':
+                     this.$dispatch("stopVideo");
+                     this.$nextTick(() => {
+                             sessionStorage.setItem('Main2ChannelURL', window.location.href);
+                             window.parent.location.href = '../../clist/index2.html';
+                             return;
+                     });
+
+                     break;
                  default:
                      break;
              }

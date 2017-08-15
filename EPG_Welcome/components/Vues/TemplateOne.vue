@@ -1074,9 +1074,12 @@
          }, 100);
 
          // 河南的需要频道列表
-         if (province === '河南') {
+      /*   if (province === '河南') {
              this.getChannelList();
-         }
+         }*/
+
+         //频道不区分省份
+         this.getChannelList();
 
          // this.listenBackKey();
          if (province !== '云南') {

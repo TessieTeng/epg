@@ -962,12 +962,12 @@
              _this.eventHandler(event);
          };
 
-        if (sessionStorage.getItem('province') == "河南") {
+        if (sessionStorage.getItem('province') == "河南" || sessionStorage.getItem('province') == "深圳"  ) {
             document.onkeydown = keyHandler;
         }else{
             document.onkeypress = keyHandler;
             // changes 2
-            document.onkeydown = keyHandler;
+            document.onkeydown = keyHandler; 
         }
          this.updateFirstClassTab(0);
          this.updateSecondClassTab(0);
