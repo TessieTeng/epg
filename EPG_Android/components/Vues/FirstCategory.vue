@@ -1,58 +1,58 @@
 <style scoped>
-.rootDiv {
-    width: 1280px;
-    height: 720px;
-    position: relative;
-    background-color: transparent;
-}
+ .rootDiv {
+     width: 1280px;
+     height: 720px;
+     position: relative;
+     background-color: transparent;
+ }
 
-.scrolls {
-    width: 100%;
-    z-index: 50;
-    position: fixed;
-    background: url(../../assets/images/bg_path1.png) no-repeat;
-    background-size: cover;
-    height: 50px;
-    color: white;
-}
+ .scrolls {
+     width: 100%;
+     z-index: 50;
+     position: fixed;
+     background: url(../../assets/images/bg_path1.png) no-repeat;
+     background-size: cover;
+     height: 50px;
+     color: white;
+ }
 
-.marquee {
-    text-align: center;
-    line-height: 50px;
-    font-weight: bold;
-}
+ .marquee {
+     text-align: center;
+     line-height: 50px;
+     font-weight: bold;
+ }
 
-.kexin {
-    position: fixed;
-    z-index: 50;
-    text-align: center;
-    background-position: center;
-    background-size: cover;
-    margin-top: 10px;
-}
+ .kexin {
+     position: fixed;
+     z-index: 50;
+     text-align: center;
+     background-position: center;
+     background-size: cover;
+     margin-top: 10px;
+ }
 
-.info {
-    position: absolute;
-    text-align: center;
-}
+ .info {
+     position: absolute;
+     text-align: center;
+ }
 
-.hint {
-    position: absolute;
-    text-decoration: none;
-    font-size: 24px;
-    color: white;
-    border-radius: 8px;
-    letter-spacing: 4px;
-    box-shadow: 0 0 10px 4px #0CC;
-    background-color: #222930;
-    top: 88%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 140px;
-    height: 36px;
-    line-height: 36px;
-    padding: 4px 2px;
-}
+ .hint {
+     position: absolute;
+     text-decoration: none;
+     font-size: 24px;
+     color: white;
+     border-radius: 8px;
+     letter-spacing: 4px;
+     box-shadow: 0 0 10px 4px #0CC;
+     background-color: #222930;
+     top: 88%;
+     left: 50%;
+     transform: translate(-50%, -50%);
+     width: 140px;
+     height: 36px;
+     line-height: 36px;
+     padding: 4px 2px;
+ }
 
  #fc-debug {
      position: fixed;
@@ -286,7 +286,7 @@
              /*
                 this.debug(''
                 + 'key:' + code
-                + ', page:' + this.currPage 
+                + ', page:' + this.currPage
                 + ', idx:' + idx
                 + ', dataIdx:' + this.dataIdx
                 + ', total:' + this.menuTotal
@@ -475,10 +475,8 @@
              switch (item.RelatedAction) {
                  case "iptv":
 
-                     // 陕西不需要该操作，会导致IPTV没法播放
-                     if (province !== '陕西') {
-                         this.$dispatch("stopVideo");
-                     }
+                     // 需要停止视频播放，但是不去释放资源
+                     this.$dispatch("stopVideo");
                      this.$nextTick(() => {
                          if (sessionStorage.getItem('province') === '河南') {
                              sessionStorage.setItem('Main2ChannelURL', window.location.href);
@@ -579,9 +577,9 @@
                  case 'overseas_channel':
                      this.$dispatch("stopVideo");
                      this.$nextTick(() => {
-                             sessionStorage.setItem('Main2ChannelURL', window.location.href);
-                             window.parent.location.href = '../../clist/index2.html';
-                             return;
+                         sessionStorage.setItem('Main2ChannelURL', window.location.href);
+                         window.parent.location.href = '../../clist/index2.html';
+                         return;
                      });
 
                      break;
@@ -741,7 +739,7 @@
              });
          },
 
-         
+
          requestUrlByIfr(url) {
 
              const ifr = document.createElement('iframe');
