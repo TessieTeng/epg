@@ -811,7 +811,7 @@
              const typeArr = [
                  'object',
                  'keyboardevent',
-                 // 创维E8200 的时间类型
+                 // 创维E8200 的事件类型
                  'event'
              ];
              if (typeArr.indexOf(type) >= 0) {
