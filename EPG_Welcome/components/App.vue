@@ -172,6 +172,24 @@
 
              this.debug('key:' + keyvalue);
 
+             const province = sessionStorage.getItem('province');
+             // 兼容陕西创维 E8200 不支持行内事件处理
+             if (province === '陕西') {
+                 const stbType = Authentication.CTCGetConfig('STBType');
+                 if (stbType === 'E8200') {
+                     console.log('E8200 key:' + keyvalue);
+                     if (keyvalue === 37) {
+                         this.$broadcast('tochinese');
+                     } else if (keyvalue === 39) {
+                         this.$broadcast('toenglish');
+                     } else if (keyvalue === 13) {
+                         this.$broadcast('gotomain');
+                     }
+
+                     return false;
+                 }
+             }
+
              switch (keyvalue) {
                  case 259: this.$broadcast('evolume', 5); return false; break;
                  case 260: this.$broadcast('evolume', -5); return false; break;
@@ -389,6 +407,7 @@
          this.isDebug = sessionStorage.getItem('EPG_DEBUG_SWITCHER') === 'open';
          /* this.isDebug = true;*/
          this.debug('location:' + window.location.href);
+         console.log('STBType: ' + Authentication.CTCGetConfig('STBType'));
 
          var _this = this;
          //监控视频动作触发的虚拟按键
