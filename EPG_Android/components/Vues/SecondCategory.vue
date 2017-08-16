@@ -146,7 +146,7 @@
                  case "vod_play":
                      this.updateIsVideoPlay(false);
                      this.$dispatch('stopVideo');
-                     this.debug('url:' + itemRelatedInfo);
+                     this.debug('url:' + item.RelatedInfo);
                      this.$router.replace({
                          path: '/mplayer',
                          params: {
