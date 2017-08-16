@@ -306,8 +306,9 @@
          },
 
          play() {
+             const province = sessionStorage.getItem('province');
              // this.debug('play');
-             if (sessionStorage.getItem('province') === '云南') {
+             if (province === '云南') {
                  this.setMediaStr();
                  this.mp.setSingleMedia(this.mediaStr);
                  this.mp.playFromStart();
@@ -319,6 +320,10 @@
                  this.mp.playFromStart();
              }
 
+             /* if (province === '陕西') {*/
+             /* this.refresh();*/
+             /* }*/
+             /* */
          },
 
          stop() {
@@ -330,6 +335,19 @@
                  this.mp.releaseMediaPlayer(this.mp.getNativePlayerInstanceID());
              }
              this.mp = null;
+         },
+
+         refresh() {
+
+             if (!this.mp) {
+                 return false;
+             }
+
+             this.mp.setVideoDisplayMode(1);
+             this.mp.setVideoDisplayArea(0, 0, 0, 0);
+             this.mp.refreshVideoDisplay();
+
+             return true;
          },
 
          type(obj) {
