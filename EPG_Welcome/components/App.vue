@@ -176,8 +176,12 @@
              // 兼容陕西创维 E8200 不支持行内事件处理
              if (province === '陕西') {
                  const stbType = Authentication.CTCGetConfig('STBType');
-                 if (stbType === 'E8200') {
-                     console.log('E8200 key:' + keyvalue);
+                 const typeArr = [
+                     'E8200',
+                     'E900-S',
+                     'HT670-GP-V'
+                 ];
+                 if (typeArr.indexOf(stbType) >= 0) {
                      if (keyvalue === 37) {
                          this.$broadcast('tochinese');
                      } else if (keyvalue === 39) {
