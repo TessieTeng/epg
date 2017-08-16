@@ -306,11 +306,21 @@
 
              return this;
          },
-
          _init() {
              this.debug('_init:' + this.area.type);
              this.mp = new MediaPlayer();
-             this.mp.initMediaPlayer();
+             this.mp.initMediaPlayer(
+                 this.mp.getNativePlayerInstanceID(),
+                 // playListFlag, videoDisplayMode
+                 0, 1,
+                 window.innerHeight, window.innerWidth,
+                 // left, top
+                 0, 0,
+                 // muteFlag, useNativeUIFlag, subtitleFlag, videoAlpha
+                 0, 1, 0, 0,
+                 // cycleFlag, randomFlag, autoDelFlag
+                 0, 0, 0
+             );
 
              if (this.area.type === 1) {
                  this.mp.setVideoDisplayMode(1);
