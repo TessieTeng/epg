@@ -56,9 +56,16 @@
     padding: 0 30px;
     height: 80px;
     line-height: 80px;
+    color: white;
+    font-size: 20px;
 }
 
-.weather {
+.pmvalue{
+    padding-left: 4px;
+    padding-right: 10px;
+    border-right: 1px solid #fff;
+}
+.weather  {
     margin-right: 10px;
     padding-right: 10px;
     border-right: 1px solid #fff;
@@ -69,6 +76,7 @@
 .weathericon {
     height: 30px;
     vertical-align: middle;
+    margin-left: 10px;
 }
 
 #timetext {
@@ -226,6 +234,8 @@
           <span id="wifiaccount"><img class='wifiicon' src='../../assets/images/wifi.png' /><span>{{wifiTip}}</span> </span>
         </div>
         <div class="top time">
+          <span>PM2.5:</span>
+          <span class="pmvalue" v-if='!!pmvalue'>{{pmvalue}}</span>
           <span class='weather' v-if='!!weather'>
             <img class='weathericon' :src='weather.SmallImageUrl' />
             {{weather.LowTemperature + '℃-' + weather.HighTemperature + '℃'}}
@@ -306,6 +316,8 @@
              VideoType: '',
              contentID: '',
              fadeTimer: null,
+             // pmword:'',
+             pmvalue:'',
          };
 
      },
@@ -530,7 +542,8 @@
              WelcomeWords,
              SubscriberName,
              PictureList,
-             VideoArea
+             VideoArea,
+             InfoArea
          }) {
              // 操作提示
              if ((typeof(OperationTips) == undefined) || null == OperationTips) {
@@ -598,6 +611,14 @@
                  this.contentID = VideoArea.IdList;
                  sessionStorage.setItem("welcomeMediaUrl", this.contentID);
                  this.getWelcomeMediaUrl();
+             }
+
+              //pm 2.5 信息区域
+             if ((typeof(InfoArea) == "undefined") || null == InfoArea) {
+                 console.log("PM2.5内容是空");
+             } else {
+                 // this.pmword  = InfoArea.PmWord;
+                 this.pmvalue = InfoArea.Pm25;
              }
          },
          listenBackKey() {
