@@ -807,7 +807,14 @@
          eventHandler(event) {
              let keycode = -1;
              let type = this.type(event);
-             if ( type === 'object' || type === 'keyboardevent') {
+             this.debug('event type: ' + type);
+             const typeArr = [
+                 'object',
+                 'keyboardevent',
+                 // 创维E8200 的时间类型
+                 'event'
+             ];
+             if (typeArr.indexOf(type) >= 0) {
                  event = event ? event : window.event;
                  keycode = event.which ? event.which : event.keyCode;
              } else {
