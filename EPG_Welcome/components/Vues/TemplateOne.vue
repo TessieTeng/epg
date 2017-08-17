@@ -508,7 +508,9 @@
                                  _this.UiWord[lang][item.Name] = item.Value;
                              });
 
-                             if (sessionStorage.getItem('WelcomePageGroupPath') === 'test') {
+                             var welcomePath = sessionStorage.getItem("WelcomePageGroupPath"); 
+                             var MainPath = sessionStorage.getItem("MainPath");
+                             if (welcomePath === 'test'&& MainPath === 'test') {
                                  _this.EPGLog({
                                      OperationCode: 'getUiWord',
                                      Detail: 'success',
@@ -625,7 +627,9 @@
              document.onkeypress = (keyEvent) => {
                  keyEvent = keyEvent ? keyEvent : window.event;
                  var keyvalue = keyEvent.which ? keyEvent.which : keyEvent.keyCode;
-                 if (sessionStorage.getItem('WelcomePageGroupPath') === 'test') {
+                 var welcomePath = sessionStorage.getItem("WelcomePageGroupPath"); 
+                 var MainPath = sessionStorage.getItem("MainPath");
+                 if (welcomePath === 'test'&& MainPath === 'test') {
                      this.EPGLog({
                          OperationCode: 'welcome_' + keyEvent.type,
                          Detail: 'keyvalue: ' + keyvalue,
@@ -722,7 +726,9 @@
                              _this.isRequestStatus = false;
                              _this.handleData(Object.freeze(_msgBody));
                              _this.changeTime(new Date(data.getResponseHeader('Date')));
-                             if (sessionStorage.getItem('WelcomePageGroupPath') === 'test') {
+                             var welcomePath = sessionStorage.getItem("WelcomePageGroupPath"); 
+                             var MainPath = sessionStorage.getItem("MainPath");
+                             if (welcomePath === 'test'&& MainPath === 'test') {
                                  _this.EPGLog({
                                      OperationCode: 'getWelcomeData',
                                      Detail: 'success',
@@ -772,7 +778,9 @@
                              } else {
                                  _this.weather = null;
                              }
-                             if (sessionStorage.getItem('WelcomePageGroupPath') === 'test') {
+                             var welcomePath = sessionStorage.getItem("WelcomePageGroupPath"); 
+                             var MainPath = sessionStorage.getItem("MainPath");
+                             if (welcomePath === 'test'&& MainPath === 'test') {
                                  _this.EPGLog({
                                      OperationCode: 'getHereWeatherInfo',
                                      Detail: 'success',
@@ -1007,11 +1015,14 @@
                         + '&callback=getRtspURL';
 
              console.log('request url: ' + reqUrl);
-             this.EPGLog({
-                 OperationCode: '欢迎页请求播放地址',
-                 Detail: reqUrl
-             });
-
+             var welcomePath = sessionStorage.getItem("WelcomePageGroupPath"); 
+             var MainPath = sessionStorage.getItem("MainPath");
+             if (welcomePath === 'test'&& MainPath === 'test'){
+                 this.EPGLog({
+                     OperationCode: '欢迎页请求播放地址',
+                     Detail: reqUrl
+                 });
+             }
              this.requestUrlByIfr(reqUrl);
 
          },
