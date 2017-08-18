@@ -108,11 +108,14 @@
                  sessionStorage.setItem("csm_id", this.csm_id);
 
                  // 后期如果从url参数拿到indexUrl，则要在这里set到sessionStorage里面
-
-                 this.EPGLog({
-                     OperationCode: 'getUrlParams',
-                     Detail: JSON.stringify(jsonObj),
-                 });
+                 var welcomePath = sessionStorage.getItem("WelcomePageGroupPath"); 
+                 var MainPath = sessionStorage.getItem("MainPath");
+                 if (welcomePath === 'test'&& MainPath === 'test'){
+                     this.EPGLog({
+                         OperationCode: 'getUrlParams',
+                         Detail: JSON.stringify(jsonObj),
+                     });
+                 }
 
                  this.doLogin();
              } else {
@@ -162,20 +165,23 @@
                  sessionStorage.setItem("UserToken", Authentication.CTCGetConfig('UserToken'));
                  sessionStorage.setItem("USERID", Authentication.CTCGetConfig("UserID"));
                  sessionStorage.setItem("STBID", Authentication.CTCGetConfig("STBID"));
-
-                 this.EPGLog({
-                     OperationCode: 'getConfig',
-                     Detail: JSON.stringify({
-                         EpgVersion: EpgVersion,
-                         zhongxingMediaUrlOrigin: sessionStorage.getItem('zhongxingMediaUrlOrigin'),
-                         huaweiMediaUrlOrigin: sessionStorage.getItem('huaweiMediaUrlOrigin'),
-                         UserToken: Authentication.CTCGetConfig('UserToken'),
-                         USERID: Authentication.CTCGetConfig("UserID"),
-                         STBID: Authentication.CTCGetConfig("STBID"),
-                         UrlOrigin: Authentication.CTCGetConfig('EPGDomain').match(/^(https?:\/\/.*:\d+)\//)[1],
-                         rtspRequestUrl: sessionStorage.getItem('rtspRequestUrl')
-                     }),
-                 });
+                 var welcomePath = sessionStorage.getItem("WelcomePageGroupPath"); 
+                 var MainPath = sessionStorage.getItem("MainPath");
+                 if (welcomePath === 'test'&& MainPath === 'test'){
+                     this.EPGLog({
+                         OperationCode: 'getConfig',
+                         Detail: JSON.stringify({
+                             EpgVersion: EpgVersion,
+                             zhongxingMediaUrlOrigin: sessionStorage.getItem('zhongxingMediaUrlOrigin'),
+                             huaweiMediaUrlOrigin: sessionStorage.getItem('huaweiMediaUrlOrigin'),
+                             UserToken: Authentication.CTCGetConfig('UserToken'),
+                             USERID: Authentication.CTCGetConfig("UserID"),
+                             STBID: Authentication.CTCGetConfig("STBID"),
+                             UrlOrigin: Authentication.CTCGetConfig('EPGDomain').match(/^(https?:\/\/.*:\d+)\//)[1],
+                             rtspRequestUrl: sessionStorage.getItem('rtspRequestUrl')
+                         }),
+                     });
+                 }
              }
          },
 
@@ -237,13 +243,17 @@
                              sessionStorage.setItem("AdPath", _msgBody.AdPath);
                              sessionStorage.setItem("MainPath", _msgBody.MainPath);
                              sessionStorage.setItem("WelcomePageGroupPath", _msgBody.WelcomePageGroupPath);
-                             _this.EPGLog({
-                                 OperationCode: 'STBLoginReq',
-                                 Detail: JSON.stringify({
-                                     reqBody: tmpObj,
-                                     data: data.response,
-                                 }),
-                             });
+                             var welcomePath = sessionStorage.getItem("WelcomePageGroupPath"); 
+                             var MainPath = sessionStorage.getItem("MainPath");
+                             if (welcomePath === 'test'&& MainPath === 'test'){
+                                 _this.EPGLog({
+                                     OperationCode: 'STBLoginReq',
+                                     Detail: JSON.stringify({
+                                         reqBody: tmpObj,
+                                         data: data.response,
+                                     }),
+                                 });
+                             }
                              _this.doAuth();
                          } else {
                              console.log("doLogin请求数据失败");
@@ -295,16 +305,17 @@
                              sessionStorage.setItem("LoginID", _msgBody.LoginID);
                              sessionStorage.setItem("RootCategoryID", _msgBody.RootCategoryID);
                              sessionStorage.setItem("Token", _msgBody.Token);
-
-                             _this.EPGLog({
-                                 OperationCode: 'DoAuthReq',
-                                 Detail: JSON.stringify({
-                                     reqBody: tmpObj,
-                                     data: data.response,
-                                 }),
-                             });
-
-
+                             var welcomePath = sessionStorage.getItem("WelcomePageGroupPath"); 
+                             var MainPath = sessionStorage.getItem("MainPath");
+                             if (welcomePath === 'test'&& MainPath === 'test'){
+                                 _this.EPGLog({
+                                     OperationCode: 'DoAuthReq',
+                                     Detail: JSON.stringify({
+                                         reqBody: tmpObj,
+                                         data: data.response,
+                                     }),
+                                 });
+                             }
                              _this.getSysParam();
                          } else {
                              console.log("Auth请求数据失败");
@@ -356,14 +367,17 @@
                              _msgBody.ParamList.Param.map(item => {
                                  sessionStorage.setItem(item.Name, item.Value);
                              });
-
-                             _this.EPGLog({
-                                 OperationCode: 'GetSysParamReq',
-                                 Detail: JSON.stringify({
-                                     reqBody: tmpObj,
-                                     data: data.response,
-                                 }),
-                             });
+                             var welcomePath = sessionStorage.getItem("WelcomePageGroupPath"); 
+                             var MainPath = sessionStorage.getItem("MainPath");
+                             if (welcomePath === 'test'&& MainPath === 'test'){
+                                 _this.EPGLog({
+                                     OperationCode: 'GetSysParamReq',
+                                     Detail: JSON.stringify({
+                                         reqBody: tmpObj,
+                                         data: data.response,
+                                     }),
+                                 });
+                             }
 
                              if (_this.GetQueryString("cKey") === 'back') {
                                  _this.gotoMainLayout();
@@ -414,11 +428,14 @@
              } else {
                  str = this.getObjStr(err);
              }
-
-             this.EPGLog({
-                 OperationCode: 'goToIptv-request broken',
-                 Detail: str,
-             });
+             var welcomePath = sessionStorage.getItem("WelcomePageGroupPath"); 
+             var MainPath = sessionStorage.getItem("MainPath");
+             if (welcomePath === 'test'&& MainPath === 'test'){
+                 this.EPGLog({
+                     OperationCode: 'goToIptv-request broken',
+                     Detail: str,
+                 });
+             }
 
              // alert(str);
              location.href = sessionStorage.getItem("indexUrl");
@@ -483,13 +500,17 @@
          },
 
          goToWelcome() {
-             this.EPGLog({
-                 OperationCode: 'goToWelcome-path',
-                 Detail: JSON.stringify({
-                     welcomePath: sessionStorage.getItem("WelcomePageGroupPath"),
-                     location: window.location.href,
-                 })
-             });
+             var welcomePath = sessionStorage.getItem("WelcomePageGroupPath"); 
+             var MainPath = sessionStorage.getItem("MainPath");
+             if (welcomePath === 'test'&& MainPath === 'test'){
+                 this.EPGLog({
+                     OperationCode: 'goToWelcome-path',
+                     Detail: JSON.stringify({
+                         welcomePath: sessionStorage.getItem("WelcomePageGroupPath"),
+                         location: window.location.href,
+                     })
+                 });
+             }
 
              /*
                 警告：测试时使用 runTestWelcome，正式环境使用 runNormalWelcome，
@@ -608,18 +629,22 @@
              indexUrl = "http://" + serverip + ':' + serverport + sessionStorage.getItem(key);
              sessionStorage.setItem("indexUrl", indexUrl);
 
-             this.EPGLog({
-                 OperationCode: '模板参数',
-                 Detail: JSON.stringify({
-                     userid: sessionStorage.getItem('userid'),
-                     userGroup: sessionStorage.getItem('userGroup'),
-                     servername: sessionStorage.getItem('servername'),
-                     serverport: sessionStorage.getItem('serverport'),
-                     remoteaddr: sessionStorage.getItem('remoteaddr'),
-                     from: sessionStorage.getItem('from'),
-                     indexUrl: sessionStorage.getItem('indexUrl'),
-                 })
-             });
+             var welcomePath = sessionStorage.getItem("WelcomePageGroupPath"); 
+             var MainPath = sessionStorage.getItem("MainPath");
+             if (welcomePath === 'test'&& MainPath === 'test'){
+                 this.EPGLog({
+                     OperationCode: '模板参数',
+                     Detail: JSON.stringify({
+                         userid: sessionStorage.getItem('userid'),
+                         userGroup: sessionStorage.getItem('userGroup'),
+                         servername: sessionStorage.getItem('servername'),
+                         serverport: sessionStorage.getItem('serverport'),
+                         remoteaddr: sessionStorage.getItem('remoteaddr'),
+                         from: sessionStorage.getItem('from'),
+                         indexUrl: sessionStorage.getItem('indexUrl'),
+                     })
+                 });
+             }
 
              const currUrl = window.location.href;
 
@@ -661,14 +686,18 @@
                  );
              }
 
-             this.EPGLog({
-                 OperationCode: '模板参数',
-                 Detail: JSON.stringify({
-                     localIp: sessionStorage.getItem('localIp'),
-                     relativePath: sessionStorage.getItem('relativePath'),
-                     indexUrl: sessionStorage.getItem('indexUrl'),
-                 })
-             });
+             var welcomePath = sessionStorage.getItem("WelcomePageGroupPath"); 
+             var MainPath = sessionStorage.getItem("MainPath");
+             if (welcomePath === 'test'&& MainPath === 'test'){
+                 this.EPGLog({
+                     OperationCode: '模板参数',
+                     Detail: JSON.stringify({
+                         localIp: sessionStorage.getItem('localIp'),
+                         relativePath: sessionStorage.getItem('relativePath'),
+                         indexUrl: sessionStorage.getItem('indexUrl'),
+                     })
+                 });
+             }
 
              this.doLogin();
          },
@@ -698,15 +727,18 @@
                  sessionStorage.setItem('indexUrl', indexUrl);
              }
 
-             this.EPGLog({
-                 OperationCode: '模板参数',
-                 Detail: JSON.stringify({
-                     from: sessionStorage.getItem('from'),
-                     userid: sessionStorage.getItem('userid'),
-                     indexUrl: sessionStorage.getItem('indexUrl'),
-                 })
-             });
-
+             var welcomePath = sessionStorage.getItem("WelcomePageGroupPath"); 
+             var MainPath = sessionStorage.getItem("MainPath");
+             if (welcomePath === 'test'&& MainPath === 'test'){
+                 this.EPGLog({
+                     OperationCode: '模板参数',
+                     Detail: JSON.stringify({
+                         from: sessionStorage.getItem('from'),
+                         userid: sessionStorage.getItem('userid'),
+                         indexUrl: sessionStorage.getItem('indexUrl'),
+                     })
+                 });
+             }
             
              if (!!window.Authentication) {
                  //处理河南华为平台机顶盒按首页键和选项键界面卡死问题
@@ -752,14 +784,17 @@
              let iptvPath = this.ss('IPTVPath');
 
              sessionStorage.setItem('indexUrl', ip + iptvPath);
-
-             this.EPGLog({
-                 OperationCode: 'portal params',
-                 Detail: JSON.stringify({
-                     domain,
-                     indexUrl: ip + iptvPath
-                 })
-             });
+             var welcomePath = sessionStorage.getItem("WelcomePageGroupPath"); 
+             var MainPath = sessionStorage.getItem("MainPath");
+             if (welcomePath === 'test'&& MainPath === 'test'){
+                 this.EPGLog({
+                     OperationCode: 'portal params',
+                     Detail: JSON.stringify({
+                         domain,
+                         indexUrl: ip + iptvPath
+                     })
+                 });
+             }
 
              this.doLogin();
          },
@@ -822,18 +857,22 @@
                  break;
          }
 
-         this.EPGLog({
-             OperationCode: '开机配置',
-             Detail: JSON.stringify({
-                 EPGIP: sessionStorage.getItem('EPGIP'),
-                 indexUrl: JSON.stringify({
-                     indexUrl: sessionStorage.getItem('indexUrl'),
+         var welcomePath = sessionStorage.getItem("WelcomePageGroupPath"); 
+         var MainPath = sessionStorage.getItem("MainPath");
+         if (welcomePath === 'test'&& MainPath === 'test'){
+             this.EPGLog({
+                 OperationCode: '开机配置',
+                 Detail: JSON.stringify({
                      EPGIP: sessionStorage.getItem('EPGIP'),
-                     MainPath: sessionStorage.getItem("MainPath"),
-                     isFirstStart: isFirstStart,
-                 }),
-             })
-         });
+                     indexUrl: JSON.stringify({
+                         indexUrl: sessionStorage.getItem('indexUrl'),
+                         EPGIP: sessionStorage.getItem('EPGIP'),
+                         MainPath: sessionStorage.getItem("MainPath"),
+                         isFirstStart: isFirstStart,
+                     }),
+                 })
+             });
+         }
 
      },
  }

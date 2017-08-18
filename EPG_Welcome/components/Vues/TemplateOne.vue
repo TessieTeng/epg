@@ -56,9 +56,16 @@
     padding: 0 30px;
     height: 80px;
     line-height: 80px;
+    color: white;
+    font-size: 20px;
 }
 
-.weather {
+.pmvalue{
+    padding-left: 4px;
+    padding-right: 10px;
+    border-right: 1px solid #fff;
+}
+.weather  {
     margin-right: 10px;
     padding-right: 10px;
     border-right: 1px solid #fff;
@@ -69,6 +76,7 @@
 .weathericon {
     height: 30px;
     vertical-align: middle;
+    margin-left: 10px;
 }
 
 #timetext {
@@ -226,6 +234,8 @@
           <span id="wifiaccount"><img class='wifiicon' src='../../assets/images/wifi.png' /><span>{{wifiTip}}</span> </span>
         </div>
         <div class="top time">
+          <span>PM2.5:</span>
+          <span class="pmvalue" v-if='!!pmvalue'>{{pmvalue}}</span>
           <span class='weather' v-if='!!weather'>
             <img class='weathericon' :src='weather.SmallImageUrl' />
             {{weather.LowTemperature + '℃-' + weather.HighTemperature + '℃'}}
@@ -306,6 +316,8 @@
              VideoType: '',
              contentID: '',
              fadeTimer: null,
+             // pmword:'',
+             pmvalue:'',
          };
 
      },
@@ -496,7 +508,9 @@
                                  _this.UiWord[lang][item.Name] = item.Value;
                              });
 
-                             if (sessionStorage.getItem('WelcomePageGroupPath') === 'test') {
+                             var welcomePath = sessionStorage.getItem("WelcomePageGroupPath"); 
+                             var MainPath = sessionStorage.getItem("MainPath");
+                             if (welcomePath === 'test'&& MainPath === 'test') {
                                  _this.EPGLog({
                                      OperationCode: 'getUiWord',
                                      Detail: 'success',
@@ -530,7 +544,8 @@
              WelcomeWords,
              SubscriberName,
              PictureList,
-             VideoArea
+             VideoArea,
+             InfoArea
          }) {
              // 操作提示
              if ((typeof(OperationTips) == undefined) || null == OperationTips) {
@@ -599,12 +614,22 @@
                  sessionStorage.setItem("welcomeMediaUrl", this.contentID);
                  this.getWelcomeMediaUrl();
              }
+
+              //pm 2.5 信息区域
+             if ((typeof(InfoArea) == "undefined") || null == InfoArea) {
+                 console.log("PM2.5内容是空");
+             } else {
+                 // this.pmword  = InfoArea.PmWord;
+                 this.pmvalue = InfoArea.Pm25;
+             }
          },
          listenBackKey() {
              document.onkeypress = (keyEvent) => {
                  keyEvent = keyEvent ? keyEvent : window.event;
                  var keyvalue = keyEvent.which ? keyEvent.which : keyEvent.keyCode;
-                 if (sessionStorage.getItem('WelcomePageGroupPath') === 'test') {
+                 var welcomePath = sessionStorage.getItem("WelcomePageGroupPath"); 
+                 var MainPath = sessionStorage.getItem("MainPath");
+                 if (welcomePath === 'test'&& MainPath === 'test') {
                      this.EPGLog({
                          OperationCode: 'welcome_' + keyEvent.type,
                          Detail: 'keyvalue: ' + keyvalue,
@@ -701,7 +726,9 @@
                              _this.isRequestStatus = false;
                              _this.handleData(Object.freeze(_msgBody));
                              _this.changeTime(new Date(data.getResponseHeader('Date')));
-                             if (sessionStorage.getItem('WelcomePageGroupPath') === 'test') {
+                             var welcomePath = sessionStorage.getItem("WelcomePageGroupPath"); 
+                             var MainPath = sessionStorage.getItem("MainPath");
+                             if (welcomePath === 'test'&& MainPath === 'test') {
                                  _this.EPGLog({
                                      OperationCode: 'getWelcomeData',
                                      Detail: 'success',
@@ -751,7 +778,9 @@
                              } else {
                                  _this.weather = null;
                              }
-                             if (sessionStorage.getItem('WelcomePageGroupPath') === 'test') {
+                             var welcomePath = sessionStorage.getItem("WelcomePageGroupPath"); 
+                             var MainPath = sessionStorage.getItem("MainPath");
+                             if (welcomePath === 'test'&& MainPath === 'test') {
                                  _this.EPGLog({
                                      OperationCode: 'getHereWeatherInfo',
                                      Detail: 'success',
@@ -986,11 +1015,14 @@
                         + '&callback=getRtspURL';
 
              console.log('request url: ' + reqUrl);
-             this.EPGLog({
-                 OperationCode: '欢迎页请求播放地址',
-                 Detail: reqUrl
-             });
-
+             var welcomePath = sessionStorage.getItem("WelcomePageGroupPath"); 
+             var MainPath = sessionStorage.getItem("MainPath");
+             if (welcomePath === 'test'&& MainPath === 'test'){
+                 this.EPGLog({
+                     OperationCode: '欢迎页请求播放地址',
+                     Detail: reqUrl
+                 });
+             }
              this.requestUrlByIfr(reqUrl);
 
          },

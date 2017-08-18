@@ -445,11 +445,14 @@
 
                                  // 菜单栏宽度
                                  // _this.responsiveWidth();
-
-                                 _this.EPGLog({
-                                     OperationCode: '主页获取列表数据',
-                                     Detail: 'success',
-                                 });
+                                var welcomePath = sessionStorage.getItem("WelcomePageGroupPath"); 
+                                var MainPath = sessionStorage.getItem("MainPath");
+                                if (welcomePath === 'test'&& MainPath === 'test'){
+                                     _this.EPGLog({
+                                         OperationCode: '主页获取列表数据',
+                                         Detail: 'success',
+                                     });
+                                }
                              })
                          } else {
                              console.log("请求数据失败");
@@ -693,10 +696,14 @@
                          const _data = JSON.parse(data.response);
                          const _msgBody = _data.Message.MessageBody;
                          if (_msgBody.ResultCode == 200) {
-                             _this.EPGLog({
-                                 OperationCode: 'GetRoomMsgReq: ',
-                                 Detail: 'success',
-                             });
+                                var welcomePath = sessionStorage.getItem("WelcomePageGroupPath"); 
+                                var MainPath = sessionStorage.getItem("MainPath");
+                                if (welcomePath === 'test'&& MainPath === 'test'){
+                                     _this.EPGLog({
+                                         OperationCode: 'GetRoomMsgReq: ',
+                                         Detail: 'success',
+                                     });
+                                }
                              if (!!_msgBody.MsgList && !!_msgBody.MsgList.RoomMsg && _msgBody.MsgList.RoomMsg.length > 0) {
                                  _this.Height = _msgBody.Height;
                                  _this.Left = _msgBody.Left;
@@ -796,10 +803,15 @@
                         + '&callback=getRtspURL';
 
              console.log('request url: ' + reqUrl);
-             this.EPGLog({
-                 OperationCode: '主页请求播放地址',
-                 Detail: reqUrl
-             });
+                                    
+             var welcomePath = sessionStorage.getItem("WelcomePageGroupPath"); 
+             var MainPath = sessionStorage.getItem("MainPath");
+             if (welcomePath === 'test'&& MainPath === 'test'){
+                 this.EPGLog({
+                     OperationCode: '主页请求播放地址',
+                     Detail: reqUrl
+                 });
+             }
 
              this.requestUrlByIfr(reqUrl);
 
@@ -903,8 +915,9 @@
                  }
              }
          });
-
-         if (sessionStorage.getItem("MainPath") === 'test') {
+         var welcomePath = sessionStorage.getItem("WelcomePageGroupPath"); 
+         var MainPath = sessionStorage.getItem("MainPath");
+         if (welcomePath === 'test'&& MainPath === 'test') {
              this.EPGLog({
                  OperationCode: '盒子信息: ',
                  Detail: JSON.stringify({
