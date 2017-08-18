@@ -856,6 +856,13 @@
                      break;
                  case 8:
                      this.$dispatch('estop');
+
+                     const stbType = Authentication.CTCGetConfig('STBType');
+                     if (province === '陕西' && stbType === 'E900-S') {
+                         this.$router.go('/firstcategory');
+                         return false;
+                     }
+
                      if (this.backUrl) {
                          /*
                             返回根据传入的参数处理
