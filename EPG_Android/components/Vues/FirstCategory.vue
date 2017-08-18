@@ -489,7 +489,17 @@
                          var address = sessionStorage.getItem("indexUrl");
                          if (province === '陕西') {
                              window.location.href = sessionStorage.getItem("indexUrl");
-                         } else {
+                         }else if(province === '深圳'){
+                             var relatedInfo = item.RelatedInfo;
+                             if(relatedInfo === ""){
+                                 window.parent.location.href = sessionStorage.getItem("indexUrl");
+                             }else{
+                                let domain = Authentication.CTCGetConfig('EPGDomain');
+                                let ip = this.getIp(domain);
+                                let epgip = sessionStorage.getItem('EPGIP') || "219.133.42.120:4181";
+                                window.parent.location.href = ip +'/EPG/jsp/'+ relatedInfo+'?returnurl=http://'+ epgip +'/iptv/portal.html';
+                             }
+                         }else {
                              window.parent.location.href = sessionStorage.getItem("indexUrl");
                          }
                      });
@@ -870,16 +880,16 @@
          this.updateLastStore(0);
          //先隐藏客信，过几秒后显示
          document.querySelector(".hint").style.visibility = 'hidden';
-         switch (sessionStorage.getItem('province')) {
-             case '云南':
-             case '河南':
-             case '陕西':
-             case '湖北':
-                 this.getTvmsMsg();
-                 this.getRoomMsg();
-                 break;
-             default:
-                 break;
+         // switch (sessionStorage.getItem('province')) {
+         //     case '云南':
+         //     case '河南':
+         //     case '陕西':
+         //     case '湖北':
+         this.getTvmsMsg();
+         this.getRoomMsg();
+             //     break;
+             // default:
+             //     break;
          }
          this.$nextTick(() => {
              const bgMediaUrl = sessionStorage.getItem('bg_media_url');
