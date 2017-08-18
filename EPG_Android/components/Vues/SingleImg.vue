@@ -24,6 +24,7 @@
     </div>
 </template>
 <script>
+import store from '../../vuex/store';
 import Loading from '../Tools/Loading.vue';
 import Http from '../../assets/lib/Http';
 import {
@@ -92,17 +93,20 @@ export default {
             },
         },
 
+        store: store,
+
         vuex: {
             actions: {
                 updateIsMainLayout,
                 updateIsVideoPlay,
             },
-            getters: {
-                isVideoPlay: getIsVideoPlay,
-            },
+            // getters: {
+            //     isVideoPlay: getIsVideoPlay,
+            // },
         },
 
         ready() {
+            this.isVideoPlay = getIsVideoPlay(store.state);
             this.updateIsMainLayout(false);
             this.getQrCode(this.$route.params.id);
             if(this.isVideoPlay){
