@@ -885,13 +885,16 @@
          //     case '河南':
          //     case '陕西':
          //     case '湖北':
-         this.getTvmsMsg();
-         this.getRoomMsg();
-             //     break;
-             // default:
-             //     break;
-         }
+         //     case '深圳':
+         //        this.getTvmsMsg();
+         //        this.getRoomMsg();
+         //         break;
+         //     default:
+         //         break;
+         // }
          this.$nextTick(() => {
+             this.getTvmsMsg();
+             this.getRoomMsg();
              const bgMediaUrl = sessionStorage.getItem('bg_media_url');
              this.debug('' + 'bg_media_url: ' + bgMediaUrl + ', firstPlay: ' + this.firstVideoPlay + ', province: ' + sessionStorage.getItem('province'));
              if (!!bgMediaUrl && bgMediaUrl !== '0'&& bgMediaUrl.indexOf("rtsp")==-1) {
