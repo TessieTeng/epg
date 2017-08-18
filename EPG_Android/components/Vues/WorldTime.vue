@@ -85,6 +85,7 @@
     </div>
 </template>
 <script>
+import store from '../../vuex/store.js';
 import moment from 'moment';
 import Loading from '../Tools/Loading.vue';
 import Http from '../../assets/lib/Http';
@@ -229,16 +230,18 @@ export default {
             Loading,
         },
 
+        store: store,
         vuex: {
             actions: {
                 updateIsVideoPlay,
             },
-            getters: {
-                isVideoPlay: getIsVideoPlay,
-            },
+            // getters: {
+            //     isVideoPlay: getIsVideoPlay,
+            // },
         },
 
         ready() {
+            this.isVideoPlay = getIsVideoPlay(store.state);
             var hint = sessionStorage.getItem("currLangCode");
             if (hint === "eng") {
                 this.hint = "Current  Time";
