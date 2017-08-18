@@ -816,6 +816,14 @@
              this.requestUrlByIfr(reqUrl);
 
          },
+
+         stateInit() {
+             this.firstClassTab = getFirstClassTab(store.state);
+             this.firstVideoPlay = getFirstVideoPlay(store.state);
+             this.isMainLayout = getIsMainLayout(store.state);
+             this.isFirstEnterKeXin = getIsFirstEnterKeXin(store.state);
+             this.isVideoPlay = getIsVideoPlay(store.state);
+         }
      },
 
      store: store,
@@ -829,19 +837,21 @@
              updateLastStore,
              updateIsFirstEnterKeXin,
              updateIsVideoPlay,
-         },
-         getters: {
-             firstClassTab: getFirstClassTab,
-             firstVideoPlay: getFirstVideoPlay,
-             isMainLayout: getIsMainLayout,
-             isFirstEnterKeXin: getIsFirstEnterKeXin,
-             isVideoPlay: getIsVideoPlay,
          }
+         /* getters: {*/
+         /* firstClassTab: getFirstClassTab,*/
+         /* firstVideoPlay: getFirstVideoPlay,*/
+         /* isMainLayout: getIsMainLayout,*/
+         /* isFirstEnterKeXin: getIsFirstEnterKeXin,*/
+         /* isVideoPlay: getIsVideoPlay,*/
+         /* }*/
      },
      components: {
          Loading,
      },
      ready() {
+
+         this.stateInit();
 
          // 兼容UT盒子从main_outer.html进入时取不到currLangCode的问题
          if (/main_outer.html/.test(window.parent.location.pathname)) {
