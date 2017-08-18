@@ -934,7 +934,7 @@
                                  setChannels(channel);
                              } else {
                                  console.log('频道列表为空');
-                                 _this.goToIptv('频道列表为空');
+                                 /* _this.goToIptv('频道列表为空');*/
                              }
 
                          } else {
@@ -956,7 +956,10 @@
              });
          },
 
-         
+
+         goToIptv(msg) {
+             window.location.href = sessionStorage.getItem('indexUrl');
+         },
          requestUrlByIfr(url) {
 
              const ifr = document.createElement('iframe');
