@@ -24,6 +24,7 @@
 </template>
 <script>
 import Loading from '../Tools/Loading.vue';
+import store from '../../vuex/store';
 import Http from '../../assets/lib/Http';
 import {
     updateIsMainLayout,
@@ -43,20 +44,21 @@ export default {
                 showLoading: true,
             };
         },
-     
+
         vuex: {
             actions: {
                 updateIsMainLayout,
                 updateIsVideoPlay,
 
             },
-            getters: {
-                getScaleImgUrl,
-                isVideoPlay: getIsVideoPlay,
-            }
+            // getters: {
+            //     getScaleImgUrl,
+            //     isVideoPlay: getIsVideoPlay,
+            // }
         },
 
         ready() {
+            this.getScaleImgUrl = getScaleImgUrl(store.state);
             this.updateIsMainLayout(false);
             this.qrCode = this.getScaleImgUrl;
 
