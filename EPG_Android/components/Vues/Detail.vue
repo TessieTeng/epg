@@ -174,17 +174,23 @@
          'title',
      ],
 
+     store: store,
+
      vuex: {
          actions: {
              updateIsVideoPlay,
          },
-         getters: {
-             lastPicList: getLastPicList,
-             isVideoPlay: getIsVideoPlay,
-         }
+         /* getters: {*/
+         /* lastPicList: getLastPicList,*/
+         /* isVideoPlay: getIsVideoPlay,*/
+         /* }*/
      },
 
      methods: {
+         stateInit() {
+             this.lastPicList = getLastPicList(store.state);
+             this.isVideoPlay = getIsVideoPlay(store.state);
+         },
          debug(obj) {
 
              // config.js 中配置
@@ -238,6 +244,7 @@
      },
 
      ready() {
+         this.stateInit();
          this.pictureList = this.lastPicList;
          console.log('detail pic list: ' + this.pictureList);
          console.log("详情页面..." + this.isVideoPlay);
