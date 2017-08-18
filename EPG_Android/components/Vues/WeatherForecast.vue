@@ -179,6 +179,7 @@
 <script>
 import ImageLoader from '../../assets/lib/ImageLoader.js';
 import Loading from '../Tools/Loading.vue';
+import store from '../../vuex/store';
 import Http from '../../assets/lib/Http';
 import {
     updateIsVideoPlay,
@@ -323,15 +324,17 @@ export default {
 
         },
 
+        store: store,
         vuex: {
             actions: {
                 updateIsVideoPlay,
             },
-            getters: {
-                isVideoPlay: getIsVideoPlay,
-            },
+            // getters: {
+            //     isVideoPlay: getIsVideoPlay,
+            // },
         },
         ready() {
+            this.isVideoPlay = getIsVideoPlay(store.state);
             var hint = sessionStorage.getItem("currLangCode");
             if (hint === "chi") {
                 this.today = "今天";
