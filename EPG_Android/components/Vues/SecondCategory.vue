@@ -270,6 +270,7 @@
              });
          },
      },
+     store: store,
 
      vuex: {
          actions: {
@@ -278,11 +279,11 @@
              updateIsMainLayout,
              updateIsVideoPlay,
          },
-         getters: {
-             secondClassTab: getSecondClassTab,
-             isVideoPlay: getIsVideoPlay,
+         // getters: {
+         //     secondClassTab: getSecondClassTab,
+         //     isVideoPlay: getIsVideoPlay,
 
-         },
+         // },
 
      },
      components: {
@@ -290,6 +291,10 @@
      },
 
      ready() {
+
+        this.secondClassTab = getSecondClassTab(store.state);
+        this.isVideoPlay = getIsVideoPlay(store.state);
+
          this.isDebug = sessionStorage.getItem('EPG_DEBUG_SWITCHER') === 'open';
          this.updateIsMainLayout(false);
          this.getRootCategoryData(this.$route.params.id);
