@@ -294,6 +294,7 @@
          },
 
          itemFocus(idx) {
+         	 sessionStorage.setItem("jumpindex", idx);
              this.isFocus = true;
 
              // 提示问题暂时保留[TODO]
@@ -440,7 +441,9 @@
                                      document.getElementById("_" + _this.firstClassTab).focus();
                                  } else {
                                      var categary = document.getElementById("firstTabItem");
-                                     categary.children[0].children[0].focus();
+                                     var jumpindex = sessionStorage.getItem("jumpindex");
+                                     var myIndex = parseInt(jumpindex);
+                                     categary.children[myIndex].children[0].focus();
                                  }
 
                                  // 菜单栏宽度
