@@ -491,13 +491,15 @@
                              window.location.href = sessionStorage.getItem("indexUrl");
                          }else if(province === '深圳'){
                              var relatedInfo = item.RelatedInfo;
+                             let domain = Authentication.CTCGetConfig('EPGDomain');
+                             let ip = this.getIp(domain);
+                             let epgip = sessionStorage.getItem('EPGIP') || "219.133.42.120:4181";
                              if(relatedInfo === ""){
                                  window.parent.location.href = sessionStorage.getItem("indexUrl");
+                             }else if (relatedInfo.indexOf("=")>0) {
+                                 window.parent.location.href = ip +'/EPG/jsp/'+ relatedInfo+'&returnurl=http://'+ epgip +'/iptv/portal.html';
                              }else{
-                                let domain = Authentication.CTCGetConfig('EPGDomain');
-                                let ip = this.getIp(domain);
-                                let epgip = sessionStorage.getItem('EPGIP') || "219.133.42.120:4181";
-                                window.parent.location.href = ip +'/EPG/jsp/'+ relatedInfo+'?returnurl=http://'+ epgip +'/iptv/portal.html';
+                                window.parent.location.href = ip +'/EPG/jsp/'+ relatedInfo+'?returnurl=http%3A%2F%2F'+ epgip +'%2Fiptv%2Fportal.html';
                              }
                          }else {
                              window.parent.location.href = sessionStorage.getItem("indexUrl");
