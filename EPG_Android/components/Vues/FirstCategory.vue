@@ -294,6 +294,7 @@
          },
 
          itemFocus(idx) {
+         	 sessionStorage.setItem("jumpindex", idx);
              this.isFocus = true;
 
              // 提示问题暂时保留[TODO]
@@ -440,7 +441,9 @@
                                      document.getElementById("_" + _this.firstClassTab).focus();
                                  } else {
                                      var categary = document.getElementById("firstTabItem");
-                                     categary.children[0].children[0].focus();
+                                     var jumpindex = sessionStorage.getItem("jumpindex");
+                                     var myIndex = parseInt(jumpindex);
+                                     categary.children[myIndex].children[0].focus();
                                  }
 
                                  // 菜单栏宽度
@@ -489,7 +492,19 @@
                          var address = sessionStorage.getItem("indexUrl");
                          if (province === '陕西') {
                              window.location.href = sessionStorage.getItem("indexUrl");
-                         } else {
+                         }else if(province === '深圳'){
+                             var relatedInfo = item.RelatedInfo;
+                             let domain = Authentication.CTCGetConfig('EPGDomain');
+                             let ip = this.getIp(domain);
+                             let epgip = sessionStorage.getItem('EPGIP') || "219.133.42.120:4181";
+                             if(relatedInfo === ""){
+                                 window.parent.location.href = sessionStorage.getItem("indexUrl");
+                             }else if (relatedInfo.indexOf("=")>0) {
+                                 window.parent.location.href = ip +'/EPG/jsp/'+ relatedInfo+'&returnurl=http://'+ epgip +'/iptv/portal.html';
+                             }else{
+                                window.parent.location.href = ip +'/EPG/jsp/'+ relatedInfo+'?returnurl=http%3A%2F%2F'+ epgip +'%2Fiptv%2Fportal.html';
+                             }
+                         }else {
                              window.parent.location.href = sessionStorage.getItem("indexUrl");
                          }
                      });
@@ -870,18 +885,21 @@
          this.updateLastStore(0);
          //先隐藏客信，过几秒后显示
          document.querySelector(".hint").style.visibility = 'hidden';
-         switch (sessionStorage.getItem('province')) {
-             case '云南':
-             case '河南':
-             case '陕西':
-             case '湖北':
-                 this.getTvmsMsg();
-                 this.getRoomMsg();
-                 break;
-             default:
-                 break;
-         }
+         // switch (sessionStorage.getItem('province')) {
+         //     case '云南':
+         //     case '河南':
+         //     case '陕西':
+         //     case '湖北':
+         //     case '深圳':
+         //        this.getTvmsMsg();
+         //        this.getRoomMsg();
+         //         break;
+         //     default:
+         //         break;
+         // }
          this.$nextTick(() => {
+             this.getTvmsMsg();
+             this.getRoomMsg();
              const bgMediaUrl = sessionStorage.getItem('bg_media_url');
              this.debug('' + 'bg_media_url: ' + bgMediaUrl + ', firstPlay: ' + this.firstVideoPlay + ', province: ' + sessionStorage.getItem('province'));
              if (!!bgMediaUrl && bgMediaUrl !== '0'&& bgMediaUrl.indexOf("rtsp")==-1) {

@@ -813,7 +813,7 @@
 
 
          // 湖北和云南不采用此功能，且不能是链接路径
-         if (province !== '湖北' && province !== '云南' && province !== '深圳') {
+         if (province !== '湖北' && province !== '云南') {
              if (!isFirstStart && isFirstStart !== '1') {
                  sessionStorage.setItem('ISFIRSTSTART', '1');
              } else { // 直接进入主页面
