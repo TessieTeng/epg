@@ -741,8 +741,8 @@
              }
             
              if (!!window.Authentication) {
-                 //处理河南华为平台机顶盒按首页键和选项键界面卡死问题
-                 Authentication.CUSetConfig('EPGDomain', 'http://10.253.255.4/iptv/epggroup_mains/main_default/main.html');
+                 // //处理河南华为平台机顶盒按首页键和选项键界面卡死问题
+                 // Authentication.CUSetConfig('EPGDomain', 'http://10.253.255.4/iptv/epggroup_mains/main_default/main.html');
                  //处理中兴平台 直播(F1)、回看(F2)、点播(F3)、资讯(F4) 点击报错(10071)
                  Authentication.CUSetConfig('ServiceEntry','URL="",HotKey="275",Desc="null"');
                  Authentication.CUSetConfig('ServiceEntry','URL="",HotKey="276",Desc="null"');
