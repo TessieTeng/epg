@@ -443,6 +443,7 @@
                                      var categary = document.getElementById("firstTabItem");
                                      var jumpindex = sessionStorage.getItem("jumpindex");
                                      var myIndex = parseInt(jumpindex);
+                                     categary.children[0].children[0].focus();
                                      categary.children[myIndex].children[0].focus();
                                  }
 
