@@ -858,7 +858,8 @@
                      this.$dispatch('estop');
 
                      const stbType = Authentication.CTCGetConfig('STBType');
-                     if (province === '陕西' && stbType === 'E900-S') {
+                     if (province === '陕西'
+                         && (stbType === 'E900-S' || stbType === 'DT741')) {
                          this.$router.go('/firstcategory');
                          return false;
                      }
