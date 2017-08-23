@@ -650,17 +650,17 @@
 
              // 这里固定写死，只要不包含查找的字符串，就直接重新设置
              // 这里也可以不用添加该判断，因为只会在开机的时候执行一次
-             if (currUrl.indexOf('113.136.46.40/iptv/portal.html') === -1) {
-                 sessionStorage.setItem('EPGDomain', currUrl);
-
-                 // 保障起见，将首页地址和272热键地址都修改成我们的portal地址
-                 Authentication.CTCSetConfig('EPGDomain', currUrl);
-                 Authentication.CTCSetConfig(
-                     'ServiceEntry',
-                     'URL=' + currUrl + ',HotKey="272",Desc="酒店EPG首页"'
-                 );
-             }
-
+             /* if (currUrl.indexOf('113.136.46.40/iptv/portal.html') === -1) {*/
+             /* sessionStorage.setItem('EPGDomain', currUrl);*/
+             /* */
+             /* // 保障起见，将首页地址和272热键地址都修改成我们的portal地址*/
+             /* Authentication.CTCSetConfig('EPGDomain', currUrl);*/
+             /* Authentication.CTCSetConfig(*/
+             /* 'ServiceEntry',*/
+             /* 'URL=' + currUrl + ',HotKey="272",Desc="酒店EPG首页"'*/
+             /* );*/
+             /* }*/
+             /* */
              this.doLogin();
          },
 
