@@ -495,7 +495,7 @@
                              let domain = Authentication.CTCGetConfig('EPGDomain');
                              let indexUrl = sessionStorage.getItem('indexUrl');
                              window.location.href = indexUrl + '?returnurl='
-                                                  + encodeURIComponent(domaiin);
+                                                  + encodeURIComponent(domain);
                          }else if(province === '深圳'){
                              var relatedInfo = item.RelatedInfo;
                              let domain = Authentication.CTCGetConfig('EPGDomain');
