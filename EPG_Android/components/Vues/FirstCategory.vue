@@ -494,6 +494,10 @@
                          if (province === '陕西') {
                              let domain = Authentication.CTCGetConfig('EPGDomain');
                              let indexUrl = sessionStorage.getItem('indexUrl');
+                             let platform = sessionStorage.getItem('from');
+                             if (platform === 'zte') {
+                                 domain = this.getIp(domain) + '/iptvepg/frame221/portal.jsp';
+                             }
                              window.location.href = indexUrl + '?returnurl='
                                                   + encodeURIComponent(domain);
                          }else if(province === '深圳'){
