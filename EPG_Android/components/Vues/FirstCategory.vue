@@ -492,7 +492,10 @@
                          }
                          var address = sessionStorage.getItem("indexUrl");
                          if (province === '陕西') {
-                             window.location.href = sessionStorage.getItem("indexUrl");
+                             let domain = Authentication.CTCGetConfig('EPGDomain');
+                             let indexUrl = sessionStorage.getItem('indexUrl');
+                             window.location.href = indexUrl + '?returnurl='
+                                                  + encodeURIComponent(domaiin);
                          }else if(province === '深圳'){
                              var relatedInfo = item.RelatedInfo;
                              let domain = Authentication.CTCGetConfig('EPGDomain');
