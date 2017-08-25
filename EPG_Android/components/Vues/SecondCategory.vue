@@ -9,7 +9,7 @@
      color: white;
      z-index: 10000000;
      word-wrap: break-word;
-     opacity: 0.5;
+     opacity: 0.6;
      overflow: scroll;
  }
 </style>
@@ -70,10 +70,33 @@
              }],
              childObj: {},
              isDebug: false,
-             backObjId: -1,
+             backObjId: -1
          };
      },
      methods: {
+         shanxiSecondPlay(contentID, routeInfo) {
+             this.$nextTick(() => {
+                 let plat = sessionStorage.getItem('from');
+                 let urls = '';
+                 let hwOrigin = sessionStorage.getItem('huaweiMediaUrlOrigin');
+                 let zteOrigin = sessionStorage.getItem('zhongxingMediaUrlOrigin');
+                 if (plat.toLowerCase() === "huawei") {
+                     urls = (hwOrigin
+                           + '/EPG/MediaService/SmallScreen.jsp?ContentID='
+                           + contentID + '&GetCntFlag=1');
+                 } else {
+                     urls = (zteOrigin
+                           + '/MediaService/SmallScreen?ContentID='
+                           + contentID + '&GetCntFlag=1');
+                 }
+                 console.log(urls);
+                 this.$dispatch('setMediaUrl', urls);
+                 this.$dispatch('efromsecond', {
+                     contentID,
+                     routeInfo
+                 });
+             });
+         },
 
          debug(obj) {
 
@@ -113,12 +136,13 @@
              }
 
          },
+
          excuteAction(item) {
              var _this = this;
              this.updateSecondClassTab(item.ObjectID);
 
              this.debug('item:' + JSON.stringify(item));
-             this.isDebug = false;
+             /* this.isDebug = false;*/
              switch (item.RelatedAction) {
                  case "weather_list":
                      this.$router.go("/weatherforecast");
@@ -144,10 +168,14 @@
 
                      break;
                  case "vod_play":
+                     let _this = this;
                      this.updateIsVideoPlay(false);
+                     this.isVideoPlay = false;
+                     sessionStorage.getItem('isVideoPlay', '0');
                      this.$dispatch('stopVideo');
                      this.debug('url:' + item.RelatedInfo);
-                     this.$router.replace({
+                     console.log(item.RelatedInfo);
+                     let routeInfo = {
                          path: '/mplayer',
                          params: {
                              id: item.ObjectID,
@@ -158,7 +186,12 @@
                              objId: this.backObjId,
                              isEnablePlayControl: 'disable',
                          },
-                     });
+                     };
+                     if (sessionStorage.getItem('province') === '陕西') {
+                         this.shanxiSecondPlay(item.RelatedInfo, routeInfo);
+                         return false;
+                     }
+                     this.$router.replace(routeInfo);
                      break;
                  case 'show_category':
                  case '':
@@ -292,26 +325,37 @@
 
      ready() {
 
-        this.secondClassTab = getSecondClassTab(store.state);
-        this.isVideoPlay = getIsVideoPlay(store.state);
+         this.$nextTick(() => {
+             this.secondClassTab = getSecondClassTab(store.state);
+             this.isVideoPlay = getIsVideoPlay(store.state);
 
-         this.isDebug = sessionStorage.getItem('EPG_DEBUG_SWITCHER') === 'open';
-         this.updateIsMainLayout(false);
-         this.getRootCategoryData(this.$route.params.id);
-         var bgMediaUrl=sessionStorage.getItem('bg_media_url');
-         this.debug('location:' + window.location.href);
-         this.debug('id:' + this.$route.params.id);
-         this.backObjId = this.$route.params.id;
-         // 判断是否有视频
-         if (!!bgMediaUrl && bgMediaUrl!=='0' && bgMediaUrl.indexOf("rtsp")==-1) {
-             this.hasVideo = true;
-             if (!this.isVideoPlay) {
-                 this.$dispatch("replay");
-                 this.updateIsVideoPlay(true);
+             this.isDebug = sessionStorage.getItem('EPG_DEBUG_SWITCHER') === 'open';
+             this.updateIsMainLayout(false);
+             this.getRootCategoryData(this.$route.params.id);
+             var bgMediaUrl=sessionStorage.getItem('bg_media_url');
+             this.debug('location:' + window.location.href);
+             this.debug('id:' + this.$route.params.id);
+             this.backObjId = this.$route.params.id;
+             console.log('---------------------------',
+                         bgMediaUrl, this.isVideoPlay,
+                         '---------------------------'
+             );
+             // 判断是否有视频
+             if (!!bgMediaUrl && bgMediaUrl!=='0' && bgMediaUrl.indexOf("rtsp")==-1) {
+                 this.hasVideo = true;
+                 if (sessionStorage.getItem('province') === '陕西') {
+                     this.$dispatch('eshanxiplay');
+                     this.updateIsVideoPlay(true);
+                 } else {
+                     if (!this.isVideoPlay) {
+                         this.$dispatch("replay");
+                         this.updateIsVideoPlay(true);
+                     }
+                 }
              }
-         }
 
-         this.tempList == [];
+             this.tempList == [];
+         });
      }
 
  }

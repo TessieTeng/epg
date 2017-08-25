@@ -833,7 +833,7 @@
              this.debug('key:' + keycode + '-' + this.isEnablePlayControl);
 
              // 需要处理的按键或消息
-             let enableKeys = [613, 181, 272, 8, 768];
+             let enableKeys = [613, 181, 272, 8, 768, 13];
              // 不需要播控
              if (this.isEnablePlayControl === 'disable') {
                  if (enableKeys.indexOf(keycode) === -1) {
@@ -864,6 +864,7 @@
                          return false;
                      }
 
+                     console.log('back url: ' + this.backUrl);
                      if (this.backUrl) {
                          /*
                             返回根据传入的参数处理
@@ -871,7 +872,7 @@
                          if (this.backUrl.indexOf('http') === 0) {
                              window.location.replace(decodeURIComponent(this.backUrl));
                          } else if (this.backUrl.indexOf('/') === 0) {
-                             this.debug('objid:' + this.objId);
+                             console.log('mplayer objid:' + this.objId);
                              if (!this.objId) {
                                  this.$router.replace(decodeURIComponent(this.backUrl));
                              } else {
@@ -914,7 +915,7 @@
                      this.$dispatch('evolume', 0);
                      return false;
                      break;
-                 case 13:
+                 case 13: return false; break;
                  case 263:  // pause or play
                      this.$dispatch(this.status === 'play' ? 'epause' : 'eresume');
                      return false;
@@ -1136,8 +1137,9 @@
          }
 
          this.debug('isEPC:' + this.isEnablePlayControl);
+         console.log('mp player query -------> ', route.query);
          this.config({
-             playUrl: this.playUrl,
+             playUrl: this.playUrl || sessionStorage.getItem('playUrl'),
              area: this.area,
              isChannel: false,
          }).play();

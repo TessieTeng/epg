@@ -483,7 +483,7 @@
                  case "iptv":
 
                      // 需要停止视频播放，但是不去释放资源
-                     this.$dispatch("stopVideo");
+                     this.$dispatch("stopVideo", 'norelease');
                      this.$nextTick(() => {
                          if (sessionStorage.getItem('province') === '河南') {
                              sessionStorage.setItem('Main2ChannelURL', window.location.href);
@@ -923,6 +923,8 @@
                              this.$dispatch('replay');
                              break;
                          case '陕西':
+                             this.$dispatch('eshanxiplay');
+                             break;
                          case '湖北':
                              let plat = sessionStorage.getItem('partner');
                              if (sessionStorage.getItem('province') === '陕西') {

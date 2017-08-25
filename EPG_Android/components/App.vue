@@ -180,7 +180,7 @@
 </style>
 <template>
     <!-- 路由外链 -->
-    <div>
+    <div">
         <router-view></router-view>
         <!--  <div class="MM">
              <div class="one" id="videoPlay">aaaaaaaaaaaaaaa</div>
@@ -220,6 +220,8 @@
              isVersionInfoShow: false,
              showVersionInfoTimer: null,
              isDebug: false,
+             isSecondVideo: false,
+             routeInfo: null
          };
      },
      methods: {
@@ -326,12 +328,12 @@
              /* */
          },
 
-         stop() {
+         stop(flag) {
              if (!this.mp) {
                  return;
              }
              this.mp.stop();
-             if (sessionStorage.getItem('province') !== '陕西') {
+             if (sessionStorage.getItem('province') !== '陕西' || flag !== 'norelease') {
                  this.mp.releaseMediaPlayer(this.mp.getNativePlayerInstanceID());
              }
              this.mp = null;
@@ -488,7 +490,13 @@
              if (!/\/firstcategory/.test(location.href)
                  && location.href.indexOf('firstcategory') === -1
              ) {
-                 history.back();
+                 console.log('app back location: ' + location.href);
+                 if (/\/secondcategory/.test(location.href)) {
+                     console.log('app back ------ go first category');
+                     this.$router.replace('/firstcategory');
+                 } else {
+                     history.back();
+                 }
                  // 云南要重新发起播放请求
                  if (province === '云南'
                      && !/\/scaleimg/.test(location.href)
@@ -617,7 +625,7 @@
              );
          },
 
-         /* trig event to change child component */ 
+         /* trig event to change child component */
          directionKeyHandler(keycode) {
              const isDetail = window.location.href.indexOf('/detail') > -1;
              if (isDetail) {
@@ -668,15 +676,31 @@
 
          //获取mediastr JSON对象
          getMediastr() {
+             let playUrl = '';
              var contentID = sessionStorage.getItem('bg_media_url');
+             if (this.isSecondVideo) {
+                 contentID = this.contentID;
+             }
              var mediaJson = window.frames["if_smallscreen"].getMediastr(contentID); //32位视频码
              const data = eval(mediaJson);
              for (var i = 0; i < data.length; i++) {
                  //console.log(data[i].mediaUrl);
-                 var playUrl = data[i].mediaUrl;
+                 playUrl = data[i].mediaUrl;
                  sessionStorage.setItem('playUrl', playUrl);
              }
-             this.$dispatch('playVideo');
+
+             if (this.isSecondVideo) {
+                 this.routeInfo.query.playUrl = playUrl || sessionStorage.getItem('playUrl');;
+                 this.isSecondVideo = false;
+                 this.$router.replace(this.routeInfo);
+                 setTimeout(() => {
+                     window.frames['if_smallscreen'].src = '';
+                 }, 500);
+             } else {
+                 this.$dispatch('playVideo');
+             }
+
+             /* this.showMediaIframe = false;*/
          },
 
          // 组合键处理
@@ -881,9 +905,33 @@
                  },
              });
          },
-
      },
      events: {
+         eshanxiplay() {
+             var zhongxingMediaUrlOrigin = sessionStorage.getItem('zhongxingMediaUrlOrigin');
+             var huaweiMediaUrlOrigin = sessionStorage.getItem('huaweiMediaUrlOrigin');
+             var contentID = sessionStorage.getItem('bg_media_url');
+
+             let urls = '';
+             let plat = sessionStorage.getItem('partner');
+             if (sessionStorage.getItem('province') === '陕西') {
+                 plat = sessionStorage.getItem('from');
+             }
+
+             if (plat.toLowerCase() === "huawei") {
+                 urls = huaweiMediaUrlOrigin + '/EPG/MediaService/SmallScreen.jsp?ContentID=' + contentID + '&GetCntFlag=1';
+             } else {
+                 urls = zhongxingMediaUrlOrigin + '/MediaService/SmallScreen?ContentID=' + contentID + '&GetCntFlag=1';
+             }
+             this.$dispatch('setMediaUrl', urls);
+         },
+         efromsecond(obj) {
+             this.isSecondVideo = !this.isSecondVideo;
+             if (obj) {
+                 this.contentID = obj.contentID;
+                 this.routeInfo = obj.routeInfo;
+             }
+         },
 
          eback() {
              this.back();
@@ -929,15 +977,16 @@
              document.querySelector(".media").style.height = '0px';
              this.mp.refreshVideoDisplay();
          },
-         stopVideo() {
+         stopVideo(clear) {
              // var nativePlayerInstanceId = this.mp.getNativePlayerInstanceID();
              // this.mp.releaseMediaPlayer(nativePlayerInstanceId);
              // this.mp.stop();
-             this.stop();
+             this.stop(clear);
          },
          setMediaUrl(mediaUrl) {
              this.showMediaIframe = true;
              this.mediaurl = mediaUrl;
+             this.debug('URL:' + this.mediaurl);
          },
 
          gotowelcome() {
@@ -981,13 +1030,13 @@
          };
 
          const province = sessionStorage.getItem('province');
-        if (province == "河南" || province === '陕西' || province === '深圳') {
-            document.onkeydown = keyHandler;
-        }else{
-            document.onkeypress = keyHandler;
-            // changes 2
-            document.onkeydown = keyHandler; 
-        }
+         if (province == "河南" || province === '陕西' || province === '深圳') {
+             document.onkeydown = keyHandler;
+         }else{
+             document.onkeypress = keyHandler;
+             // changes 2
+             document.onkeydown = keyHandler;
+         }
          this.updateFirstClassTab(0);
          this.updateSecondClassTab(0);
      },

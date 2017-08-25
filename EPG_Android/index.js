@@ -18,6 +18,7 @@ import Store from "Vues/Store";
 import ScaleImg from "Vues/ScaleImg";
 import VersionInfo from "Vues/VersionInfo";
 import SpecialRecommendation from "Vues/SpecialRecommendation";
+import Empty from "Vues/Empty";
 
 Vue.use(VueRouter);
 
@@ -75,6 +76,9 @@ router.map({
     "/mplayer": {
         component: MPlayer,
     },
+    "/empty": {
+        component: Empty
+    }
 });
 
 router.redirect({ '/': '/firstcategory' });
