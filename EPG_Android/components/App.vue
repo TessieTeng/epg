@@ -180,7 +180,7 @@
 </style>
 <template>
     <!-- 路由外链 -->
-    <div">
+    <div>
         <router-view></router-view>
         <!--  <div class="MM">
              <div class="one" id="videoPlay">aaaaaaaaaaaaaaa</div>
