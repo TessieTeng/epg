@@ -922,8 +922,14 @@
                          case '云南':
                              this.$dispatch('replay');
                              break;
+                         case '陕西':
                          case '湖北':
-                             if (sessionStorage.getItem("partner") === "HUAWEI") {
+                             let plat = sessionStorage.getItem('partner');
+                             if (sessionStorage.getItem('province') === '陕西') {
+                                 plat = sessionStorage.getItem('from');
+                             }
+
+                             if (plat.toLowerCase() === "huawei") {
                                  urls = huaweiMediaUrlOrigin + '/EPG/MediaService/SmallScreen.jsp?ContentID=' + contentID + '&GetCntFlag=1';
                                  this.mediaurl = urls;
                              } else {
@@ -933,7 +939,6 @@
                              this.$dispatch('setMediaUrl', this.mediaurl);
                              break;
                          case '河南':
-                         case '陕西':
                              sessionStorage.setItem('playUrl', bgMediaUrl);
                              this.$dispatch('replay');
                              break;
