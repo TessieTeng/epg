@@ -513,7 +513,10 @@
                              if (welcomePath === 'test'&& MainPath === 'test') {
                                  _this.EPGLog({
                                      OperationCode: 'getUiWord',
-                                     Detail: 'success',
+                                     Detail: JSON.stringify({
+                                             reqBody: tmpObj,
+                                             data: data.response,
+                                    }),
                                  });
                              }
                          } else {
@@ -731,7 +734,10 @@
                              if (welcomePath === 'test'&& MainPath === 'test') {
                                  _this.EPGLog({
                                      OperationCode: 'getWelcomeData',
-                                     Detail: 'success',
+                                     Detail: JSON.stringify({
+                                             reqBody: tmpObj,
+                                             data: data.response,
+                                     }),
                                  });
                              }
                          } else {
@@ -783,7 +789,10 @@
                              if (welcomePath === 'test'&& MainPath === 'test') {
                                  _this.EPGLog({
                                      OperationCode: 'getHereWeatherInfo',
-                                     Detail: 'success',
+                                     Detail: JSON.stringify({
+                                             reqBody: tmpObj,
+                                             data: data.response,
+                                     }),
                                  });
                              }
                          } else {

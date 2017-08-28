@@ -454,7 +454,10 @@
                                 if (welcomePath === 'test'&& MainPath === 'test'){
                                      _this.EPGLog({
                                          OperationCode: '主页获取列表数据',
-                                         Detail: 'success',
+                                         Detail: JSON.stringify({
+                                             reqBody: tmpObj,
+                                             data: data.response,
+                                        }),
                                      });
                                 }
                              })
@@ -724,7 +727,10 @@
                                 if (welcomePath === 'test'&& MainPath === 'test'){
                                      _this.EPGLog({
                                          OperationCode: 'GetRoomMsgReq: ',
-                                         Detail: 'success',
+                                         Detail: JSON.stringify({
+                                             reqBody: tmpObj,
+                                             data: data.response,
+                                        }),
                                      });
                                 }
                              if (!!_msgBody.MsgList && !!_msgBody.MsgList.RoomMsg && _msgBody.MsgList.RoomMsg.length > 0) {
