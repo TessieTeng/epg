@@ -567,7 +567,7 @@
                      const url = item.RelatedInfo;
                      this.debug('RelatedInfo:' + url);
                      this.$dispatch('stopVideo');
-                     this.$router.replace({
+                     this.$router.go({
                          path: "/mplayer",
                          query: {
                              playUrl: item.RelatedInfo,
