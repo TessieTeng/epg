@@ -149,6 +149,7 @@
     isReinit: false,    // 可选
     });
   */
+ import Http from "../../assets/lib/Http";
  export default {
      data() {
          return {
@@ -647,13 +648,13 @@
              // 测试url发生变化可以正常发起重新播放逻辑
              setTimeout(() => {
                  this.playUrl = 'http://42.236.123.10/iptv/clist/vod/yanguiren.ts';
-                       this.area = {
-                           type: 0,
-                           x: 100,
-                           y: 200,
-                           w: 300,
-                           h: 400
-                       };
+                 this.area = {
+                     type: 0,
+                     x: 100,
+                     y: 200,
+                     w: 300,
+                     h: 400
+                 };
              }, 20000);
          },
 
