@@ -513,7 +513,7 @@
                              }else if (relatedInfo.indexOf("=")>0) {
                                  window.parent.location.href = ip +'/EPG/jsp/'+ relatedInfo+'&returnurl=http://'+ epgip +'/iptv/portal.html';
                              }else{
-                                window.parent.location.href = ip +'/EPG/jsp/'+ relatedInfo+'?returnurl=http%3A%2F%2F'+ epgip +'%2Fiptv%2Fportal.html';
+                                window.parent.location.href = ip +'/EPG/jsp/'+ relatedInfo+'?returnurl=http://'+ epgip +'/iptv/portal.html';
                              }
                          }else {
                              window.parent.location.href = sessionStorage.getItem("indexUrl");
@@ -879,7 +879,6 @@
          Loading,
      },
      ready() {
-
          this.stateInit();
 
          // 兼容UT盒子从main_outer.html进入时取不到currLangCode的问题
