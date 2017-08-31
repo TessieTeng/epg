@@ -294,7 +294,7 @@
          },
 
          itemFocus(idx) {
-         	 sessionStorage.setItem("jumpindex", idx);
+             sessionStorage.setItem("jumpindex", idx);
              this.isFocus = true;
 
              // 提示问题暂时保留[TODO]
@@ -442,24 +442,28 @@
                                  } else {
                                      var categary = document.getElementById("firstTabItem");
                                      var jumpindex = sessionStorage.getItem("jumpindex");
-                                     var myIndex = parseInt(jumpindex);
+                                     var myIndex = parseInt(jumpindex, 10);
                                      categary.children[0].children[0].focus();
-                                     categary.children[myIndex].children[0].focus();
+                                     if (typeof(myIndex) === 'number'
+                                         && (myIndex >=0 && myIndex <= 6)
+                                     ) {
+                                         categary.children[myIndex].children[0].focus();
+                                     }
                                  }
 
                                  // 菜单栏宽度
                                  // _this.responsiveWidth();
-                                var welcomePath = sessionStorage.getItem("WelcomePageGroupPath"); 
-                                var MainPath = sessionStorage.getItem("MainPath");
-                                if (welcomePath === 'test'&& MainPath === 'test'){
+                                 var welcomePath = sessionStorage.getItem("WelcomePageGroupPath");
+                                 var MainPath = sessionStorage.getItem("MainPath");
+                                 if (welcomePath === 'test'&& MainPath === 'test'){
                                      _this.EPGLog({
                                          OperationCode: '主页获取列表数据',
                                          Detail: JSON.stringify({
                                              reqBody: tmpObj,
                                              data: data.response,
-                                        }),
+                                         }),
                                      });
-                                }
+                                 }
                              })
                          } else {
                              console.log("请求数据失败");
@@ -513,7 +517,7 @@
                              }else if (relatedInfo.indexOf("=")>0) {
                                  window.parent.location.href = ip +'/EPG/jsp/'+ relatedInfo+'&returnurl=http://'+ epgip +'/iptv/portal.html';
                              }else{
-                                window.parent.location.href = ip +'/EPG/jsp/'+ relatedInfo+'?returnurl=http%3A%2F%2F'+ epgip +'%2Fiptv%2Fportal.html';
+                                 window.parent.location.href = ip +'/EPG/jsp/'+ relatedInfo+'?returnurl=http%3A%2F%2F'+ epgip +'%2Fiptv%2Fportal.html';
                              }
                          }else {
                              window.parent.location.href = sessionStorage.getItem("indexUrl");
@@ -722,17 +726,17 @@
                          const _data = JSON.parse(data.response);
                          const _msgBody = _data.Message.MessageBody;
                          if (_msgBody.ResultCode == 200) {
-                                var welcomePath = sessionStorage.getItem("WelcomePageGroupPath"); 
-                                var MainPath = sessionStorage.getItem("MainPath");
-                                if (welcomePath === 'test'&& MainPath === 'test'){
-                                     _this.EPGLog({
-                                         OperationCode: 'GetRoomMsgReq: ',
-                                         Detail: JSON.stringify({
-                                             reqBody: tmpObj,
-                                             data: data.response,
-                                        }),
-                                     });
-                                }
+                             var welcomePath = sessionStorage.getItem("WelcomePageGroupPath");
+                             var MainPath = sessionStorage.getItem("MainPath");
+                             if (welcomePath === 'test'&& MainPath === 'test'){
+                                 _this.EPGLog({
+                                     OperationCode: 'GetRoomMsgReq: ',
+                                     Detail: JSON.stringify({
+                                         reqBody: tmpObj,
+                                         data: data.response,
+                                     }),
+                                 });
+                             }
                              if (!!_msgBody.MsgList && !!_msgBody.MsgList.RoomMsg && _msgBody.MsgList.RoomMsg.length > 0) {
                                  _this.Height = _msgBody.Height;
                                  _this.Left = _msgBody.Left;
@@ -832,8 +836,8 @@
                         + '&callback=getRtspURL';
 
              console.log('request url: ' + reqUrl);
-                                    
-             var welcomePath = sessionStorage.getItem("WelcomePageGroupPath"); 
+
+             var welcomePath = sessionStorage.getItem("WelcomePageGroupPath");
              var MainPath = sessionStorage.getItem("MainPath");
              if (welcomePath === 'test'&& MainPath === 'test'){
                  this.EPGLog({
@@ -964,7 +968,7 @@
                  }
              }
          });
-         var welcomePath = sessionStorage.getItem("WelcomePageGroupPath"); 
+         var welcomePath = sessionStorage.getItem("WelcomePageGroupPath");
          var MainPath = sessionStorage.getItem("MainPath");
          if (welcomePath === 'test'&& MainPath === 'test') {
              this.EPGLog({
