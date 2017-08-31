@@ -742,8 +742,8 @@
 
              this.$router.go(this.routeInfo);
              /* setTimeout(() => {*/
-                 /* window.frames['if_smallscreen'].src = '';*/
-                 /* }, 500);*/
+             /* window.frames['if_smallscreen'].src = '';*/
+             /* }, 500);*/
          },
 
          //获取mediastr JSON对象
@@ -1104,10 +1104,14 @@
              });
 
              this.showMediaIframe = true;
-             if (this.mediaurl) {
-                 this.mediaurl = '';
-             }
-             window.frames['if_smallscreen'].src = '';
+             console.log(window.frames['if_smallscreen']);
+             let frame = null;
+             /* if (!window.frames['if_smallscreen']) {*/
+             /* frame = document.getElementById('if_smallscreen');*/
+             /* frame.src = '';*/
+             /* } else {*/
+             /* window.frames['if_smallscreen'].src = '';*/
+             /* }*/
              this.mediaurl = mediaUrl;
              console.log('setMediaUrl: ' + this.mediaurl);
              this.debug('URL:' + this.mediaurl);
