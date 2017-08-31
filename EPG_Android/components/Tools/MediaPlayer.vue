@@ -204,6 +204,42 @@
      },
 
      methods: {
+         EPGLog(params = {
+             OperationCode: '',
+             Detail: ''
+         }) {
+             let path = sessionStorage.getItem('MainPath');
+
+             if (path !== 'test') {
+                 return false;
+             }
+
+             const tmpObj = {
+                 "Message": {
+                     "MessageType": "EPGLogReq",
+                     "MessageBody": {
+                         "USERID": sessionStorage.getItem("UserID"),
+                         "HostID": sessionStorage.getItem("HostID"),
+                         "OperationCode": params.OperationCode,
+                         "Detail": params.Detail,
+                     },
+                 }
+             };
+
+             let repath = sessionStorage.getItem('relativePath');
+
+
+             Http({
+                 type: 'POST',
+                 url: (repath
+                     ? repath + '/epgservice/index.php?MessageType=EPGLogReq'
+                     : '/epgservice/index.php?MessageType=EPGLogReq'
+                 ),
+                 data: JSON.stringify(tmpObj),
+                 complete: function(data) {},
+                 error: function(err) {},
+             });
+         },
 
          // 对外初始化接口
          init() {
@@ -611,13 +647,13 @@
              // 测试url发生变化可以正常发起重新播放逻辑
              setTimeout(() => {
                  this.playUrl = 'http://42.236.123.10/iptv/clist/vod/yanguiren.ts';
-                 this.area = {
-                     type: 0,
-                     x: 100,
-                     y: 200,
-                     w: 300,
-                     h: 400
-                 };
+                       this.area = {
+                           type: 0,
+                           x: 100,
+                           y: 200,
+                           w: 300,
+                           h: 400
+                       };
              }, 20000);
          },
 
@@ -868,7 +904,7 @@
                      if (this.backUrl) {
                          /*
                             返回根据传入的参数处理
-                         */
+                          */
                          if (this.backUrl.indexOf('http') === 0) {
                              window.location.replace(decodeURIComponent(this.backUrl));
                          } else if (this.backUrl.indexOf('/') === 0) {
@@ -1121,28 +1157,37 @@
      },
 
      ready() {
-         this.debug('mp-ready');
-         this.isDebug = sessionStorage.getItem('EPG_DEBUG_SWITCHER') === 'open';
-         const route = this.$route;
-         this.debug('route:' + JSON.stringify(route));
-         // 如果是路由方式，则需要重新绑定事件处理
-         if (route && route.query) {
-             this.cacheEvent();
-             this.playUrl = route.query.playUrl || this.playUrl;
-             this.area = route.query.area || this.area;
-             this.objId = route.query.objId || this.objId;
-             this.backUrl = route.query.backUrl || this.backUrl;
-             // 播控开关
-             this.isEnablePlayControl = route.query.isEnablePlayControl;
-         }
+         this.$nextTick(() => {
+             this.debug('mp-ready');
+             this.isDebug = sessionStorage.getItem('EPG_DEBUG_SWITCHER') === 'open';
+             const route = this.$route;
+             this.debug('route:' + JSON.stringify(route));
+             // 如果是路由方式，则需要重新绑定事件处理
+             if (route && route.query) {
+                 this.cacheEvent();
+                 this.playUrl = route.query.playUrl || this.playUrl;
+                 this.area = route.query.area || this.area;
+                 this.objId = route.query.objId || this.objId;
+                 this.backUrl = route.query.backUrl || this.backUrl;
+                 // 播控开关
+                 this.isEnablePlayControl = route.query.isEnablePlayControl;
+             }
 
-         this.debug('isEPC:' + this.isEnablePlayControl);
-         console.log('mp player query -------> ', route.query);
-         this.config({
-             playUrl: this.playUrl || sessionStorage.getItem('playUrl'),
-             area: this.area,
-             isChannel: false,
-         }).play();
+             this.debug('isEPC:' + this.isEnablePlayControl);
+             console.log('mp player query -------> ', route.query);
+             this.EPGLog({
+                 OperationCode: 'MP ready',
+                 Detail: JSON.stringify({
+                     route: this.$route,
+                     secondUrl: sessionStorage.getItem('second_media_url')
+                 })
+             });
+             this.config({
+                 playUrl: this.playUrl || sessionStorage.getItem('second_media_url'),
+                 area: this.area,
+                 isChannel: false,
+             }).play();
+         });
      },
-};
+ };
 </script>

@@ -76,6 +76,7 @@
      methods: {
          shanxiSecondPlay(contentID, routeInfo) {
              this.$nextTick(() => {
+
                  let plat = sessionStorage.getItem('from');
                  let urls = '';
                  let hwOrigin = sessionStorage.getItem('huaweiMediaUrlOrigin');
@@ -90,11 +91,18 @@
                            + contentID + '&GetCntFlag=1');
                  }
                  console.log(urls);
-                 this.$dispatch('setMediaUrl', urls);
+                 sessionStorage.setItem('s_main_isSecondVideo', '1');
                  this.$dispatch('efromsecond', {
                      contentID,
                      routeInfo
                  });
+
+                 let secondMediaUrl = sessionStorage.getItem('second_media_url');
+                 if (secondMediaUrl) {
+                     this.$dispatch('gomplayer');
+                 } else {
+                     this.$dispatch('setMediaUrl', urls);
+                 }
              });
          },
 
@@ -140,6 +148,7 @@
          excuteAction(item) {
              var _this = this;
              this.updateSecondClassTab(item.ObjectID);
+             sessionStorage.setItem('epg_leave_page', 'second');
 
              this.debug('item:' + JSON.stringify(item));
              /* this.isDebug = false;*/
@@ -191,7 +200,8 @@
                          this.shanxiSecondPlay(item.RelatedInfo, routeInfo);
                          return false;
                      }
-                     this.$router.replace(routeInfo);
+                     /* this.$router.replace(routeInfo);*/
+                     this.$router.go(routeInfo);
                      break;
                  case 'show_category':
                  case '':
@@ -333,8 +343,6 @@
              this.updateIsMainLayout(false);
              this.getRootCategoryData(this.$route.params.id);
              var bgMediaUrl=sessionStorage.getItem('bg_media_url');
-             this.debug('location:' + window.location.href);
-             this.debug('id:' + this.$route.params.id);
              this.backObjId = this.$route.params.id;
              console.log('---------------------------',
                          bgMediaUrl, this.isVideoPlay,

@@ -225,6 +225,35 @@
          };
      },
      methods: {
+         EPGLog(params = {
+             OperationCode: '',
+             Detail: ''
+         }) {
+             let path = sessionStorage.getItem('MainPath');
+
+             if (path !== 'test') {
+                 return false;
+             }
+
+             const tmpObj = {
+                 "Message": {
+                     "MessageType": "EPGLogReq",
+                     "MessageBody": {
+                         "USERID": sessionStorage.getItem("UserID"),
+                         "HostID": sessionStorage.getItem("HostID"),
+                         "OperationCode": params.OperationCode,
+                         "Detail": params.Detail,
+                     },
+                 }
+             };
+             Http({
+                 type: 'POST',
+                 url: sessionStorage.getItem("relativePath") + '/epgservice/index.php?MessageType=EPGLogReq',
+                 data: JSON.stringify(tmpObj),
+                 complete: function(data) {},
+                 error: function(err) {},
+             });
+         },
 
          // 组合键定义函数
          defineCombineKeyFn() {
@@ -493,9 +522,18 @@
                  console.log('app back location: ' + location.href);
                  if (/\/secondcategory/.test(location.href)) {
                      console.log('app back ------ go first category');
-                     this.$router.replace('/firstcategory');
+                     /* this.$router.replace('/firstcategory');*/
+                     this.$router.go('/firstcategory');
                  } else {
+                     /* if (province === '陕西'*/
+                     /* && (/\/store/.test(location.href)*/
+                     /* || /\/singleimg/.test(location.href))*/
+                     /* ) {*/
+                     /* this.$router.replace('/firstcategory');*/
+                     /* this.$router.go('/firstcategory');*/
+                     /* } else {*/
                      history.back();
+                     /* }*/
                  }
                  // 云南要重新发起播放请求
                  if (province === '云南'
@@ -674,10 +712,45 @@
              // };
          },
 
+         goMPlayer(playUrl) {
+             this.routeInfo.query.playUrl = sessionStorage.getItem('second_media_url');
+             console.log(this.routeInfo.query);
+             this.isSecondVideo = false;
+             sessionStorage.setItem('s_main_isSecondVedio', '0');
+             /* this.$router.replace(this.routeInfo);*/
+             this.EPGLog({
+                 OperationCode: 'goMPlayer',
+                 Detail: JSON.stringify({
+                     routeInfo: this.routeInfo,
+                     second: this.isSecondVideo,
+                     playUrl: playUrl
+                 })
+             });
+
+             let url = this.routeInfo.query.playUrl;
+
+             if (!url) {
+                 sessionStorage.setItem('s_main_isSecondVedio', '1');
+                 this.getMediaStr();
+                 return false;
+             }
+
+             this.EPGLog({
+                 OperationCode: 'ready to play second',
+                 Detail: JSON.stringify(this.routeInfo)
+             });
+
+             this.$router.go(this.routeInfo);
+             /* setTimeout(() => {*/
+                 /* window.frames['if_smallscreen'].src = '';*/
+                 /* }, 500);*/
+         },
+
          //获取mediastr JSON对象
          getMediastr() {
              let playUrl = '';
              var contentID = sessionStorage.getItem('bg_media_url');
+             this.isSecondVideo = sessionStorage.getItem('s_main_isSecondVideo') === '1';
              if (this.isSecondVideo) {
                  contentID = this.contentID;
              }
@@ -686,16 +759,31 @@
              for (var i = 0; i < data.length; i++) {
                  //console.log(data[i].mediaUrl);
                  playUrl = data[i].mediaUrl;
-                 sessionStorage.setItem('playUrl', playUrl);
+                 if (this.isSecondVideo) {
+                     sessionStorage.setItem('second_media_url', playUrl);
+                 } else {
+                     sessionStorage.setItem('playUrl', playUrl);
+                 }
              }
 
+             this.EPGLog({
+                 OperationCode: 'getMediastr',
+                 Detail: JSON.stringify({
+                     second: this.isSecondVideo,
+                     contentID: contentID,
+                     playUrl: sessionStorage.getItem('playUrl'),
+                     secondUrl: sessionStorage.getItem('second_media_url')
+                 })
+             });
+
+             console.log('--------> getmediastr:',
+                         this.isSecondVideo,
+                         sessionStorage.getItem('second_media_url'),
+                         sessionStorage.getItem('playUrl')
+             );
+
              if (this.isSecondVideo) {
-                 this.routeInfo.query.playUrl = playUrl || sessionStorage.getItem('playUrl');;
-                 this.isSecondVideo = false;
-                 this.$router.replace(this.routeInfo);
-                 setTimeout(() => {
-                     window.frames['if_smallscreen'].src = '';
-                 }, 500);
+                 this.goMPlayer();
              } else {
                  this.$dispatch('playVideo');
              }
@@ -907,7 +995,18 @@
          },
      },
      events: {
+         gomplayer() {
+             this.goMPlayer();
+             return true;
+         },
          eshanxiplay() {
+
+             let playUrl = sessionStorage.getItem('playUrl');
+             if (playUrl) { // 地址存在了就不用重复获取了
+                 this.$dispatch('playVideo');
+                 return false;
+             }
+
              var zhongxingMediaUrlOrigin = sessionStorage.getItem('zhongxingMediaUrlOrigin');
              var huaweiMediaUrlOrigin = sessionStorage.getItem('huaweiMediaUrlOrigin');
              var contentID = sessionStorage.getItem('bg_media_url');
@@ -923,10 +1022,11 @@
              } else {
                  urls = zhongxingMediaUrlOrigin + '/MediaService/SmallScreen?ContentID=' + contentID + '&GetCntFlag=1';
              }
+             console.log('eshanxiplay: ' + window.location.href);
              this.$dispatch('setMediaUrl', urls);
          },
          efromsecond(obj) {
-             this.isSecondVideo = !this.isSecondVideo;
+             this.isSecondVideo = sessionStorage.getItem('s_main_isSecondVideo') === '1';
              if (obj) {
                  this.contentID = obj.contentID;
                  this.routeInfo = obj.routeInfo;
@@ -984,8 +1084,32 @@
              this.stop(clear);
          },
          setMediaUrl(mediaUrl) {
+             // 如果播放地址已经存在了，就不用再重新发请求获取了
+             let province = sessionStorage.getItem('province');
+             if (province === '陕西' && this.isSecondVideo) {
+                 let secondMediaUrl = sessionStorage.getItem('second_media_url');
+                 if (secondMediaUrl) {
+                     this.goMPlayer(secondMediaUrl);
+                     return false;
+                 }
+             } // end
+
+             this.EPGLog({
+                 OperationCode: 'setMediaUrl',
+                 Detail: JSON.stringify({
+                     isSecond: this.isSecondVideo,
+                     secondMediaUrl: sessionStorage.getItem('second_media_url'),
+                     mediaurl: this.mediaurl
+                 })
+             });
+
              this.showMediaIframe = true;
+             if (this.mediaurl) {
+                 this.mediaurl = '';
+             }
+             window.frames['if_smallscreen'].src = '';
              this.mediaurl = mediaUrl;
+             console.log('setMediaUrl: ' + this.mediaurl);
              this.debug('URL:' + this.mediaurl);
          },
 
