@@ -227,21 +227,18 @@
          };
      },
      methods: {
-         EPGLog(params = {
+          EPGLog(params = {
              OperationCode: '',
-             Detail: ''
+             Detail: '',
          }) {
-             let path = sessionStorage.getItem('MainPath');
 
-             if (path !== 'test') {
-                 return false;
-             }
+             const path = sessionStorage.getItem("WelcomePageGroupPath");
 
              const tmpObj = {
                  "Message": {
                      "MessageType": "EPGLogReq",
                      "MessageBody": {
-                         "USERID": sessionStorage.getItem("UserID"),
+                         "USERID": sessionStorage.getItem("USERID"),
                          "HostID": sessionStorage.getItem("HostID"),
                          "OperationCode": params.OperationCode,
                          "Detail": params.Detail,
@@ -256,7 +253,6 @@
                  error: function(err) {},
              });
          },
-
          // 组合键定义函数
          defineCombineKeyFn() {
              let showVerInfoCB = () => {

@@ -233,7 +233,32 @@
      },
 
      methods: {
+          EPGLog(params = {
+             OperationCode: '',
+             Detail: '',
+         }) {
 
+             const path = sessionStorage.getItem("WelcomePageGroupPath");
+
+             const tmpObj = {
+                 "Message": {
+                     "MessageType": "EPGLogReq",
+                     "MessageBody": {
+                         "USERID": sessionStorage.getItem("USERID"),
+                         "HostID": sessionStorage.getItem("HostID"),
+                         "OperationCode": params.OperationCode,
+                         "Detail": params.Detail,
+                     },
+                 }
+             };
+             Http({
+                 type: 'POST',
+                 url: sessionStorage.getItem("relativePath") + '/epgservice/index.php?MessageType=EPGLogReq',
+                 data: JSON.stringify(tmpObj),
+                 complete: function(data) {},
+                 error: function(err) {},
+             });
+         },
          show(els, type) {
 
              let visible = type ? 'visible' : 'hidden';
@@ -621,30 +646,6 @@
              }
 
          },
-         EPGLog(params = {
-             OperationCode: '',
-             Detail: ''
-         }) {
-
-             const tmpObj = {
-                 "Message": {
-                     "MessageType": "EPGLogReq",
-                     "MessageBody": {
-                         "USERID": sessionStorage.getItem("UserID"),
-                         "HostID": sessionStorage.getItem("HostID"),
-                         "OperationCode": params.OperationCode,
-                         "Detail": params.Detail,
-                     },
-                 }
-             };
-             Http({
-                 type: 'POST',
-                 url: sessionStorage.getItem("relativePath") + '/epgservice/index.php?MessageType=EPGLogReq',
-                 data: JSON.stringify(tmpObj),
-                 complete: function(data) {},
-                 error: function(err) {},
-             });
-         },
          getObjStr(obj) {
              let str = '';
              for (const key in obj) {
@@ -964,7 +965,8 @@
                  }
              }
          });
-          if (this.welcomePath === 'test'&& this.MainPath === 'test') {
+         //this.welcomePath === 'test'&& this.MainPath === 'test'
+          if (true) {
              this.EPGLog({
                  OperationCode: 'FirstCategory_进入...',
                  Detail: JSON.stringify({
