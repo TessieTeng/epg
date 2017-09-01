@@ -534,22 +534,21 @@
                              _msgBody.VariableList.Variable.map(item => {
                                  _this.UiWord[lang][item.Name] = item.Value;
                              });
-
-                             if (_this.welcomePath === 'test'&& _this.MainPath === 'test') {
-                                 _this.EPGLog({
-                                     OperationCode: 'TemplateOne_getUiWord',
-                                     Detail: JSON.stringify({
-                                             reqBody: tmpObj,
-                                             data: data.response,
-                                    }),
-                                 });
-                             }
                          } else {
                              console.log("UiWord获取数据失败!");
                          }
                      } else {
                          console.log("UiWord网络请求失败");
                      }
+                      if (_this.welcomePath === 'test'&& _this.MainPath === 'test') {
+                        _this.EPGLog({
+                            OperationCode: 'TemplateOne_getUiWord',
+                            Detail: JSON.stringify({
+                                    reqBody: tmpObj,
+                                    data: data.status === 200?data.response:data,
+                            }),
+                        });
+                    }
                  },
                  error: function(err) {
                      console.log(err);
@@ -880,6 +879,15 @@
                      } else {
                          console.log("入住信息网络请求失败");
                      }
+                      if (_this.welcomePath === 'test'&& _this.MainPath === 'test') {
+                        _this.EPGLog({
+                            OperationCode: 'TemplateOne_getRoomInfoReq',
+                            Detail: JSON.stringify({
+                                    reqBody: tmpObj,
+                                    data: data.status === 200?data.response:data,
+                            }),
+                        });
+                    }
                  }
 
              });
@@ -940,7 +948,7 @@
 
                  //console.log('all channels: ' + JSON.stringify(listChannels));
              }
-
+             let IptvData = {};
              Http({
                  type: 'POST',
                  url: sessionStorage.getItem("relativePath") + '/epgservice/index.php?MessageType=GetChannelListReq',
@@ -951,36 +959,75 @@
                          const _msgBody = _data.Message.MessageBody;
                          if (_msgBody.ResultCode == 200) {
                              let channel = _msgBody.ChannelList.Channel;
+                             if (_this.welcomePath === 'test'&& _this.MainPath === 'test') {
+                                _this.EPGLog({
+                                    OperationCode: 'TemplateOne_getChannelList',
+                                    Detail: JSON.stringify({
+                                            reqBody: tmpObj,
+                                            data: data.response,
+                                    }),
+                                });
+                            }
                              // console.log('post channel list: ' + channel.length);
                              if (channel && channel.length > 0) {
                                  setChannels(channel);
                              } else {
                                  console.log('频道列表为空');
-                                 /* _this.goToIptv('频道列表为空');*/
                              }
 
                          } else {
                              console.log("频道数据获取失败");
-                             _this.goToIptv("频道数据获取失败");
+                             IptvData = { 
+                                "message": "频道数据获取失败",
+                                "tmpObj":tmpObj,
+                                "data": data, 
+                                };
+                             _this.goToIptv(IptvData);
                          }
                      } else {
                          console.log("频道网络请求失败");
-                         _this.goToIptv("频道网络请求失败");
+                         IptvData = { 
+                            "message": "频道网络请求失败",
+                            "tmpObj":tmpObj,
+                            "data": data, 
+                            };
+                         _this.goToIptv(IptvData);
                      }
-
+                     
                      _this.isRequestStatus = false;
                      _this.showLoading = false;
                  },
                  error: function(err) {
                      console.log(err);
-                     _this.goToIptv(err);
+                     IptvData = { 
+                        "message": "getChannelList_err",
+                        "tmpObj":tmpObj,
+                        "data": err, 
+                    };
+                     _this.goToIptv(IptvData);
                  },
              });
          },
 
+         goToIptv(IptvData) {
 
-         goToIptv(msg) {
-             window.location.href = sessionStorage.getItem('indexUrl');
+             let obj = {};
+             if ((typeof IptvData).toLowerCase() === 'object') {
+                 obj = IptvData;
+             } else if((typeof IptvData).toLowerCase() === 'string'){
+                obj = {message:IptvData};
+             }
+             if (this.welcomePath === 'test'&& this.MainPath === 'test'){
+                 this.EPGLog({
+                     OperationCode: 'portal_goToIptv-request broken',
+                     Detail:JSON.stringify({
+                        data: obj,
+                     })
+                 });
+             }
+
+             // alert(str);
+             location.href = sessionStorage.getItem("indexUrl");
          },
          requestUrlByIfr(url) {
 
@@ -1121,7 +1168,7 @@
 
         if (this.welcomePath === 'test'&& this.MainPath === 'test'){
             this.EPGLog({
-                OperationCode: 'templateOne_ready',
+                OperationCode: 'templateOne_进入...',
                 Detail: JSON.stringify({
                     location:window.location.href,
                     Province:province,

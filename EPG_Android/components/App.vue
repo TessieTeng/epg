@@ -253,6 +253,25 @@
                  error: function(err) {},
              });
          },
+         goToIptv(IptvData) {
+
+             let obj = {};
+             if ((typeof IptvData).toLowerCase() === 'object') {
+                 obj = IptvData;
+             } else if((typeof IptvData).toLowerCase() === 'string'){
+                obj = {message:IptvData};
+             }
+             if (this.welcomePath === 'test'&& this.MainPath === 'test'){
+                 this.EPGLog({
+                     OperationCode: 'portal_goToIptv-request broken',
+                     Detail:JSON.stringify({
+                        data: obj,
+                     })
+                 });
+             }
+
+            //  location.href = sessionStorage.getItem("indexUrl");
+         },
          // 组合键定义函数
          defineCombineKeyFn() {
              let showVerInfoCB = () => {
@@ -948,6 +967,7 @@
          getProgramInfo() {
              const _this = this;
              let UrlOrigin = sessionStorage.getItem('UrlOrigin');
+             let IptvData = {};
              const USERID = sessionStorage.getItem('USERID');
              const UserToken = sessionStorage.getItem('UserToken');
              const contentID = sessionStorage.getItem('bg_media_url');
@@ -975,7 +995,14 @@
                       + ', EPGIP:' + EPGIP
                       + ', testLink:' + testLink
              );
-
+             const tmpObj = {
+                 "Message": {
+                    "UrlOrigin": UrlOrigin,
+                    "USERID": USERID,
+                    "UserToken": UserToken,
+                    "contentID": contentID,
+                 }
+             }; 
              Http({
                  type: 'GET',
                  url: UrlOrigin + '/GetProgramInfo?programId=78&userFlag=' + USERID + '&userToken=' + UserToken + '&contentID=' + contentID + '&productIDs=',
@@ -985,11 +1012,36 @@
                      if (data.status === 200) {
                          const res = JSON.parse(data.response);
                          _this.selectionStart(res.assetId, UrlOrigin, UserToken);
+                         if (_this.welcomePath === 'test'&& _this.MainPath === 'test'){
+                            _this.EPGLog({
+                                OperationCode: 'main_getProgramInfo',
+                                Detail: JSON.stringify({
+                                    EPGIP: EPGIP,
+                                    TestLink: testLink,
+                                    tmpObj: tmpObj,
+                                    data: data.response,
+                                })
+                            });
+                        }
+                       
                      } else {
+                         IptvData = {                           
+                            "message": "获取不了url参数",
+                            "tmpObj":tmpObj,
+                            "data": data,                        
+                        };
+                         _this.goToIptv(IptvData);
                          console.log('error: ' + data.status);
                      }
+                     
                  },
                  error: function(err) {
+                    IptvData = {                           
+                        "message": "网络请求错误：",
+                        "tmpObj":tmpObj,  
+                        "err": err, 
+                    };
+                     _this.goToIptv(IptvData);
                      console.log('网络请求错误：' + err);
                  },
              });
@@ -997,6 +1049,14 @@
          selectionStart(assetId, UrlOrigin, UserToken) {
              this.debug('selectionStart')
              const _this = this;
+             let IptvData = {};
+             const tmpObj = {
+                 "Message": {
+                    "UrlOrigin": UrlOrigin,
+                    "assetId": assetId,
+                    "UserToken": UserToken,
+                 }
+             }; 
              Http({
                  type: 'GET',
                  url: UrlOrigin + '/SelectionStart?assetId=' + assetId + '&userToken=' + UserToken,
@@ -1006,15 +1066,35 @@
                      if (data.status === 200) {
                          const res = JSON.parse(data.response);
                          sessionStorage.setItem('playUrl', res.playUrl);
-
+                        if (_this.welcomePath === 'test'&& _this.MainPath === 'test'){
+                            _this.EPGLog({
+                                OperationCode: 'main_selectionStart',
+                                Detail: JSON.stringify({
+                                    tmpObj: tmpObj,
+                                    data: data.response,
+                                })
+                            });
+                        }
                          // _this.debug('playUrl:' + res.playUrl);
                          _this.$dispatch("playVideo");
                      } else {
+                        IptvData = {                           
+                            "message": "获取不了url参数",
+                            "tmpObj":tmpObj,
+                            "data": data,                        
+                        };
+                         _this.goToIptv(IptvData);
                          console.log('error: ' + data.status);
                      }
                  },
                  error: function(err) {
-                     console.log(err);
+                    IptvData = {                           
+                        "message": "网络请求错误",
+                        "tmpObj":tmpObj,
+                        "data": err,                        
+                    };
+                    _this.goToIptv(IptvData);
+                     console.log("网络请求错误"+err);
                  },
              });
          },

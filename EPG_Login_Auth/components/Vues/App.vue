@@ -237,6 +237,7 @@
                      "MessageBody": tmpBody,
                  }
              };
+             let IptvData = {};
 
              Http({
                  type: 'POST',
@@ -265,20 +266,34 @@
                              }
                              _this.doAuth();
                          } else {
+                             IptvData = { 
+                                "message": "doLogin请求数据失败",
+                                "tmpObj":tmpObj,
+                                "data": data, 
+                                };
+                            _this.goToIptv(IptvData);
                              console.log("doLogin请求数据失败");
-                             _this.goToIptv("doLogin请求数据失败");
-
                          }
                      } else {
+                         IptvData = { 
+                            "message": "doLogin网络请求失败",
+                            "tmpObj":tmpObj,
+                            "data": data, 
+                            };
+                         _this.goToIptv(IptvData);
                          console.log("doLogin网络请求失败");
-                         _this.goToIptv("doLogin网络请求失败");
                      }
 
                      _this.isRequestStatus = false;
                      _this.showLoading = false;
                  },
                  error: function(err) {
-                     _this.goToIptv(err);
+                     IptvData = { 
+                        "message": "doLogin_err",
+                        "tmpObj":tmpObj,
+                        "data": err, 
+                    };
+                     _this.goToIptv(IptvData);
                  },
              });
          },
@@ -298,7 +313,7 @@
                      },
                  }
              };
-
+            let IptvData = {};
              Http({
                  type: 'POST',
                  url: sessionStorage.getItem("relativePath") + '/epgservice/index.php?MessageType=DoAuthReq',
@@ -325,18 +340,34 @@
                              }
                              _this.getSysParam();
                          } else {
+                             IptvData = { 
+                                "message": "Auth请求数据失败",
+                                "tmpObj":tmpObj,
+                                "data": data, 
+                                };
+                            _this.goToIptv(IptvData);
                              console.log("Auth请求数据失败");
-                             _this.goToIptv("Auth请求数据失败");
                          }
                      } else {
                          console.log("Auth网络请求失败");
-                         _this.goToIptv("Auth网络请求失败");
+                          IptvData = { 
+                                "message": "Auth网络请求失败",
+                                "tmpObj":tmpObj,
+                                "data": data, 
+                                };
+                         _this.goToIptv(IptvData);
                      }
 
                      _this.isRequestStatus = false;
                      _this.showLoading = false;
                  },
                  error: function(err) {
+                      IptvData = { 
+                                "message": "Auth_err",
+                                "tmpObj":tmpObj,
+                                "data": err, 
+                                };
+                     _this.goToIptv(IptvData);
                      _this.goToIptv(err);
                  },
              });
@@ -361,7 +392,7 @@
                      }
                  }
              };
-
+            let IptvData = {};
              Http({
                  type: 'POST',
                  url: sessionStorage.getItem("relativePath") + '/epgservice/index.php?MessageType=GetSysParamReq',
@@ -392,11 +423,21 @@
                              }
                          } else {
                              console.log("视频数据获取失败");
-                             _this.goToIptv("视频数据获取失败");
+                              IptvData = { 
+                                "message": "视频数据获取失败",
+                                "tmpObj":tmpObj,
+                                "data": err, 
+                                };
+                            _this.goToIptv(IptvData);
                          }
                      } else {
                          console.log("视频网络请求失败");
-                         _this.goToIptv("视频网络请求失败");
+                         IptvData = { 
+                                "message": "视频网络请求失败",
+                                "tmpObj":tmpObj,
+                                "data": err, 
+                                };
+                        _this.goToIptv(IptvData);
                      }
 
                      _this.isRequestStatus = false;
@@ -404,7 +445,12 @@
                  },
                  error: function(err) {
                      console.log(err);
-                     _this.goToIptv(err);
+                     IptvData = { 
+                                "message": "getSysParam_err",
+                                "tmpObj":tmpObj,
+                                "data": err, 
+                                };
+                     _this.goToIptv(IptvData);
                  },
              });
 
@@ -426,22 +472,23 @@
              return str;
          },
 
-         goToIptv(err) {
+         goToIptv(IptvData) {
 
-             let str = '';
-             if ((typeof err).toLowerCase() === 'string') {
-                 str = err;
-             } else {
-                 str = this.getObjStr(err);
+             let obj = {};
+             if ((typeof IptvData).toLowerCase() === 'object') {
+                 obj = IptvData;
+             } else if((typeof IptvData).toLowerCase() === 'string'){
+                obj = {message:IptvData};
              }
              if (this.welcomePath === 'test'&& this.MainPath === 'test'){
                  this.EPGLog({
                      OperationCode: 'portal_goToIptv-request broken',
-                     Detail: str,
+                     Detail:JSON.stringify({
+                        data: obj,
+                     })
                  });
              }
 
-             // alert(str);
              location.href = sessionStorage.getItem("indexUrl");
          },
 
