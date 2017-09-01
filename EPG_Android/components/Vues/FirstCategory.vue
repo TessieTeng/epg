@@ -128,6 +128,8 @@
  export default {
      data() {
          return {
+             welcomePath: sessionStorage.getItem("WelcomePageGroupPath"),
+             MainPath: sessionStorage.getItem("MainPath"),
              showKeXin: false,
              isDebug: false,
              isRequestStatus: false,
@@ -453,11 +455,9 @@
 
                                  // 菜单栏宽度
                                  // _this.responsiveWidth();
-                                 var welcomePath = sessionStorage.getItem("WelcomePageGroupPath");
-                                 var MainPath = sessionStorage.getItem("MainPath");
-                                 if (welcomePath === 'test'&& MainPath === 'test'){
+                                 if (_this.welcomePath === 'test'&& _this.MainPath === 'test'){
                                      _this.EPGLog({
-                                         OperationCode: '主页获取列表数据',
+                                         OperationCode: 'FirstCategory_请求数据',
                                          Detail: JSON.stringify({
                                              reqBody: tmpObj,
                                              data: data.response,
@@ -726,17 +726,15 @@
                          const _data = JSON.parse(data.response);
                          const _msgBody = _data.Message.MessageBody;
                          if (_msgBody.ResultCode == 200) {
-                             var welcomePath = sessionStorage.getItem("WelcomePageGroupPath");
-                             var MainPath = sessionStorage.getItem("MainPath");
-                             if (welcomePath === 'test'&& MainPath === 'test'){
-                                 _this.EPGLog({
-                                     OperationCode: 'GetRoomMsgReq: ',
-                                     Detail: JSON.stringify({
-                                         reqBody: tmpObj,
-                                         data: data.response,
-                                     }),
-                                 });
-                             }
+                              if (_this.welcomePath === 'test'&& _this.MainPath === 'test'){
+                                     _this.EPGLog({
+                                         OperationCode: 'FirstCategory_GetRoomMsgReq: ',
+                                         Detail: JSON.stringify({
+                                             reqBody: tmpObj,
+                                             data: data.response,
+                                        }),
+                                     });
+                                }
                              if (!!_msgBody.MsgList && !!_msgBody.MsgList.RoomMsg && _msgBody.MsgList.RoomMsg.length > 0) {
                                  _this.Height = _msgBody.Height;
                                  _this.Left = _msgBody.Left;
@@ -837,11 +835,9 @@
 
              console.log('request url: ' + reqUrl);
 
-             var welcomePath = sessionStorage.getItem("WelcomePageGroupPath");
-             var MainPath = sessionStorage.getItem("MainPath");
-             if (welcomePath === 'test'&& MainPath === 'test'){
+              if (this.welcomePath === 'test'&& this.MainPath === 'test'){
                  this.EPGLog({
-                     OperationCode: '主页请求播放地址',
+                     OperationCode: 'FirstCategory_请求播放地址',
                      Detail: reqUrl
                  });
              }
@@ -968,11 +964,9 @@
                  }
              }
          });
-         var welcomePath = sessionStorage.getItem("WelcomePageGroupPath");
-         var MainPath = sessionStorage.getItem("MainPath");
-         if (welcomePath === 'test'&& MainPath === 'test') {
+          if (this.welcomePath === 'test'&& this.MainPath === 'test') {
              this.EPGLog({
-                 OperationCode: '盒子信息: ',
+                 OperationCode: 'FirstCategory_进入...',
                  Detail: JSON.stringify({
                      HostID: sessionStorage.getItem("HostID"),
                      UserID: sessionStorage.getItem("UserID"),

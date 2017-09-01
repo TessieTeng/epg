@@ -178,6 +178,8 @@
  export default {
      data() {
          return {
+             welcomePath: sessionStorage.getItem("WelcomePageGroupPath"),
+             MainPath: sessionStorage.getItem("MainPath"),
              storePicList: [],
              curList: [],
              curPage: 1,
@@ -197,6 +199,32 @@
      },
 
      methods: {
+         EPGLog(params = {
+             OperationCode: '',
+             Detail: '',
+         }) {
+
+             const path = sessionStorage.getItem("WelcomePageGroupPath");
+
+             const tmpObj = {
+                 "Message": {
+                     "MessageType": "EPGLogReq",
+                     "MessageBody": {
+                         "USERID": sessionStorage.getItem("USERID"),
+                         "HostID": sessionStorage.getItem("HostID"),
+                         "OperationCode": params.OperationCode,
+                         "Detail": params.Detail,
+                     },
+                 }
+             };
+             Http({
+                 type: 'POST',
+                 url: sessionStorage.getItem("relativePath") + '/epgservice/index.php?MessageType=EPGLogReq',
+                 data: JSON.stringify(tmpObj),
+                 complete: function(data) {},
+                 error: function(err) {},
+             });
+         },
          debug(obj) {
 
              if (!this.isDebug) { return; }
@@ -295,6 +323,15 @@
                      } else {
                          console.log("请求失败");
                      }
+                    if (_this.welcomePath === 'test'&& _this.MainPath === 'test') {
+                        _this.EPGLog({
+                            OperationCode: 'Store_获取数据',
+                            Detail: JSON.stringify({
+                                tmpObj: tmpObj,
+                                data: _msgBody.ResultCode == 200?data.response:data,
+                            }),
+                        });
+                    }
                  },
                  error: function(err) {
                      console.log(err);
@@ -312,6 +349,15 @@
                      imgUrl = item.PictureList.Picture[i].PictureUrl;
                  }
              }
+             if (this.welcomePath === 'test'&& this.MainPath === 'test') {
+                this.EPGLog({
+                    OperationCode: 'Store_scaleimg',
+                    Detail: JSON.stringify({
+                        imgObjectID: imgObjectID,
+                        imgUrl: imgUrl,
+                    }),
+                });
+            }
              this.updateScaleImgUrl(imgUrl);
              this.updateLastStore(imgObjectID);
              this.$router.go("/scaleimg");
@@ -357,6 +403,14 @@
          if (this.isVideoPlay) {
              this.$dispatch("stopVideo");
              this.updateIsVideoPlay(false);
+         }
+         if (this.welcomePath === 'test'&& this.MainPath === 'test') {
+             this.EPGLog({
+                 OperationCode: 'Store_进入...',
+                 Detail: JSON.stringify({
+                    backObjId: this.$route.params.id,
+                 }),
+             });
          }
      }
 

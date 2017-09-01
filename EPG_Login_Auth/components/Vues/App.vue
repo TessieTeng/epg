@@ -11,6 +11,8 @@
      data() {
          return {
              isRequestStatus: false,
+             welcomePath: sessionStorage.getItem("WelcomePageGroupPath"),
+             MainPath: sessionStorage.getItem("MainPath"),
              totalUrl: '',
              server_ip: '',
              group_name: '',
@@ -108,11 +110,9 @@
                  sessionStorage.setItem("csm_id", this.csm_id);
 
                  // 后期如果从url参数拿到indexUrl，则要在这里set到sessionStorage里面
-                 var welcomePath = sessionStorage.getItem("WelcomePageGroupPath"); 
-                 var MainPath = sessionStorage.getItem("MainPath");
-                 if (welcomePath === 'test'&& MainPath === 'test'){
+                 if (this.welcomePath === 'test'&& this.MainPath === 'test'){
                      this.EPGLog({
-                         OperationCode: 'getUrlParams',
+                         OperationCode: 'portal_getUrlParams',
                          Detail: JSON.stringify(jsonObj),
                      });
                  }
@@ -124,9 +124,7 @@
          },
 
          setConfig(config) {
-
              var setOne = function(cfg) {
-
                  for (let key in cfg) {
                      if (typeof(cfg[key]) === 'object') {
                          sessionStorage.setItem(key, JSON.stringify(cfg[key]));
@@ -143,6 +141,18 @@
              } else {
                  setOne(config);
              }
+
+             if (this.welcomePath === 'test'&& this.MainPath === 'test'){
+             this.EPGLog({
+                 OperationCode: 'poratl_setConfig',
+                 Detail: JSON.stringify({
+                     Config: JSON.stringify({
+                         Config: config,
+                         ConfigLenght:config.length,//!!!没打印出来
+                     }),
+                 })
+              });
+            }
          },
 
          getConfig() {
@@ -165,11 +175,10 @@
                  sessionStorage.setItem("UserToken", Authentication.CTCGetConfig('UserToken'));
                  sessionStorage.setItem("USERID", Authentication.CTCGetConfig("UserID"));
                  sessionStorage.setItem("STBID", Authentication.CTCGetConfig("STBID"));
-                 var welcomePath = sessionStorage.getItem("WelcomePageGroupPath"); 
-                 var MainPath = sessionStorage.getItem("MainPath");
-                 if (welcomePath === 'test'&& MainPath === 'test'){
+        
+                 if (this.welcomePath === 'test'&& this.MainPath === 'test'){
                      this.EPGLog({
-                         OperationCode: 'getConfig',
+                         OperationCode: 'portal_getConfig',
                          Detail: JSON.stringify({
                              EpgVersion: EpgVersion,
                              zhongxingMediaUrlOrigin: sessionStorage.getItem('zhongxingMediaUrlOrigin'),
@@ -243,11 +252,11 @@
                              sessionStorage.setItem("AdPath", _msgBody.AdPath);
                              sessionStorage.setItem("MainPath", _msgBody.MainPath);
                              sessionStorage.setItem("WelcomePageGroupPath", _msgBody.WelcomePageGroupPath);
-                             var welcomePath = sessionStorage.getItem("WelcomePageGroupPath"); 
-                             var MainPath = sessionStorage.getItem("MainPath");
-                             if (welcomePath === 'test'&& MainPath === 'test'){
+                            //  var welcomePath = sessionStorage.getItem("WelcomePageGroupPath"); 
+                            //  var MainPath = sessionStorage.getItem("MainPath");
+                             if (_this.welcomePath === 'test'&& _this.MainPath === 'test'){
                                  _this.EPGLog({
-                                     OperationCode: 'STBLoginReq',
+                                     OperationCode: 'portal_STBLoginReq',
                                      Detail: JSON.stringify({
                                          reqBody: tmpObj,
                                          data: data.response,
@@ -305,11 +314,9 @@
                              sessionStorage.setItem("LoginID", _msgBody.LoginID);
                              sessionStorage.setItem("RootCategoryID", _msgBody.RootCategoryID);
                              sessionStorage.setItem("Token", _msgBody.Token);
-                             var welcomePath = sessionStorage.getItem("WelcomePageGroupPath"); 
-                             var MainPath = sessionStorage.getItem("MainPath");
-                             if (welcomePath === 'test'&& MainPath === 'test'){
+                             if (_this.welcomePath === 'test'&& _this.MainPath === 'test'){
                                  _this.EPGLog({
-                                     OperationCode: 'DoAuthReq',
+                                     OperationCode: 'portal_DoAuthReq',
                                      Detail: JSON.stringify({
                                          reqBody: tmpObj,
                                          data: data.response,
@@ -367,11 +374,10 @@
                              _msgBody.ParamList.Param.map(item => {
                                  sessionStorage.setItem(item.Name, item.Value);
                              });
-                             var welcomePath = sessionStorage.getItem("WelcomePageGroupPath"); 
-                             var MainPath = sessionStorage.getItem("MainPath");
-                             if (welcomePath === 'test'&& MainPath === 'test'){
+                            
+                             if (_this.welcomePath === 'test'&& _this.MainPath === 'test'){
                                  _this.EPGLog({
-                                     OperationCode: 'GetSysParamReq',
+                                     OperationCode: 'portal_GetSysParamReq',
                                      Detail: JSON.stringify({
                                          reqBody: tmpObj,
                                          data: data.response,
@@ -428,11 +434,9 @@
              } else {
                  str = this.getObjStr(err);
              }
-             var welcomePath = sessionStorage.getItem("WelcomePageGroupPath"); 
-             var MainPath = sessionStorage.getItem("MainPath");
-             if (welcomePath === 'test'&& MainPath === 'test'){
+             if (this.welcomePath === 'test'&& this.MainPath === 'test'){
                  this.EPGLog({
-                     OperationCode: 'goToIptv-request broken',
+                     OperationCode: 'portal_goToIptv-request broken',
                      Detail: str,
                  });
              }
@@ -500,11 +504,9 @@
          },
 
          goToWelcome() {
-             var welcomePath = sessionStorage.getItem("WelcomePageGroupPath"); 
-             var MainPath = sessionStorage.getItem("MainPath");
-             if (welcomePath === 'test'&& MainPath === 'test'){
+             if (this.welcomePath === 'test'&& this.MainPath === 'test'){
                  this.EPGLog({
-                     OperationCode: 'goToWelcome-path',
+                     OperationCode: 'portal_goToWelcome-path',
                      Detail: JSON.stringify({
                          welcomePath: sessionStorage.getItem("WelcomePageGroupPath"),
                          location: window.location.href,
@@ -628,12 +630,9 @@
              // 拼接 iptv 地址
              indexUrl = "http://" + serverip + ':' + serverport + sessionStorage.getItem(key);
              sessionStorage.setItem("indexUrl", indexUrl);
-
-             var welcomePath = sessionStorage.getItem("WelcomePageGroupPath"); 
-             var MainPath = sessionStorage.getItem("MainPath");
-             if (welcomePath === 'test'&& MainPath === 'test'){
+             if (this.welcomePath === 'test'&& this.MainPath === 'test'){
                  this.EPGLog({
-                     OperationCode: '模板参数',
+                     OperationCode: 'portal_模板参数',
                      Detail: JSON.stringify({
                          userid: sessionStorage.getItem('userid'),
                          userGroup: sessionStorage.getItem('userGroup'),
@@ -686,11 +685,9 @@
                  );
              }
 
-             var welcomePath = sessionStorage.getItem("WelcomePageGroupPath"); 
-             var MainPath = sessionStorage.getItem("MainPath");
-             if (welcomePath === 'test'&& MainPath === 'test'){
+             if (this.welcomePath === 'test'&& this.MainPath === 'test'){
                  this.EPGLog({
-                     OperationCode: '模板参数',
+                     OperationCode: 'portal_模板参数',
                      Detail: JSON.stringify({
                          localIp: sessionStorage.getItem('localIp'),
                          relativePath: sessionStorage.getItem('relativePath'),
@@ -727,11 +724,9 @@
                  sessionStorage.setItem('indexUrl', indexUrl);
              }
 
-             var welcomePath = sessionStorage.getItem("WelcomePageGroupPath"); 
-             var MainPath = sessionStorage.getItem("MainPath");
-             if (welcomePath === 'test'&& MainPath === 'test'){
+             if (this.welcomePath === 'test'&& this.MainPath === 'test'){
                  this.EPGLog({
-                     OperationCode: '模板参数',
+                     OperationCode: 'portal_模板参数',
                      Detail: JSON.stringify({
                          from: sessionStorage.getItem('from'),
                          userid: sessionStorage.getItem('userid'),
@@ -784,9 +779,7 @@
              let iptvPath = this.ss('IPTVPath');
 
              sessionStorage.setItem('indexUrl', ip + iptvPath);
-             var welcomePath = sessionStorage.getItem("WelcomePageGroupPath"); 
-             var MainPath = sessionStorage.getItem("MainPath");
-             if (welcomePath === 'test'&& MainPath === 'test'){
+             if (this.welcomePath === 'test'&& this.MainPath === 'test'){
                  this.EPGLog({
                      OperationCode: 'portal params',
                      Detail: JSON.stringify({
@@ -801,17 +794,13 @@
      },
 
      ready() {
-
          var _this = this;
 
          this.getConfig();
 
          const province = sessionStorage.getItem('province');
-
          // 标识是不是第一次开机进入欢迎页，后面走portal就不用再认证登录，直接进入主页
          var isFirstStart = sessionStorage.getItem('ISFIRSTSTART');
-
-
          // 湖北和云南不采用此功能，且不能是链接路径
          if (province !== '湖北' && province !== '云南') {
              if (!isFirstStart && isFirstStart !== '1') {
@@ -856,24 +845,22 @@
              default:
                  break;
          }
-
-         var welcomePath = sessionStorage.getItem("WelcomePageGroupPath"); 
-         var MainPath = sessionStorage.getItem("MainPath");
-         if (welcomePath === 'test'&& MainPath === 'test'){
+          //  var welcomePath = sessionStorage.getItem("WelcomePageGroupPath"); 
+        //  var MainPath = sessionStorage.getItem("MainPath");
+         if (this.welcomePath === 'test'&& this.MainPath === 'test'){
              this.EPGLog({
-                 OperationCode: '开机配置',
+                 OperationCode: 'portal_进入...',
                  Detail: JSON.stringify({
                      EPGIP: sessionStorage.getItem('EPGIP'),
                      indexUrl: JSON.stringify({
                          indexUrl: sessionStorage.getItem('indexUrl'),
-                         EPGIP: sessionStorage.getItem('EPGIP'),
                          MainPath: sessionStorage.getItem("MainPath"),
                          isFirstStart: isFirstStart,
+                         province: province,
                      }),
                  })
              });
          }
-
      },
  }
 </script>

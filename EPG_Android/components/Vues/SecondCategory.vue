@@ -56,6 +56,8 @@
  export default {
      data() {
          return {
+             welcomePath: sessionStorage.getItem("WelcomePageGroupPath"),
+             MainPath: sessionStorage.getItem("MainPath"),
              isRequestStatus: false,
              hasVideo: false,
              bgimg: '',
@@ -74,6 +76,32 @@
          };
      },
      methods: {
+         EPGLog(params = {
+             OperationCode: '',
+             Detail: '',
+         }) {
+
+             const path = sessionStorage.getItem("WelcomePageGroupPath");
+
+             const tmpObj = {
+                 "Message": {
+                     "MessageType": "EPGLogReq",
+                     "MessageBody": {
+                         "USERID": sessionStorage.getItem("USERID"),
+                         "HostID": sessionStorage.getItem("HostID"),
+                         "OperationCode": params.OperationCode,
+                         "Detail": params.Detail,
+                     },
+                 }
+             };
+             Http({
+                 type: 'POST',
+                 url: sessionStorage.getItem("relativePath") + '/epgservice/index.php?MessageType=EPGLogReq',
+                 data: JSON.stringify(tmpObj),
+                 complete: function(data) {},
+                 error: function(err) {},
+             });
+         },
          shanxiSecondPlay(contentID, routeInfo) {
              this.$nextTick(() => {
 
@@ -103,6 +131,18 @@
                  } else {
                      this.$dispatch('setMediaUrl', urls);
                  }
+                  if (this.welcomePath === 'test'&& this.MainPath === 'test') {
+                    this.EPGLog({
+                        OperationCode: 'SecondCategory_shanxiSecondPlay',
+                        Detail: JSON.stringify({
+                            contentID: contentID,
+                            zteOrigin: zteOrigin,
+                            plat: plat,
+                            urls: urls,
+                            secondMediaUrl: secondMediaUrl,
+                        }),
+                    });
+                }
              });
          },
 
@@ -299,6 +339,15 @@
                          } else {
                              console.log("请求数据失败");
                          }
+                         if (_this.welcomePath === 'test'&& _this.MainPath === 'test') {
+                            _this.EPGLog({
+                                OperationCode: 'SecondCategory_请求数据 ',
+                                Detail: JSON.stringify({
+                                    reqBody: tmpObj,
+                                    data: data.status === 200?data.response:data,
+                                }),
+                            });
+                        }
                      } else {
                          console.log("网络请求失败");
                      }
@@ -364,6 +413,17 @@
 
              this.tempList == [];
          });
+          if (this.welcomePath === 'test'&& this.MainPath === 'test') {
+             this.EPGLog({
+                 OperationCode: 'SecondCategory_进入...',
+                 Detail: JSON.stringify({
+                     location: window.location.href,
+                     bgMediaUrl: sessionStorage.getItem('bg_media_url'),
+                     backObjId: this.$route.params.id,
+                     isVideoPlay: getIsVideoPlay(store.state),
+                 }),
+             });
+         }
      }
 
  }

@@ -203,6 +203,8 @@
  export default {
      data() {
          return {
+             welcomePath: sessionStorage.getItem("WelcomePageGroupPath"),
+             MainPath: sessionStorage.getItem("MainPath"),
              mp: null,
              mediaStr: null,
              z: 0,
@@ -485,7 +487,15 @@
          homepage() { // 首页键处理
 
              const province = sessionStorage.getItem('province');
-
+            if (this.welcomePath === 'test'&& this.MainPath === 'test'){
+                this.EPGLog({
+                    OperationCode: 'main_homepage',
+                    Detail: JSON.stringify({
+                        Province: province,
+                        location:location.href,
+                    })
+                });
+            }
              if (province === '云南') {
                  if (this.mp) {
                      this.stop();
@@ -514,7 +524,15 @@
 
          back() {
              const province = sessionStorage.getItem('province');
-
+            if (this.welcomePath === 'test'&& this.MainPath === 'test'){
+                this.EPGLog({
+                    OperationCode: 'main_back',
+                    Detail: JSON.stringify({
+                        Province: province,
+                        location:location.href,
+                    })
+                });
+            }
              this.debug(location.href);
              if (!/\/firstcategory/.test(location.href)
                  && location.href.indexOf('firstcategory') === -1
@@ -696,7 +714,14 @@
              }
 
              this.debug(keyvalue);
-
+             //  if (_this.welcomePath === 'test'&& _this.MainPath === 'test'){
+            //     _this.EPGLog({
+            //         OperationCode: 'main_eventHandler',
+            //         Detail: JSON.stringify({
+            //             Keyvalue: keyvalue,
+            //         })
+            //     });
+            // }
              switch (keyvalue) {
                  case 8: _this.back(); break;
                  case 181: _this.homepage(); break;
@@ -718,14 +743,16 @@
              this.isSecondVideo = false;
              sessionStorage.setItem('s_main_isSecondVedio', '0');
              /* this.$router.replace(this.routeInfo);*/
-             this.EPGLog({
-                 OperationCode: 'goMPlayer',
-                 Detail: JSON.stringify({
-                     routeInfo: this.routeInfo,
-                     second: this.isSecondVideo,
-                     playUrl: playUrl
-                 })
-             });
+             if (this.welcomePath === 'test'&& this.MainPath === 'test'){
+                this.EPGLog({
+                    OperationCode: 'goMPlayer',
+                    Detail: JSON.stringify({
+                        routeInfo: this.routeInfo,
+                        second: this.isSecondVideo,
+                        playUrl: playUrl
+                    })
+                });
+             }
 
              let url = this.routeInfo.query.playUrl;
 
@@ -734,11 +761,12 @@
                  this.getMediaStr();
                  return false;
              }
-
-             this.EPGLog({
-                 OperationCode: 'ready to play second',
-                 Detail: JSON.stringify(this.routeInfo)
-             });
+            if (this.welcomePath === 'test'&& this.MainPath === 'test'){
+                this.EPGLog({
+                    OperationCode: 'ready to play second',
+                    Detail: JSON.stringify(this.routeInfo)
+                });
+            }
 
              this.$router.go(this.routeInfo);
              /* setTimeout(() => {*/
@@ -765,16 +793,17 @@
                      sessionStorage.setItem('playUrl', playUrl);
                  }
              }
-
-             this.EPGLog({
-                 OperationCode: 'getMediastr',
-                 Detail: JSON.stringify({
-                     second: this.isSecondVideo,
-                     contentID: contentID,
-                     playUrl: sessionStorage.getItem('playUrl'),
-                     secondUrl: sessionStorage.getItem('second_media_url')
-                 })
-             });
+            if (this.welcomePath === 'test'&& this.MainPath === 'test'){
+                this.EPGLog({
+                    OperationCode: 'getMediastr',
+                    Detail: JSON.stringify({
+                        second: this.isSecondVideo,
+                        contentID: contentID,
+                        playUrl: sessionStorage.getItem('playUrl'),
+                        secondUrl: sessionStorage.getItem('second_media_url')
+                    })
+                });
+            }
 
              console.log('--------> getmediastr:',
                          this.isSecondVideo,
@@ -1093,15 +1122,16 @@
                      return false;
                  }
              } // end
-
-             this.EPGLog({
-                 OperationCode: 'setMediaUrl',
-                 Detail: JSON.stringify({
-                     isSecond: this.isSecondVideo,
-                     secondMediaUrl: sessionStorage.getItem('second_media_url'),
-                     mediaurl: this.mediaurl
-                 })
-             });
+            if (this.welcomePath === 'test'&& this.MainPath === 'test'){
+                this.EPGLog({
+                    OperationCode: 'setMediaUrl',
+                    Detail: JSON.stringify({
+                        isSecond: this.isSecondVideo,
+                        secondMediaUrl: sessionStorage.getItem('second_media_url'),
+                        mediaurl: this.mediaurl
+                    })
+                });
+            }
 
              this.showMediaIframe = true;
              console.log(window.frames['if_smallscreen']);
@@ -1167,6 +1197,14 @@
          }
          this.updateFirstClassTab(0);
          this.updateSecondClassTab(0);
+         if (_this.welcomePath === 'test'&& _this.MainPath === 'test'){
+            _this.EPGLog({
+                OperationCode: 'main_进入...',
+                Detail: JSON.stringify({
+                    Province: province,
+                })
+            });
+        }
      },
      store: store,
 
