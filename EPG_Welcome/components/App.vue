@@ -225,17 +225,6 @@
              const keyvalue = keyEvent.which ? keyEvent.which : keyEvent.keyCode;
              let virtualKey = "";
              const province = sessionStorage.getItem('province');
-              if (_this.welcomePath === 'test'&& _this.MainPath === 'test'){
-             _this.EPGLog({
-                 OperationCode: 'welcome_eventHandler',
-                 Detail: JSON.stringify({
-                    Keyvalue:keyvalue,
-                    Province:province,
-                    StbType:Authentication.CTCGetConfig('STBType'),
-                })
-             });
-            }
-
              switch (province) {
                  case '云南':
                      virtualKey = 0x0300;
@@ -312,6 +301,15 @@
                  }
                  const mediaEventType = mediaEvent.type.replace(/\"/g, "");
                  this.debug('type:' + mediaEventType)
+                 if (this.welcomePath === 'test'&& this.MainPath === 'test'){
+                    this.EPGLog({
+                        OperationCode: 'welcome_eventHandler',
+                        Detail: JSON.stringify({
+                            mediaEventType:mediaEventType,
+                            StbType:Authentication.CTCGetConfig('STBType'),
+                        })
+                    });
+                }
                  switch (mediaEventType) {
                      case "EVENT_MEDIA_BEGINING":
                          {

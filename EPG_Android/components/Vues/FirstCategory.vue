@@ -511,6 +511,15 @@
              this.updateFirstClassTab(item.ObjectID);
              this.updateSecondClassTab(0);
              const province = sessionStorage.getItem('province');
+             _this.EPGLog({
+                OperationCode: 'FirstEnter',
+                Detail: JSON.stringify({
+                    FirstClassTab: item.ObjectID,
+                    RelatedAction: item.RelatedAction, 
+                    Language: sessionStorage.getItem("currLangCode"),
+                    province: province,
+                })
+            });
              switch (item.RelatedAction) {
                  case "iptv":
 
@@ -763,6 +772,13 @@
          },
          //隐藏客信
          hideNotice() {
+            this.EPGLog({
+                OperationCode: 'NoticeRead',
+                Detail: JSON.stringify({
+                    NoticeRead: "readed",
+                    Language: sessionStorage.getItem("currLangCode"),
+                })
+            });
              document.querySelector(".kexin").style.visibility = "hidden";
              document.querySelector(".hint").style.visibility = "hidden";
              document.getElementById("firstTabItem").children[0].children[0].focus();

@@ -189,7 +189,16 @@
              var _this = this;
              this.updateSecondClassTab(item.ObjectID);
              sessionStorage.setItem('epg_leave_page', 'second');
-
+             const province = sessionStorage.getItem('province');
+             this.EPGLog({
+                OperationCode: 'SecondEnter',
+                Detail: JSON.stringify({
+                    SecondClassTab: item.ObjectID,
+                    RelatedAction: item.RelatedAction, 
+                    Language: sessionStorage.getItem("currLangCode"),
+                    province: province,
+                })
+            });
              this.debug('item:' + JSON.stringify(item));
              /* this.isDebug = false;*/
              switch (item.RelatedAction) {
