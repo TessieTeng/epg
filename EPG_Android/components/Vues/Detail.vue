@@ -125,6 +125,7 @@
 <script>
  // import swiper from 'Tools/Swiper.vue';
  import store from '../../vuex/store.js';
+ import Http from '../../assets/lib/Http';
  import {
      updateIsVideoPlay,
  } from '../../vuex/actions.js';
@@ -135,6 +136,8 @@
  export default {
      data() {
          return {
+             welcomePath: sessionStorage.getItem("WelcomePageGroupPath"),
+             MainPath: sessionStorage.getItem("MainPath"),
              name: 'name',
              isShowSwiper: true,
              pictureList: [],
@@ -187,6 +190,32 @@
      },
 
      methods: {
+          EPGLog(params = {
+             OperationCode: '',
+             Detail: '',
+         }) {
+
+             const path = sessionStorage.getItem("WelcomePageGroupPath");
+
+             const tmpObj = {
+                 "Message": {
+                     "MessageType": "EPGLogReq",
+                     "MessageBody": {
+                         "USERID": sessionStorage.getItem("USERID"),
+                         "HostID": sessionStorage.getItem("HostID"),
+                         "OperationCode": params.OperationCode,
+                         "Detail": params.Detail,
+                     },
+                 }
+             };
+             Http({
+                 type: 'POST',
+                 url: sessionStorage.getItem("relativePath") + '/epgservice/index.php?MessageType=EPGLogReq',
+                 data: JSON.stringify(tmpObj),
+                 complete: function(data) {},
+                 error: function(err) {},
+             });
+         },
          stateInit() {
              this.lastPicList = getLastPicList(store.state);
              this.isVideoPlay = getIsVideoPlay(store.state);
@@ -253,6 +282,16 @@
          // if(this.isVideoPlay){
          this.$dispatch("stopVideo");
          this.updateIsVideoPlay(false);
+         //this.welcomePath === 'test'&& this.MainPath === 'test'
+         if (true) {
+             this.EPGLog({
+                 OperationCode: 'Detail_进入...',
+                 Detail: JSON.stringify({
+                     pictureList: this.pictureList,
+                     isVideoPlay: this.isVideoPlay,
+                 }),
+             });
+         }
          // }
      },
  }

@@ -203,6 +203,8 @@
  export default {
      data() {
          return {
+             welcomePath: sessionStorage.getItem("WelcomePageGroupPath"),
+             MainPath: sessionStorage.getItem("MainPath"),
              mp: null,
              mediaStr: null,
              z: 0,
@@ -225,7 +227,50 @@
          };
      },
      methods: {
+          EPGLog(params = {
+             OperationCode: '',
+             Detail: '',
+         }) {
 
+             const path = sessionStorage.getItem("WelcomePageGroupPath");
+
+             const tmpObj = {
+                 "Message": {
+                     "MessageType": "EPGLogReq",
+                     "MessageBody": {
+                         "USERID": sessionStorage.getItem("USERID"),
+                         "HostID": sessionStorage.getItem("HostID"),
+                         "OperationCode": params.OperationCode,
+                         "Detail": params.Detail,
+                     },
+                 }
+             };
+             Http({
+                 type: 'POST',
+                 url: sessionStorage.getItem("relativePath") + '/epgservice/index.php?MessageType=EPGLogReq',
+                 data: JSON.stringify(tmpObj),
+                 complete: function(data) {},
+                 error: function(err) {},
+             });
+         },
+         goToIptv(IptvData) {
+             let obj = {};
+             if ((typeof IptvData).toLowerCase() === 'object') {
+                 obj = IptvData;
+             } else if((typeof IptvData).toLowerCase() === 'string'){
+                obj = {message:IptvData};
+             }
+             if (this.welcomePath === 'test'&& this.MainPath === 'test'){
+                 this.EPGLog({
+                     OperationCode: 'portal_goToIptv-request broken',
+                     Detail:JSON.stringify({
+                        data: obj,
+                     })
+                 });
+             }
+
+            //  location.href = sessionStorage.getItem("indexUrl");
+         },
          // 组合键定义函数
          defineCombineKeyFn() {
              let showVerInfoCB = () => {
@@ -456,7 +501,15 @@
          homepage() { // 首页键处理
 
              const province = sessionStorage.getItem('province');
-
+            if (this.welcomePath === 'test'&& this.MainPath === 'test'){
+                this.EPGLog({
+                    OperationCode: 'main_homepage',
+                    Detail: JSON.stringify({
+                        Province: province,
+                        location:location.href,
+                    })
+                });
+            }
              if (province === '云南') {
                  if (this.mp) {
                      this.stop();
@@ -485,7 +538,15 @@
 
          back() {
              const province = sessionStorage.getItem('province');
-
+            if (this.welcomePath === 'test'&& this.MainPath === 'test'){
+                this.EPGLog({
+                    OperationCode: 'main_back',
+                    Detail: JSON.stringify({
+                        Province: province,
+                        location:location.href,
+                    })
+                });
+            }
              this.debug(location.href);
              if (!/\/firstcategory/.test(location.href)
                  && location.href.indexOf('firstcategory') === -1
@@ -658,7 +719,14 @@
              }
 
              this.debug(keyvalue);
-
+             //  if (_this.welcomePath === 'test'&& _this.MainPath === 'test'){
+            //     _this.EPGLog({
+            //         OperationCode: 'main_eventHandler',
+            //         Detail: JSON.stringify({
+            //             Keyvalue: keyvalue,
+            //         })
+            //     });
+            // }
              switch (keyvalue) {
                  case 8: _this.back(); break;
                  case 181: _this.homepage(); break;
@@ -672,6 +740,43 @@
                  default: return true; break;
              }
              // };
+         },
+
+         goMPlayer(playUrl) {
+             this.routeInfo.query.playUrl = sessionStorage.getItem('second_media_url');
+             console.log(this.routeInfo.query);
+             this.isSecondVideo = false;
+             sessionStorage.setItem('s_main_isSecondVedio', '0');
+             /* this.$router.replace(this.routeInfo);*/
+             if (this.welcomePath === 'test'&& this.MainPath === 'test'){
+                this.EPGLog({
+                    OperationCode: 'goMPlayer',
+                    Detail: JSON.stringify({
+                        routeInfo: this.routeInfo,
+                        second: this.isSecondVideo,
+                        playUrl: playUrl
+                    })
+                });
+             }
+
+             let url = this.routeInfo.query.playUrl;
+
+             if (!url) {
+                 sessionStorage.setItem('s_main_isSecondVedio', '1');
+                 this.getMediaStr();
+                 return false;
+             }
+            if (this.welcomePath === 'test'&& this.MainPath === 'test'){
+                this.EPGLog({
+                    OperationCode: 'ready to play second',
+                    Detail: JSON.stringify(this.routeInfo)
+                });
+            }
+
+             this.$router.go(this.routeInfo);
+             /* setTimeout(() => {*/
+             /* window.frames['if_smallscreen'].src = '';*/
+             /* }, 500);*/
          },
 
          //获取mediastr JSON对象
@@ -688,6 +793,23 @@
                  playUrl = data[i].mediaUrl;
                  sessionStorage.setItem('playUrl', playUrl);
              }
+            if (this.welcomePath === 'test'&& this.MainPath === 'test'){
+                this.EPGLog({
+                    OperationCode: 'getMediastr',
+                    Detail: JSON.stringify({
+                        second: this.isSecondVideo,
+                        contentID: contentID,
+                        playUrl: sessionStorage.getItem('playUrl'),
+                        secondUrl: sessionStorage.getItem('second_media_url')
+                    })
+                });
+            }
+
+             console.log('--------> getmediastr:',
+                         this.isSecondVideo,
+                         sessionStorage.getItem('second_media_url'),
+                         sessionStorage.getItem('playUrl')
+             );
 
              if (this.isSecondVideo) {
                  this.routeInfo.query.playUrl = playUrl || sessionStorage.getItem('playUrl');;
@@ -835,6 +957,7 @@
          getProgramInfo() {
              const _this = this;
              let UrlOrigin = sessionStorage.getItem('UrlOrigin');
+             let IptvData = {};
              const USERID = sessionStorage.getItem('USERID');
              const UserToken = sessionStorage.getItem('UserToken');
              const contentID = sessionStorage.getItem('bg_media_url');
@@ -862,7 +985,14 @@
                       + ', EPGIP:' + EPGIP
                       + ', testLink:' + testLink
              );
-
+             const tmpObj = {
+                 "Message": {
+                    "UrlOrigin": UrlOrigin,
+                    "USERID": USERID,
+                    "UserToken": UserToken,
+                    "contentID": contentID,
+                 }
+             }; 
              Http({
                  type: 'GET',
                  url: UrlOrigin + '/GetProgramInfo?programId=78&userFlag=' + USERID + '&userToken=' + UserToken + '&contentID=' + contentID + '&productIDs=',
@@ -872,11 +1002,36 @@
                      if (data.status === 200) {
                          const res = JSON.parse(data.response);
                          _this.selectionStart(res.assetId, UrlOrigin, UserToken);
+                         if (_this.welcomePath === 'test'&& _this.MainPath === 'test'){
+                            _this.EPGLog({
+                                OperationCode: 'main_getProgramInfo',
+                                Detail: JSON.stringify({
+                                    EPGIP: EPGIP,
+                                    TestLink: testLink,
+                                    tmpObj: tmpObj,
+                                    data: data.response,
+                                })
+                            });
+                        }
+                       
                      } else {
+                         IptvData = {                           
+                            "message": "获取不了url参数",
+                            "tmpObj":tmpObj,
+                            "data": data,                        
+                        };
+                         _this.goToIptv(IptvData);
                          console.log('error: ' + data.status);
                      }
+                     
                  },
                  error: function(err) {
+                    IptvData = {                           
+                        "message": "网络请求错误：",
+                        "tmpObj":tmpObj,  
+                        "err": err, 
+                    };
+                     _this.goToIptv(IptvData);
                      console.log('网络请求错误：' + err);
                  },
              });
@@ -884,6 +1039,14 @@
          selectionStart(assetId, UrlOrigin, UserToken) {
              this.debug('selectionStart')
              const _this = this;
+             let IptvData = {};
+             const tmpObj = {
+                 "Message": {
+                    "UrlOrigin": UrlOrigin,
+                    "assetId": assetId,
+                    "UserToken": UserToken,
+                 }
+             }; 
              Http({
                  type: 'GET',
                  url: UrlOrigin + '/SelectionStart?assetId=' + assetId + '&userToken=' + UserToken,
@@ -893,15 +1056,35 @@
                      if (data.status === 200) {
                          const res = JSON.parse(data.response);
                          sessionStorage.setItem('playUrl', res.playUrl);
-
+                        if (_this.welcomePath === 'test'&& _this.MainPath === 'test'){
+                            _this.EPGLog({
+                                OperationCode: 'main_selectionStart',
+                                Detail: JSON.stringify({
+                                    tmpObj: tmpObj,
+                                    data: data.response,
+                                })
+                            });
+                        }
                          // _this.debug('playUrl:' + res.playUrl);
                          _this.$dispatch("playVideo");
                      } else {
+                        IptvData = {                           
+                            "message": "获取不了url参数",
+                            "tmpObj":tmpObj,
+                            "data": data,                        
+                        };
+                         _this.goToIptv(IptvData);
                          console.log('error: ' + data.status);
                      }
                  },
                  error: function(err) {
-                     console.log(err);
+                    IptvData = {                           
+                        "message": "网络请求错误",
+                        "tmpObj":tmpObj,
+                        "data": err,                        
+                    };
+                    _this.goToIptv(IptvData);
+                     console.log("网络请求错误"+err);
                  },
              });
          },
@@ -984,6 +1167,26 @@
              this.stop(clear);
          },
          setMediaUrl(mediaUrl) {
+             // 如果播放地址已经存在了，就不用再重新发请求获取了
+             let province = sessionStorage.getItem('province');
+             if (province === '陕西' && this.isSecondVideo) {
+                 let secondMediaUrl = sessionStorage.getItem('second_media_url');
+                 if (secondMediaUrl) {
+                     this.goMPlayer(secondMediaUrl);
+                     return false;
+                 }
+             } // end
+            if (this.welcomePath === 'test'&& this.MainPath === 'test'){
+                this.EPGLog({
+                    OperationCode: 'setMediaUrl',
+                    Detail: JSON.stringify({
+                        isSecond: this.isSecondVideo,
+                        secondMediaUrl: sessionStorage.getItem('second_media_url'),
+                        mediaurl: this.mediaurl
+                    })
+                });
+            }
+
              this.showMediaIframe = true;
              this.mediaurl = mediaUrl;
              this.debug('URL:' + this.mediaurl);
@@ -1039,6 +1242,14 @@
          }
          this.updateFirstClassTab(0);
          this.updateSecondClassTab(0);
+         if (_this.welcomePath === 'test'&& _this.MainPath === 'test'){
+            _this.EPGLog({
+                OperationCode: 'main_进入...',
+                Detail: JSON.stringify({
+                    Province: province,
+                })
+            });
+        }
      },
      store: store,
 

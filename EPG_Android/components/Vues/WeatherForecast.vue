@@ -227,6 +227,7 @@ export default {
         },
         methods: {
             changeCity(item) {
+                // console.log(item);
                 this.currentItem = item;
                 this.currentItem.temprature = this.formatTemperature(item.WeatherList.Weather[0]);
             },

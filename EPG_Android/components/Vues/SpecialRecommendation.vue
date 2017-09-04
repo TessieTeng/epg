@@ -190,7 +190,7 @@ div.rootView {
             <span class="hint">{{lefthint}}</span>
             <span class="rights">{{righthint}}</span>
         </div>
-    </div>ss
+    </div>
 </template>
 <script>
 export default {

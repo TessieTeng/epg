@@ -280,6 +280,8 @@
  export default {
      data() {
          return {
+             welcomePath: sessionStorage.getItem("WelcomePageGroupPath"),
+             MainPath: sessionStorage.getItem("MainPath"),
              isDebug: false,
              tabIndex: -1,
              isRequestStatus: false,
@@ -328,7 +330,32 @@
      },
 
      methods: {
+         EPGLog(params = {
+             OperationCode: '',
+             Detail: '',
+         }) {
 
+             const path = sessionStorage.getItem("WelcomePageGroupPath");
+
+             const tmpObj = {
+                 "Message": {
+                     "MessageType": "EPGLogReq",
+                     "MessageBody": {
+                         "USERID": sessionStorage.getItem("USERID"),
+                         "HostID": sessionStorage.getItem("HostID"),
+                         "OperationCode": params.OperationCode,
+                         "Detail": params.Detail,
+                     },
+                 }
+             };
+             Http({
+                 type: 'POST',
+                 url: sessionStorage.getItem("relativePath") + '/epgservice/index.php?MessageType=EPGLogReq',
+                 data: JSON.stringify(tmpObj),
+                 complete: function(data) {},
+                 error: function(err) {},
+             });
+         },
          resetFocusAni() {
              document.querySelector('#defaultLang').style.border = '3px solid rgba(36, 142, 248, 0)';
              document.querySelector('#engLang').style.border = '3px solid rgba(36, 142, 248, 0)';
@@ -507,24 +534,21 @@
                              _msgBody.VariableList.Variable.map(item => {
                                  _this.UiWord[lang][item.Name] = item.Value;
                              });
-
-                             var welcomePath = sessionStorage.getItem("WelcomePageGroupPath");
-                             var MainPath = sessionStorage.getItem("MainPath");
-                             if (welcomePath === 'test'&& MainPath === 'test') {
-                                 _this.EPGLog({
-                                     OperationCode: 'getUiWord',
-                                     Detail: JSON.stringify({
-                                             reqBody: tmpObj,
-                                             data: data.response,
-                                    }),
-                                 });
-                             }
                          } else {
                              console.log("UiWord获取数据失败!");
                          }
                      } else {
                          console.log("UiWord网络请求失败");
                      }
+                      if (_this.welcomePath === 'test'&& _this.MainPath === 'test') {
+                        _this.EPGLog({
+                            OperationCode: 'TemplateOne_getUiWord',
+                            Detail: JSON.stringify({
+                                    reqBody: tmpObj,
+                                    data: data.status === 200?data.response:data,
+                            }),
+                        });
+                    }
                  },
                  error: function(err) {
                      console.log(err);
@@ -550,6 +574,19 @@
              VideoArea,
              InfoArea
          }) {
+              if (this.welcomePath === 'test'&& this.MainPath === 'test'){
+                this.EPGLog({
+                    OperationCode: 'TemplateOne_handleData',
+                    Detail: JSON.stringify({
+                        OperationTips: OperationTips,
+                        WelcomeWords: WelcomeWords,
+                        SubscriberName: SubscriberName,
+                        PictureList: PictureList,
+                        VideoArea: VideoArea,
+                        InfoArea: InfoArea,
+                    })
+                });
+            }
              // 操作提示
              if ((typeof(OperationTips) == undefined) || null == OperationTips) {
                  console.log("操作提示为空");
@@ -625,6 +662,8 @@
                  // this.pmword  = InfoArea.PmWord;
                  this.pmvalue = InfoArea.Pm25;
              }
+
+
          },
          listenBackKey() {
              document.onkeypress = (keyEvent) => {
@@ -729,11 +768,9 @@
                              _this.isRequestStatus = false;
                              _this.handleData(Object.freeze(_msgBody));
                              _this.changeTime(new Date(data.getResponseHeader('Date')));
-                             var welcomePath = sessionStorage.getItem("WelcomePageGroupPath");
-                             var MainPath = sessionStorage.getItem("MainPath");
-                             if (welcomePath === 'test'&& MainPath === 'test') {
+                             if (_this.welcomePath === 'test'&& _this.MainPath === 'test') {
                                  _this.EPGLog({
-                                     OperationCode: 'getWelcomeData',
+                                     OperationCode: 'TemplateOne_getWelcomeData',
                                      Detail: JSON.stringify({
                                              reqBody: tmpObj,
                                              data: data.response,
@@ -784,11 +821,9 @@
                              } else {
                                  _this.weather = null;
                              }
-                             var welcomePath = sessionStorage.getItem("WelcomePageGroupPath");
-                             var MainPath = sessionStorage.getItem("MainPath");
-                             if (welcomePath === 'test'&& MainPath === 'test') {
+                             if (_this.welcomePath === 'test'&& _this.MainPath === 'test') {
                                  _this.EPGLog({
-                                     OperationCode: 'getHereWeatherInfo',
+                                     OperationCode: 'TemplateOne_getHereWeatherInfo',
                                      Detail: JSON.stringify({
                                              reqBody: tmpObj,
                                              data: data.response,
@@ -813,29 +848,6 @@
                  str += key + ': ' + obj[key] + '; ';
              }
              return str;
-         },
-         EPGLog(params = {
-             OperationCode: '',
-             Detail: ''
-         }) {
-             const tmpObj = {
-                 "Message": {
-                     "MessageType": "EPGLogReq",
-                     "MessageBody": {
-                         "USERID": sessionStorage.getItem("UserID"),
-                         "HostID": sessionStorage.getItem("HostID"),
-                         "OperationCode": params.OperationCode,
-                         "Detail": params.Detail,
-                     },
-                 }
-             };
-             Http({
-                 type: 'POST',
-                 url: sessionStorage.getItem("relativePath") + '/epgservice/index.php?MessageType=EPGLogReq',
-                 data: JSON.stringify(tmpObj),
-                 complete: function(data) {},
-                 error: function(err) {},
-             });
          },
 
          getRoomInfoReq() {
@@ -867,6 +879,15 @@
                      } else {
                          console.log("入住信息网络请求失败");
                      }
+                      if (_this.welcomePath === 'test'&& _this.MainPath === 'test') {
+                        _this.EPGLog({
+                            OperationCode: 'TemplateOne_getRoomInfoReq',
+                            Detail: JSON.stringify({
+                                    reqBody: tmpObj,
+                                    data: data.status === 200?data.response:data,
+                            }),
+                        });
+                    }
                  }
 
              });
@@ -927,7 +948,7 @@
 
                  //console.log('all channels: ' + JSON.stringify(listChannels));
              }
-
+             let IptvData = {};
              Http({
                  type: 'POST',
                  url: sessionStorage.getItem("relativePath") + '/epgservice/index.php?MessageType=GetChannelListReq',
@@ -938,36 +959,75 @@
                          const _msgBody = _data.Message.MessageBody;
                          if (_msgBody.ResultCode == 200) {
                              let channel = _msgBody.ChannelList.Channel;
+                             if (_this.welcomePath === 'test'&& _this.MainPath === 'test') {
+                                _this.EPGLog({
+                                    OperationCode: 'TemplateOne_getChannelList',
+                                    Detail: JSON.stringify({
+                                            reqBody: tmpObj,
+                                            data: data.response,
+                                    }),
+                                });
+                            }
                              // console.log('post channel list: ' + channel.length);
                              if (channel && channel.length > 0) {
                                  setChannels(channel);
                              } else {
                                  console.log('频道列表为空');
-                                 /* _this.goToIptv('频道列表为空');*/
                              }
 
                          } else {
                              console.log("频道数据获取失败");
-                             _this.goToIptv("频道数据获取失败");
+                             IptvData = { 
+                                "message": "频道数据获取失败",
+                                "tmpObj":tmpObj,
+                                "data": data, 
+                                };
+                             _this.goToIptv(IptvData);
                          }
                      } else {
                          console.log("频道网络请求失败");
-                         _this.goToIptv("频道网络请求失败");
+                         IptvData = { 
+                            "message": "频道网络请求失败",
+                            "tmpObj":tmpObj,
+                            "data": data, 
+                            };
+                         _this.goToIptv(IptvData);
                      }
-
+                     
                      _this.isRequestStatus = false;
                      _this.showLoading = false;
                  },
                  error: function(err) {
                      console.log(err);
-                     _this.goToIptv(err);
+                     IptvData = { 
+                        "message": "getChannelList_err",
+                        "tmpObj":tmpObj,
+                        "data": err, 
+                    };
+                     _this.goToIptv(IptvData);
                  },
              });
          },
 
+         goToIptv(IptvData) {
 
-         goToIptv(msg) {
-             window.location.href = sessionStorage.getItem('indexUrl');
+             let obj = {};
+             if ((typeof IptvData).toLowerCase() === 'object') {
+                 obj = IptvData;
+             } else if((typeof IptvData).toLowerCase() === 'string'){
+                obj = {message:IptvData};
+             }
+             if (this.welcomePath === 'test'&& this.MainPath === 'test'){
+                 this.EPGLog({
+                     OperationCode: 'portal_goToIptv-request broken',
+                     Detail:JSON.stringify({
+                        data: obj,
+                     })
+                 });
+             }
+
+             // alert(str);
+             location.href = sessionStorage.getItem("indexUrl");
          },
          requestUrlByIfr(url) {
 
@@ -1031,7 +1091,7 @@
              var MainPath = sessionStorage.getItem("MainPath");
              if (welcomePath === 'test'&& MainPath === 'test'){
                  this.EPGLog({
-                     OperationCode: '欢迎页请求播放地址',
+                     OperationCode: 'TemplateOne_欢迎页请求播放地址',
                      Detail: reqUrl
                  });
              }
@@ -1105,6 +1165,16 @@
          this.isDebug = sessionStorage.getItem('EPG_DEBUG_SWITCHER') === 'open';
          /* this.isDebug = true;*/
          const province = sessionStorage.getItem('province');
+
+        if (this.welcomePath === 'test'&& this.MainPath === 'test'){
+            this.EPGLog({
+                OperationCode: 'templateOne_进入...',
+                Detail: JSON.stringify({
+                    location:window.location.href,
+                    Province:province,
+                })
+            });
+        }
          document.querySelector("#defaultLang").focus();
          this.canNotGoBack = true;
          this.getUiWord('chi', ['wifi_where_tip']);

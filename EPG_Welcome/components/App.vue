@@ -33,6 +33,8 @@
  export default {
      data() {
          return {
+             welcomePath: sessionStorage.getItem("WelcomePageGroupPath"),
+             MainPath: sessionStorage.getItem("MainPath"),
              mp: null,
              mediaStr: null,
              mediaurl: '',
@@ -41,6 +43,33 @@
          };
      },
      methods: {
+        EPGLog(params = {
+             OperationCode: '',
+             Detail: '',
+         }) {
+
+             const path = sessionStorage.getItem("WelcomePageGroupPath");
+
+             const tmpObj = {
+                 "Message": {
+                     "MessageType": "EPGLogReq",
+                     "MessageBody": {
+                         "USERID": sessionStorage.getItem("USERID"),
+                         "HostID": sessionStorage.getItem("HostID"),
+                         "OperationCode": params.OperationCode,
+                         "Detail": params.Detail,
+                     },
+                 }
+             };
+             Http({
+                 type: 'POST',
+                 url: sessionStorage.getItem("relativePath") + '/epgservice/index.php?MessageType=EPGLogReq',
+                 data: JSON.stringify(tmpObj),
+                 complete: function(data) {},
+                 error: function(err) {},
+             });
+         },
+
          debug(obj) {
 
              // config.js 中配置
@@ -76,6 +105,16 @@
              this.mediaStr += 'startTime:0,';
              this.mediaStr += 'endTime:20000,';
              this.mediaStr += 'entryID:"jsonentry1"}]';
+
+             if (this.welcomePath === 'test'&& this.MainPath === 'test'){
+                    this.EPGLog({
+                        OperationCode: 'welcome_setMediaStr',
+                        Detail: JSON.stringify({
+                            PlayUrl: playUrl,
+                            mediaStr: this.mediaStr,
+                        })
+                    });
+             }
          },
 
          play() {
@@ -83,6 +122,15 @@
              this.setMediaStr();
              this.mp.setSingleMedia(this.mediaStr);
              this.mp.playFromStart();
+
+             if (this.welcomePath === 'test'&& this.MainPath === 'test'){
+                    this.EPGLog({
+                        OperationCode: 'welcome_play',
+                        Detail: JSON.stringify({
+                            EnterPlay: "play",
+                        })
+                    });
+             }
          },
 
          stop() {
@@ -90,6 +138,15 @@
              this.mp.stop();
              this.mp.releaseMediaPlayer(this.mp.getNativePlayerInstanceID());
              this.mp = null;
+
+             if (this.welcomePath === 'test'&& this.MainPath === 'test'){
+                    this.EPGLog({
+                        OperationCode: 'welcome_stop',
+                        Detail: JSON.stringify({
+                            EnterStop: "stop",
+                        })
+                    });
+             }
          },
 
          initMediaPlay() {
@@ -106,6 +163,16 @@
              this.mp = new MediaPlayer(); //新建一个mediaplayer对象
              var instanceId = this.mp.getNativePlayerInstanceID(); //读取本地的媒体播放实例的标识
 
+             if (this.welcomePath === 'test'&& this.MainPath === 'test'){
+                    this.EPGLog({
+                        OperationCode: 'welcome_initMediaPlay',
+                        Detail: JSON.stringify({
+                            initMediaMp: this.mp,
+                            Province: province,
+                            PlayUrl: playUrl
+                        })
+                    });
+             }
 
              var playListFlag = 0; //Media Player 的播放模式。 0：单媒体的播放模式 (默认值)，1: 播放列表的播放模式
              var videoDisplayMode = 1; //MediaPlayer 对象对应的视频窗口的显示模式. 1: 全屏显示2: 按宽度显示，3: 按高度显示
@@ -157,7 +224,8 @@
              keyEvent = keyEvent ? keyEvent : window.event;
              const keyvalue = keyEvent.which ? keyEvent.which : keyEvent.keyCode;
              let virtualKey = "";
-             switch (sessionStorage.getItem('province')) {
+             const province = sessionStorage.getItem('province');
+             switch (province) {
                  case '云南':
                      virtualKey = 0x0300;
                      break;
@@ -172,7 +240,6 @@
 
              this.debug('key:' + keyvalue);
 
-             const province = sessionStorage.getItem('province');
              // 兼容陕西创维 E8200 不支持行内事件处理
              if (province === '陕西') {
                  const stbType = Authentication.CTCGetConfig('STBType');
@@ -202,6 +269,7 @@
                  default: return true;
                      break;
              }
+
          },
 
          virtualKey() {
@@ -233,6 +301,15 @@
                  }
                  const mediaEventType = mediaEvent.type.replace(/\"/g, "");
                  this.debug('type:' + mediaEventType)
+                 if (this.welcomePath === 'test'&& this.MainPath === 'test'){
+                    this.EPGLog({
+                        OperationCode: 'welcome_eventHandler',
+                        Detail: JSON.stringify({
+                            mediaEventType:mediaEventType,
+                            StbType:Authentication.CTCGetConfig('STBType'),
+                        })
+                    });
+                }
                  switch (mediaEventType) {
                      case "EVENT_MEDIA_BEGINING":
                          {
@@ -271,6 +348,17 @@
                  }
              } catch (e) {
                  console.log(e);
+             }
+
+              if (this.welcomePath === 'test'&& this.MainPath === 'test'){
+                this.EPGLog({
+                    OperationCode: 'welcome_virtualKey',
+                    Detail: JSON.stringify({
+                        MediaEvent:mediaEvent?JSON.parse(mediaEvent):mediaEvent,
+                        MediaEventType:mediaEventType,
+                        Province:sessionStorage.getItem('province'),
+                    })
+                });
              }
          },
 
@@ -324,11 +412,27 @@
                      } else {
                          console.log('error: ' + data.status);
                      }
+                      if (_this.welcomePath === 'test'&& _this.MainPath === 'test'){
+                        _this.EPGLog({
+                            OperationCode: 'welcome_getProgramInfo',
+                            Detail: JSON.stringify({
+                                UrlOrigin: UrlOrigin,
+                                EPGIP: EPGIP,
+                                TestLink: testLink,
+                                USERID: USERID,
+                                UserToken: UserToken,
+                                contentID: contentID,
+                                data: data.status === 200?data.response:data,
+                            })
+                        });
+                    }
                  },
                  error: function(err) {
                      console.log('网络请求错误：' + err);
                  },
              });
+
+             
          },
          selectionStart(assetId, UrlOrigin, UserToken) {
              const _this = this;
@@ -348,6 +452,18 @@
                      } else {
                          console.log('error: ' + data.status);
                      }
+
+                      if (_this.welcomePath === 'test'&& _this.MainPath === 'test'){
+                        _this.EPGLog({
+                            OperationCode: 'welcome_selectionStart',
+                            Detail: JSON.stringify({
+                                UrlOrigin: UrlOrigin,
+                                AssetId: assetId,
+                                UserToken: UserToken,
+                                data: data.status === 200?data.response:data,
+                            })
+                        });
+                    }
                  },
                  error: function(err) {
                      console.log(err);
@@ -373,6 +489,15 @@
          replay() {
              this.debug('replay-mp:' + this.mp);
              this.getProgramInfo();
+
+             if (this.welcomePath === 'test'&& this.MainPath === 'test'){
+                this.EPGLog({
+                    OperationCode: 'welcome_replay',
+                    Detail: JSON.stringify({
+                        ReplayMp: this.mp,
+                    })
+                });
+             }
          },
 
          playVideo() {
@@ -389,6 +514,15 @@
                  this.mp.playFromStart(); //从头开始播放
              }
 
+            if (this.welcomePath === 'test'&& this.MainPath === 'test'){
+                    this.EPGLog({
+                        OperationCode: 'welcome_playVideo',
+                        Detail: JSON.stringify({
+                            PlayVideoMp: this.mp,
+                            Province: province,
+                        })
+                    });
+                }
              // this.updateIsVideoPlay(true);
          },
 
@@ -412,6 +546,16 @@
          /* this.isDebug = true;*/
          this.debug('location:' + window.location.href);
          console.log('STBType: ' + Authentication.CTCGetConfig('STBType'));
+
+         if (this.welcomePath === 'test'&& this.MainPath === 'test'){
+             this.EPGLog({
+                 OperationCode: 'welcome_进入...',
+                 Detail: JSON.stringify({
+                    location:window.location.href,
+                    STBType:Authentication.CTCGetConfig('STBType'),
+                })
+             });
+         }
 
          var _this = this;
          //监控视频动作触发的虚拟按键
