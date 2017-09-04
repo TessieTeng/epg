@@ -163,7 +163,7 @@
                 </div> -->
                     <div class="city">
                         <ul id="weatherListUl">
-                            <li v-for="(index, item) in CurList" track-by='$index'>
+                            <li v-for="(index, item) in CurList" track-by='$index' data-index="{{index}}">
                                 <a href="javascript:;" @focus="changeCity(item)" @keydown='changeCurList($event, index)'>
                                     <img :src="item.CityImageUrl" class="cityImg" :alt="item.CityName">
                                 </a>
@@ -190,6 +190,8 @@ import {
 export default {
     data() {
             return {
+                welcomePath: sessionStorage.getItem("WelcomePageGroupPath"),
+                MainPath: sessionStorage.getItem("MainPath"),
                 isRequestStatus: false,
                 showLayout: false,
                 showLoading: true,
@@ -220,19 +222,56 @@ export default {
         },
         watch: {
             curListPage() {
-                this.$nextTick(() => {
+                this.$nextTick(() => {                 
                     document.querySelector('#weatherListUl li a').focus();
                 });
             }
         },
         methods: {
+             EPGLog(params = {
+             OperationCode: '',
+             Detail: '',
+         }) {
+
+             const path = sessionStorage.getItem("WelcomePageGroupPath");
+
+             const tmpObj = {
+                 "Message": {
+                     "MessageType": "EPGLogReq",
+                     "MessageBody": {
+                         "USERID": sessionStorage.getItem("USERID"),
+                         "HostID": sessionStorage.getItem("HostID"),
+                         "OperationCode": params.OperationCode,
+                         "Detail": params.Detail,
+                     },
+                 }
+             };
+             Http({
+                 type: 'POST',
+                 url: sessionStorage.getItem("relativePath") + '/epgservice/index.php?MessageType=EPGLogReq',
+                 data: JSON.stringify(tmpObj),
+                 complete: function(data) {},
+                 error: function(err) {},
+             });
+         },
             changeCity(item) {
-                // console.log(item);
+                if (this.welcomePath === 'test'&& this.MainPath === 'test'){
+                    this.EPGLog({
+                        OperationCode: 'Weather_changeCity',
+                        Detail:JSON.stringify({
+                            item: item,
+                        })
+                    });
+                }
                 this.currentItem = item;
                 this.currentItem.temprature = this.formatTemperature(item.WeatherList.Weather[0]);
             },
             changeCurList(event, index) {
                 if (event.keyCode === 38 && index < 6 && this.curListPage > 1) {
+                     //解决焦点处于当前页0位置（左上角）翻页，数据不获取不刷新问题
+                    if(index === 0){
+                        document.querySelector('#weatherListUl li a').blur();
+                    }
                     this.curListPage--;
                 }
                 if (event.keyCode === 40 && index >= 6 && this.curListPage < Math.ceil(this.WeatherCityList.length / this.CurListLen)) {
@@ -292,7 +331,16 @@ export default {
                         } else {
                             console.log("网络请求失败");
                         }
-
+                        if (_this.welcomePath === 'test'&& _this.MainPath === 'test'){
+                            _this.EPGLog({
+                                OperationCode: 'Weather_getRootCategoryData',
+                                Detail:JSON.stringify({
+                                    tmpObj: tmpObj,
+                                    data: data.status === 200?data.response:data,
+                                    // temperature: this.formatTemperature(item.WeatherList.Weather[0]),
+                                })
+                            });
+                        }
                         _this.isRequestStatus = false;
                         _this.showLoading = false;
                     },
@@ -353,6 +401,15 @@ export default {
             if (this.isVideoPlay) {
                 this.$dispatch("stopVideo");
                 this.updateIsVideoPlay(false);
+            }
+            if (this.welcomePath === 'test'&& this.MainPath === 'test'){
+                this.EPGLog({
+                    OperationCode: 'Weather_进入...',
+                    Detail:JSON.stringify({
+                    // item: item,
+                    // temperature: this.formatTemperature(item.WeatherList.Weather[0]),
+                    })
+                });
             }
         },
 }
