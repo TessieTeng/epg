@@ -163,7 +163,7 @@
                 </div> -->
                     <div class="city">
                         <ul id="weatherListUl">
-                            <li v-for="(index, item) in CurList" track-by='$index' data-index="{{index}}">
+                            <li v-for="(index, item) in CurList" track-by='$index'>
                                 <a href="javascript:;" @focus="changeCity(item)" @keydown='changeCurList($event, index)'>
                                     <img :src="item.CityImageUrl" class="cityImg" :alt="item.CityName">
                                 </a>

@@ -554,7 +554,7 @@
                  console.log('app back location: ' + location.href);
                  if (/\/secondcategory/.test(location.href)) {
                      console.log('app back ------ go first category');
-                     this.$router.replace('/firstcategory');
+                     this.$router.go('/firstcategory');
                  } else {
                      history.back();
                  }
