@@ -26,7 +26,8 @@
  }
 
  .wifi {
-     width: 700px;
+     width: 720px;
+     max-width: 720px;
      height: 80px;
      position: relative;
      padding-left: 30px;
@@ -36,13 +37,13 @@
 
  #wifiaccount {
      display: block;
-     font-size: 24px;
+     font-size: 22px;
      color: white;
  }
 
  .wifiicon {
      margin-right: 10px;
-     height: 24px;
+     height: 22px;
      vertical-align: middle;
  }
 
@@ -53,7 +54,7 @@
  .time {
      float: right;
      position: relative;
-     padding: 0 30px;
+     padding: 5px 30px;
      height: 80px;
      line-height: 80px;
      color: white;
